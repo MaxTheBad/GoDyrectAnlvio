@@ -474,9 +474,9 @@ function escapeXml(value = '') {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
 }
-const emptyState = { marginTop: 12, padding: 18, borderRadius: 16, border: '1px solid rgba(94,128,202,0.28)', background: 'rgba(12,18,39,0.66)', display: 'grid', gap: 14, color: '#fff' };
+const emptyState = { marginTop: 18, padding: 'clamp(22px, 5vw, 42px)', borderRadius: 20, border: '1px solid rgba(229,255,242,.11)', background: 'radial-gradient(circle at 90% 10%, rgba(185,255,90,.1), transparent 35%), #0d1010', display: 'grid', gap: 18, color: '#f4f7f5' };
 const emptyTitle = { margin: 0, fontSize: 18 };
 const emptyCopy = { margin: '6px 0 0', color: 'rgba(255,255,255,0.82)', lineHeight: 1.5 };
 const emptyActions = { display: 'flex', gap: 10, flexWrap: 'wrap' };
-const primaryAction = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '10px 14px', borderRadius: 10, background: '#2e7dff', color: '#fff', textDecoration: 'none', fontWeight: 700 };
+const primaryAction = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '11px 15px', borderRadius: 11, background: '#b9ff5a', color: '#0a1205', textDecoration: 'none', fontWeight: 800 };
 const secondaryAction = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '10px 14px', borderRadius: 10, background: '#141817', color: '#fff', textDecoration: 'none', fontWeight: 700, border: '1px solid rgba(229,255,242,0.14)' };

@@ -163,6 +163,7 @@ export default function FeedPage() {
           <div style={feedHeaderCopy}>
             <p style={feedEyebrow}>Feed</p>
             <h1 style={feedTitle}>Posts from people and businesses you follow</h1>
+            <nav style={feedTabs} aria-label='Feed views'><span style={feedTabActive}>Following</span><a href='/favorites' style={feedTab}>Saved</a></nav>
           </div>
         </div>
 
@@ -199,9 +200,9 @@ export default function FeedPage() {
           })}
         </div>
 
-        <div style={bottomExploreWrap}>
+        {rows.length ? <div style={bottomExploreWrap}>
           <a href="/explore" style={exploreBtn}>Explore more listings</a>
-        </div>
+        </div> : null}
       </div>
     </main>
   );
@@ -289,7 +290,7 @@ const searchBtn = {
 const inner = { width: 'min(980px, calc(100% - 32px))', margin: '0 auto', padding: '0 0 90px' };
 const feedHeader = { paddingTop: 18, display: 'grid', gap: 16 };
 const feedHeaderCopy = { display: 'grid', gap: 6 };
-const feedEyebrow = { margin: 0, fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', color: '#9fc0ff' };
+const feedEyebrow = { margin: 0, fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase', color: '#b9ff5a', fontWeight: 800 };
 const feedTitle = { margin: 0, fontSize: 'clamp(24px, 4vw, 34px)', lineHeight: 1.1, color: '#fff' };
 const feedColumn = {
   width: 'min(470px, calc(100vw - 24px))',
@@ -301,8 +302,11 @@ const feedColumnTight = {
   ...feedColumn,
   marginTop: 8,
 };
-const statusText = { margin: '16px 0 0', color: '#cdd9ff' };
-const loginBtn = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 'fit-content', padding: '10px 14px', borderRadius: 10, background: '#2e7dff', color: '#fff', textDecoration: 'none', fontWeight: 700 };
+const feedTabs = { display: 'flex', gap: 6, marginTop: 12 };
+const feedTab = { padding: '8px 13px', borderRadius: 999, color: '#98a39e', textDecoration: 'none', fontSize: 13, fontWeight: 700 };
+const feedTabActive = { ...feedTab, color: '#0a1205', background: '#b9ff5a' };
+const statusText = { margin: '16px 0 0', color: '#b8c1bd' };
+const loginBtn = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 'fit-content', padding: '10px 14px', borderRadius: 10, background: '#b9ff5a', color: '#0a1205', textDecoration: 'none', fontWeight: 800 };
 const bottomExploreWrap = { marginTop: 16, display: 'flex', justifyContent: 'center' };
 const exploreBtn = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(229,255,242,0.14)', borderRadius: 8, background: '#141817', color: '#fff', padding: '10px 14px', textDecoration: 'none', fontWeight: 600 };
 const postShell = {
