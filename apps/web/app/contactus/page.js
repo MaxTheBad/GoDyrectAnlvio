@@ -22,10 +22,6 @@ export default function ContactPage(){
   return (
     <main ref={ref} className="hero">
       <div className="container">
-        <header className="header">
-          <div className="logo">G<span>o</span>Dyrect</div>
-        </header>
-
         <section className="content">
           <h1 className="title">Contact Us</h1>
           <p className="subtitle">Fill out the form and we'll get back to you.</p>
@@ -43,10 +39,6 @@ export default function ContactPage(){
       <style jsx>{`
         .hero{min-height:80vh;display:flex;align-items:center;justify-content:center;background: linear-gradient(rgba(0,0,0,0.12), rgba(0,0,0,0.12)), url('/bg.jpg');background-size:cover;background-position:center;background-attachment:fixed;color:#0f172a;padding:48px;}
         .container{width:100%;max-width:900px;position:relative}
-        .header{display:flex;justify-content:flex-start;align-items:center;margin-bottom:2rem}
-        .logo{font-weight:800;font-size:1.25rem;letter-spacing:0.5px}
-        .logo span{color:#06b6d4}
-
         .content{background:linear-gradient(180deg, rgba(7,10,14,0.88), rgba(8,12,20,0.82));padding:36px;border-radius:12px;box-shadow:0 10px 30px rgba(7,10,14,0.32);color:#e6eef8}
         .title{font-size:1.75rem;margin:0 0 8px;color:#e6eef8}
         .subtitle{margin:0 0 18px;color:rgba(230,238,248,0.8);max-width:680px}

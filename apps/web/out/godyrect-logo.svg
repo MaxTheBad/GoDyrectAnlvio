@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="864" height="180" viewBox="0 0 864 180" role="img" aria-labelledby="title desc">
+  <title id="title">GoDyrect logo</title>
+  <desc id="desc">A lime-green direct arrow followed by the GoDyrect wordmark.</desc>
+  <g fill="none" fill-rule="evenodd">
+    <rect x="8" y="8" width="164" height="164" rx="42" fill="#A8FF3E"/>
+    <path d="M49 90h72M96 59l31 31-31 31" stroke="#070B08" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="202" y="121" fill="#F5F7F2" font-family="Inter, Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="80" font-weight="700" letter-spacing="-4">Go</text>
+    <text x="321" y="121" fill="#A8FF3E" font-family="Inter, Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="80" font-weight="700" letter-spacing="-4">Dyrect</text>
+  </g>
+</svg>
