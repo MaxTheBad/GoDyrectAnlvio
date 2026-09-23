@@ -2,7 +2,7 @@ export default function Footer(){
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
-        <div className="site-footer__brand">© {new Date().getFullYear()} GoDyrect. Deals move better direct.</div>
+        <div className="site-footer__brand">© {new Date().getFullYear()} GoDyrect · Built for deals that move.</div>
         <nav className="site-footer__links" aria-label="Footer navigation">
           <a href="/about">About</a>
           <a href="/contactus">Contact</a>

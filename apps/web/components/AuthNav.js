@@ -1,158 +1,36 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
+const memberLinks = [['/explore','Discover'],['/feed','Following'],['/messages','Messages'],['/dashboard','Workspace']];
+
 export default function AuthNav() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [user,setUser] = useState(null);
+  const [loading,setLoading] = useState(true);
+  const [menuOpen,setMenuOpen] = useState(false);
 
   useEffect(() => {
     let mounted = true;
+    supabase?.auth.getUser().then(({data}) => { if (mounted) { setUser(data?.user || null); setLoading(false); } });
+    if (!supabase) setLoading(false);
+    const { data } = supabase?.auth.onAuthStateChange((_event,session) => { setUser(session?.user || null); setLoading(false); }) || {};
+    return () => { mounted = false; data?.subscription?.unsubscribe(); };
+  },[]);
 
-    async function loadUser() {
-      if (!supabase) {
-        setLoading(false);
-        return;
-      }
-      const { data } = await supabase.auth.getUser();
-      if (mounted) {
-        setUser(data?.user ?? null);
-        setLoading(false);
-      }
-    }
+  async function signOut() { await supabase?.auth.signOut(); window.location.href = '/explore'; }
+  const links = user ? memberLinks : [['/explore','Discover'],['/about','How it works']];
 
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-
-    loadUser();
-
-    if (!supabase) return () => {};
-    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => {
-      mounted = false;
-      window.removeEventListener('resize', checkMobile);
-      subscription?.subscription?.unsubscribe();
-    };
-  }, []);
-
-  async function signOut() {
-    if (!supabase) return;
-    await supabase.auth.signOut();
-    window.location.href = '/';
-  }
-
-  if (loading) return null;
-
-  const loggedOutLinks = (
-    <>
-      <a href='/login' style={ghostBtn}>Sign in</a>
-      <a href='/signup' style={ghostBtn}>Sign up</a>
-      <a href='/signup?intent=sell' style={primaryBtn}>Sell</a>
-    </>
-  );
-
-  const loggedInLinks = (
-    <>
-      <a href='/feed' style={ghostBtn}>Feed</a>
-      <a href='/explore' style={ghostBtn}>Explore</a>
-      <a href='/businesses' style={ghostBtn}>Businesses</a>
-      <a href='/messages' style={ghostBtn}>Messages</a>
-      <a href='/favorites' style={ghostBtn}>Favorites</a>
-      <a href='/listings/new' style={primaryBtn}>Post</a>
-      <a href='/profile' style={ghostBtn}>Account</a>
-      <button style={ghostBtn} onClick={signOut}>Sign out</button>
-    </>
-  );
-
-  if (isMobile) {
-    return (
-      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 8 }}>
-        {user ? (
-          <button style={mobilePill} onClick={signOut}>Sign out</button>
-        ) : (
-          <>
-            <a href='/login' style={mobilePill}>Sign in</a>
-            <a href='/signup' style={mobilePillSecondary}>Sign up</a>
-          </>
-        )}
-        <button style={hamburgerBtn} onClick={() => setMenuOpen((v) => !v)} aria-label='Menu'>☰</button>
-        {menuOpen ? <div style={mobileMenu}>{user ? loggedInLinks : loggedOutLinks}</div> : null}
+  return (
+    <nav className="auth-nav" aria-label="Account navigation">
+      {!loading && links.map(([href,label]) => <a className="nav-link" href={href} key={href}>{label}</a>)}
+      {!loading && (user ? <a className="nav-primary" href="/listings/new">List a business</a> : <><a className="nav-link" href="/login">Sign in</a><a className="nav-primary" href="/signup">Get started</a></>)}
+      <div className="nav-menu">
+        <button className="nav-menu__button" aria-label="Open navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(v => !v)}>≡</button>
+        {menuOpen ? <div className="nav-menu__panel">
+          {links.map(([href,label]) => <a href={href} key={href}>{label}</a>)}
+          {user ? <><a href="/favorites">Saved</a><a href="/profile">Profile</a><a href="/listings/new">List a business</a><button onClick={signOut}>Sign out</button></> : <><a href="/login">Sign in</a><a href="/signup">Get started</a></>}
+        </div> : null}
       </div>
-    );
-  }
-
-  return <nav style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{user ? loggedInLinks : loggedOutLinks}</nav>;
+    </nav>
+  );
 }
-
-const mobileMenu = {
-  position: 'absolute',
-  right: 0,
-  top: 44,
-  background: '#ffffff',
-  border: '1px solid #e5e7eb',
-  borderRadius: 14,
-  padding: 8,
-  display: 'grid',
-  gap: 8,
-  minWidth: 190,
-  zIndex: 20,
-  boxShadow: '0 10px 30px rgba(17,24,39,0.12)',
-};
-
-const primaryBtn = {
-  border: 0,
-  borderRadius: 999,
-  background: 'linear-gradient(135deg, #f58529 0%, #dd2a7b 45%, #8134af 75%, #515bd4 100%)',
-  color: '#fff',
-  padding: '9px 14px',
-  cursor: 'pointer',
-  textDecoration: 'none',
-  fontWeight: 600,
-};
-
-const ghostBtn = {
-  border: '1px solid #e5e7eb',
-  borderRadius: 999,
-  background: '#fff',
-  color: '#111827',
-  padding: '9px 14px',
-  cursor: 'pointer',
-  textDecoration: 'none',
-  fontWeight: 600,
-};
-
-const hamburgerBtn = {
-  border: 0,
-  background: 'transparent',
-  color: '#fff',
-  fontSize: 26,
-  lineHeight: 1,
-  padding: 2,
-  cursor: 'pointer',
-};
-
-const mobilePill = {
-  border: '1px solid rgba(255,255,255,0.18)',
-  borderRadius: 999,
-  background: '#111',
-  color: '#fff',
-  padding: '8px 12px',
-  cursor: 'pointer',
-  textDecoration: 'none',
-  fontWeight: 600,
-  fontSize: 13,
-};
-
-const mobilePillSecondary = {
-  ...mobilePill,
-  background: '#2e7dff',
-  borderColor: '#2e7dff',
-};

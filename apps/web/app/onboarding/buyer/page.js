@@ -125,13 +125,13 @@ export default function BuyerOnboardingPage() {
   );
 }
 
-const wrap = { minHeight: '100vh', padding: 24, background: '#0b1020', color: '#fff' };
-const card = { maxWidth: 900, margin: '0 auto', background: '#121b3f', border: '1px solid #2a3c78', borderRadius: 24, padding: 20, boxShadow: '0 24px 60px rgba(0,0,0,0.28)' };
+const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#fff' };
+const card = { maxWidth: 900, margin: '0 auto', background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 24, padding: 20, boxShadow: '0 24px 60px rgba(0,0,0,0.28)' };
 const eyebrow = { margin: '0 0 10px', color: '#8fb7ff', letterSpacing: '0.18em', textTransform: 'uppercase', fontSize: 12, fontWeight: 700 };
 const title = { margin: '0 0 8px', color: '#fff', fontSize: 'clamp(2rem, 4vw, 3.2rem)', lineHeight: 1.05 };
 const sub = { margin: 0, color: 'rgba(255,255,255,0.78)', lineHeight: 1.5, maxWidth: 760 };
 const label = { fontSize: 13, opacity: 0.88 };
-const input = { borderRadius: 12, border: '1px solid #304178', background: '#0b1431', color: '#fff', padding: '12px 14px' };
+const input = { borderRadius: 12, border: '1px solid rgba(229,255,242,0.14)', background: '#090b0b', color: '#fff', padding: '12px 14px' };
 const grid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10 };
 const chip = (active) => ({
   borderRadius: 999,
@@ -143,4 +143,4 @@ const chip = (active) => ({
   fontWeight: 700,
 });
 const btnPrimary = { border: 0, borderRadius: 12, background: '#2e7dff', color: '#fff', padding: '12px 14px', cursor: 'pointer', textDecoration: 'none' };
-const btnGhost = { border: '1px solid #304178', borderRadius: 12, background: '#0e1738', color: '#fff', padding: '12px 14px', textDecoration: 'none' };
+const btnGhost = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 12, background: '#141817', color: '#fff', padding: '12px 14px', textDecoration: 'none' };

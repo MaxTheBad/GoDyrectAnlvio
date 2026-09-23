@@ -98,11 +98,11 @@ export default function BusinessProfilePage() {
   );
 }
 
-const wrap = { minHeight: '100vh', padding: 24, background: '#0b1020', color: '#fff' };
-const card = { maxWidth: 920, margin: '0 auto', display: 'grid', gap: 14, background: '#121b3f', border: '1px solid #2a3c78', borderRadius: 24, padding: 18, boxShadow: '0 24px 60px rgba(0,0,0,0.28)' };
+const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#fff' };
+const card = { maxWidth: 920, margin: '0 auto', display: 'grid', gap: 14, background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 24, padding: 18, boxShadow: '0 24px 60px rgba(0,0,0,0.28)' };
 const heroTop = { display: 'grid', gridTemplateColumns: '56px minmax(0, 1fr) auto', gap: 14, alignItems: 'center' };
 const brandMark = { width: 56, height: 56, borderRadius: 18, display: 'grid', placeItems: 'center', background: 'linear-gradient(135deg, #ffd6e8, #c7d6ff)', color: '#0f172a', fontWeight: 800, fontSize: 22 };
 const muted = { marginTop: 4, color: 'rgba(255,255,255,0.72)', fontSize: 14 };
 const section = { marginTop: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(42,60,120,0.8)', borderRadius: 16, padding: 14 };
 const rowLink = { display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center', padding: '10px 12px', border: '1px solid rgba(42,60,120,0.8)', borderRadius: 12, color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.03)' };
-const btn = { border: '1px solid #2a3c78', borderRadius: 999, background: '#2e7dff', color: '#fff', padding: '10px 14px', width: 'fit-content', cursor: 'pointer' };
+const btn = { border: '1px solid rgba(229,255,242,0.11)', borderRadius: 999, background: '#2e7dff', color: '#fff', padding: '10px 14px', width: 'fit-content', cursor: 'pointer' };

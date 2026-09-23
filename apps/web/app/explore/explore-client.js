@@ -41,4 +41,4 @@ export default function ExploreClient() {
   );
 }
 
-const shell = { display: 'grid', gap: 18 };
+const shell = { display: 'grid', gap: 0 };

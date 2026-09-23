@@ -11,4 +11,4 @@ export default function ExplorePage() {
   );
 }
 
-const page = { minHeight: '100vh', background: '#0b1020' };
+const page = { minHeight: '100vh', background: 'var(--bg)' };

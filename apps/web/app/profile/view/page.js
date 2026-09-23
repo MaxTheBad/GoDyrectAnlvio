@@ -102,10 +102,10 @@ function initial(name) {
   return name.trim().charAt(0).toUpperCase();
 }
 
-const wrap = { minHeight: '100vh', padding: 24, background: '#0b1020', color: '#fff' };
-const card = { maxWidth: 640, margin: '0 auto', background: '#121b3f', border: '1px solid #2a3c78', borderRadius: 24, padding: 18, display: 'grid', gap: 10, boxShadow: '0 24px 60px rgba(0,0,0,0.28)' };
+const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#fff' };
+const card = { maxWidth: 640, margin: '0 auto', background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 24, padding: 18, display: 'grid', gap: 10, boxShadow: '0 24px 60px rgba(0,0,0,0.28)' };
 const heroTop = { display: 'grid', gridTemplateColumns: '96px minmax(0, 1fr) auto', gap: 16, alignItems: 'center' };
 const avatar = { width: 96, height: 96, borderRadius: 999, objectFit: 'cover' };
 const avatarFallback = { width: 96, height: 96, borderRadius: 999, display: 'grid', placeItems: 'center', background: 'linear-gradient(135deg, #ffd6e8, #c7d6ff)', color: '#0f172a', fontSize: 28, fontWeight: 800 };
 const badge = (role) => ({ display: 'inline-block', width: 'fit-content', padding: '6px 10px', borderRadius: 999, background: role === 'seller' ? '#124d2f' : role === 'buyer' ? '#1e3a8a' : '#5b4b16', border: '1px solid #3a4f8f', fontSize: 12 });
-const followBtn = { border: '1px solid #2a3c78', borderRadius: 999, background: '#2e7dff', color: '#fff', padding: '9px 14px', cursor: 'pointer', width: 'fit-content' };
+const followBtn = { border: '1px solid rgba(229,255,242,0.11)', borderRadius: 999, background: '#2e7dff', color: '#fff', padding: '9px 14px', cursor: 'pointer', width: 'fit-content' };

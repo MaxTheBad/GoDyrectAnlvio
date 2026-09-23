@@ -35,25 +35,23 @@ export default function LoginPage() {
   }
 
   return (
-    <main style={wrap}>
-      <form onSubmit={submit} style={card}>
-        <a href='/' style={brand} aria-label="GoDyrect Home"><img src="/logo.png" alt="GoDyrect" style={{ width: 120, height: 34, objectFit: 'contain' }} /></a>
-        <h1 style={{ margin: 0 }}>Log in</h1>
-        <input style={input} placeholder='Email' type='email' name='email' autoComplete='email' value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input style={input} placeholder='Password' type='password' name='password' id='login-password' autoComplete='current-password' value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button style={{ ...btn, opacity: submitting ? 0.7 : 1 }} type='submit' disabled={submitting}>
-          {submitting ? 'Logging in…' : 'Log in'}
-        </button>
-        {msg ? <p role='status'>{msg}</p> : null}
-        <p style={{ marginTop: 2 }}>Don’t have an account? <a href='/signup' style={{ color: '#8fb7ff' }}>Sign up</a></p>
+    <main className='auth-shell'>
+      <section className='auth-story'>
+        <div className='auth-story__content'>
+          <div className='auth-kicker'>Your deal room</div>
+          <h1>Good deals move <em>fast.</em></h1>
+          <p>Pick up where you left off. Your saved opportunities, conversations, and businesses are waiting.</p>
+          <div className='auth-proof'><span>Private by design</span><span>Direct conversations</span><span>No gatekeepers</span></div>
+        </div>
+      </section>
+      <form onSubmit={submit} className='auth-card auth-form'>
+        <div><div className='auth-kicker'>Welcome back</div><h2>Sign in to GoDyrect</h2><p>Enter your details to continue.</p></div>
+        <label>Email address<input placeholder='you@company.com' type='email' name='email' autoComplete='email' value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
+        <label>Password<input placeholder='Your password' type='password' name='password' id='login-password' autoComplete='current-password' value={password} onChange={(e) => setPassword(e.target.value)} required /></label>
+        <button className='auth-submit' type='submit' disabled={submitting}>{submitting ? 'Signing in…' : 'Sign in →'}</button>
+        {msg ? <p className='auth-message' role='status'>{msg}</p> : null}
+        <p className='auth-switch'>New here? <a href='/signup'>Create an account</a></p>
       </form>
     </main>
   );
 }
-
-const wrap = { minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#0b1020', color: '#fff' };
-const card = { width: 380, display: 'grid', gap: 10, background: '#121b3f', padding: 20, borderRadius: 12, border: '1px solid #2a3c78' };
-const brand = { display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: 4 };
-const brandIcon = { width: 28, height: 28, borderRadius: 8, background: '#2e7dff' };
-const input = { borderRadius: 8, border: '1px solid #304178', background: '#0b1431', color: '#fff', padding: '10px 12px' };
-const btn = { border: 0, borderRadius: 8, background: '#2e7dff', color: '#fff', padding: '10px 12px' };

@@ -108,9 +108,9 @@ export default function FavoritesPage() {
   );
 }
 
-const wrap = { minHeight: '100vh', padding: 24, background: '#0b1020', color: '#fff' };
-const card = { maxWidth: 980, margin: '0 auto', background: '#121b3f', border: '1px solid #2a3c78', borderRadius: 12, padding: 16 };
-const row = { border: '1px solid #304178', borderRadius: 10, background: '#0e1738', padding: 12, display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' };
-const ghostBtn = { border: '1px solid #304178', borderRadius: 10, background: '#0e1738', color: '#fff', padding: '10px 12px', textDecoration: 'none' };
+const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#fff' };
+const card = { maxWidth: 980, margin: '0 auto', background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 12, padding: 16 };
+const row = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, background: '#141817', padding: 12, display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' };
+const ghostBtn = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, background: '#141817', color: '#fff', padding: '10px 12px', textDecoration: 'none' };
 const dangerBtn = { border: '1px solid #7a3040', borderRadius: 10, background: '#3a1520', color: '#ffd7dd', padding: '10px 12px', cursor: 'pointer' };
 const loginBtn = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 'fit-content', padding: '10px 14px', borderRadius: 10, background: '#2e7dff', color: '#fff', textDecoration: 'none', fontWeight: 700 };

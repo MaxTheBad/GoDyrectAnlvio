@@ -268,20 +268,20 @@ export default function EditListingPage() {
   );
 }
 
-const wrap = { minHeight: '100vh', padding: 24, background: '#0b1020', color: '#fff' };
-const card = { maxWidth: 760, margin: '0 auto', display: 'grid', gap: 10, background: '#121b3f', border: '1px solid #2a3c78', borderRadius: 12, padding: 16 };
-const input = { borderRadius: 8, border: '1px solid #304178', background: '#0b1431', color: '#fff', padding: '10px 12px' };
+const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#fff' };
+const card = { maxWidth: 760, margin: '0 auto', display: 'grid', gap: 10, background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 12, padding: 16 };
+const input = { borderRadius: 8, border: '1px solid rgba(229,255,242,0.14)', background: '#090b0b', color: '#fff', padding: '10px 12px' };
 const label = { display: 'flex', alignItems: 'center', gap: 8 };
 const btn = { border: 0, borderRadius: 8, background: '#2e7dff', color: '#fff', padding: '10px 12px', cursor: 'pointer' };
-const ghostBtn = { border: '1px solid #304178', borderRadius: 8, background: '#0e1738', color: '#fff', padding: '10px 12px', textDecoration: 'none' };
-const mediaSection = { marginTop: 8, border: '1px solid #304178', borderRadius: 10, background: '#0e1738', padding: 10, display: 'grid', gap: 10 };
+const ghostBtn = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 8, background: '#141817', color: '#fff', padding: '10px 12px', textDecoration: 'none' };
+const mediaSection = { marginTop: 8, border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, background: '#141817', padding: 10, display: 'grid', gap: 10 };
 const mediaGrid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 8 };
-const mediaItem = { border: '1px solid #304178', borderRadius: 8, overflow: 'hidden', background: '#0b1431', display: 'grid', gap: 6, padding: 6 };
+const mediaItem = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 8, overflow: 'hidden', background: '#090b0b', display: 'grid', gap: 6, padding: 6 };
 const mediaEl = { width: '100%', height: 90, objectFit: 'cover', borderRadius: 6 };
-const thumbBtn = { border: '1px solid #304178', borderRadius: 6, background: '#10204a', color: '#fff', padding: '6px 8px', cursor: 'pointer', fontSize: 12 };
+const thumbBtn = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 6, background: '#10204a', color: '#fff', padding: '6px 8px', cursor: 'pointer', fontSize: 12 };
 const removeBtn = { border: '1px solid #7a3040', borderRadius: 6, background: '#3a1520', color: '#ffd7dd', padding: '5px 8px', cursor: 'pointer', fontSize: 12 };
 const modal = { position: 'fixed', inset: 0, background: 'rgba(3,7,18,0.82)', display: 'grid', placeItems: 'center', padding: 16, zIndex: 60 };
-const modalInner = { width: 'min(96vw, 720px)', background: '#121b3f', border: '1px solid #304178', borderRadius: 16, padding: 16, color: '#fff' };
+const modalInner = { width: 'min(96vw, 720px)', background: '#0d1010', border: '1px solid rgba(229,255,242,0.14)', borderRadius: 16, padding: 16, color: '#fff' };
 const thumbVideo = { width: '100%', maxHeight: '70vh', borderRadius: 12, background: '#000' };
 const thumbPreviewWrap = { width: '100%', borderRadius: 12, overflow: 'hidden', background: '#000', marginTop: 8 };
 const thumbPreviewImg = { width: '100%', height: 'auto', display: 'block' };

@@ -490,7 +490,14 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
       <section style={listingSection}>
         <h3 style={{ marginTop: 4, color: '#fff' }}>{viewMode === 'map' ? 'Listing locations' : 'Business listings'}</h3>
         {loadingListings ? <p style={{ opacity: 0.8, color: 'rgba(235,241,255,0.78)' }}>Loading listings...</p> : null}
-        {!loadingListings && filteredListings.length === 0 ? <p style={{ opacity: 0.8, color: 'rgba(235,241,255,0.78)' }}>No active listings found.</p> : null}
+        {!loadingListings && filteredListings.length === 0 ? (
+          <div style={emptyMarket}>
+            <span style={emptyMarketKicker}>The marketplace is open</span>
+            <h2 style={emptyMarketTitle}>Be the first deal people discover.</h2>
+            <p style={emptyMarketCopy}>No opportunities match these filters yet. Clear your search or put a business in front of the next serious buyer.</p>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}><a href='/listings/new' style={emptyMarketPrimary}>List a business →</a><button type='button' style={ghostBtn} onClick={() => window.location.assign('/explore')}>Clear filters</button></div>
+          </div>
+        ) : null}
         {viewMode === 'map' && !loadingListings && filteredListings.length ? <MarketplaceMap listings={filteredListings} isMobile={isMobile} /> : null}
         <div style={{ display: viewMode === 'list' ? 'grid' : 'none', gap: 10 }}>
           {filteredListings.map((l) => {
@@ -613,18 +620,18 @@ function milesBetween(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-const filterSection = { marginTop: 16, background: '#0f1732', border: '1px solid rgba(94,128,202,0.28)', borderRadius: 20, padding: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.18)' };
-const mobileFilterToggle = { width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(94,128,202,0.28)', borderRadius: 12, background: '#121b3f', color: '#fff', padding: '10px 12px', cursor: 'pointer', fontWeight: 600 };
-const listingSection = { marginTop: 16, background: '#0f1732', border: '1px solid rgba(94,128,202,0.28)', borderRadius: 20, padding: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.18)' };
-const primaryBtn = { border: 0, borderRadius: 999, background: '#2e7dff', color: '#fff', padding: '10px 14px', cursor: 'pointer', fontWeight: 600 };
-const ghostBtn = { border: '1px solid rgba(94,128,202,0.28)', borderRadius: 999, background: '#121b3f', color: '#fff', padding: '10px 12px', cursor: 'pointer', fontWeight: 600 };
-const input = { borderRadius: 12, border: '1px solid rgba(94,128,202,0.28)', background: '#0b1431', color: '#fff', padding: '10px 12px', width: '100%' };
+const filterSection = { width: 'min(calc(100% - 36px), 1240px)', margin: '28px auto 0', background: '#0d1010', border: '1px solid rgba(229,255,242,.11)', borderRadius: 20, padding: 18 };
+const mobileFilterToggle = { width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(229,255,242,.11)', borderRadius: 12, background: '#141817', color: '#f4f7f5', padding: '11px 12px', cursor: 'pointer', fontWeight: 600 };
+const listingSection = { width: 'min(calc(100% - 36px), 1240px)', margin: '18px auto 72px', background: '#0d1010', border: '1px solid rgba(229,255,242,.11)', borderRadius: 20, padding: 22 };
+const primaryBtn = { border: 0, borderRadius: 12, background: '#b9ff5a', color: '#0a1205', padding: '10px 14px', cursor: 'pointer', fontWeight: 700 };
+const ghostBtn = { border: '1px solid rgba(229,255,242,.11)', borderRadius: 11, background: '#141817', color: '#f4f7f5', padding: '10px 12px', cursor: 'pointer', fontWeight: 600 };
+const input = { borderRadius: 10, border: '1px solid rgba(229,255,242,.11)', background: '#090b0b', color: '#f4f7f5', padding: '10px 12px', width: '100%' };
 const sortWrap = { display: 'grid', gap: 4 };
-const dropWrap = { background: '#0b1431', border: '1px solid rgba(94,128,202,0.28)', borderRadius: 14, padding: 10 };
-const dropBtn = { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid rgba(94,128,202,0.28)', borderRadius: 12, background: '#121b3f', color: '#fff', padding: '10px 12px', cursor: 'pointer', fontWeight: 600 };
+const dropWrap = { background: '#090b0b', border: '1px solid rgba(229,255,242,.11)', borderRadius: 14, padding: 10 };
+const dropBtn = { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid rgba(229,255,242,.11)', borderRadius: 10, background: '#141817', color: '#f4f7f5', padding: '10px 12px', cursor: 'pointer', fontWeight: 600 };
 const rowLabel = { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, color: 'rgba(235,241,255,0.78)' };
 const toastStyle = { position: 'fixed', bottom: 92, right: 20, background: '#111827', color: '#fff', padding: '10px 14px', borderRadius: 12, boxShadow: '0 10px 24px rgba(17,24,39,0.25)' };
-const listingCard = { border: '1px solid rgba(94,128,202,0.28)', borderRadius: 18, background: '#121b3f', padding: 14, display: 'grid', gap: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.18)' };
+const listingCard = { border: '1px solid rgba(94,128,202,0.28)', borderRadius: 18, background: '#0d1010', padding: 14, display: 'grid', gap: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.18)' };
 const listingTopRow = { display: 'grid', gridTemplateColumns: '42px minmax(0, 1fr) auto', gap: 12, alignItems: 'start' };
 const listingAvatar = { width: 42, height: 42, borderRadius: 999, display: 'grid', placeItems: 'center', background: 'linear-gradient(135deg, #ffd6e8, #c7d6ff)', color: '#0f172a', fontSize: 18, fontWeight: 800, border: '1px solid rgba(94,128,202,0.28)' };
 const listingTitle = { color: '#fff', textDecoration: 'none', fontWeight: 800, fontSize: 18, lineHeight: 1.1 };
@@ -651,12 +658,17 @@ const mapPin = { position: 'absolute', transform: 'translate(-50%, -50%)', displ
 const mapPinDot = { width: 11, height: 11, borderRadius: 999, background: '#ff6b35', boxShadow: '0 0 0 4px rgba(255,107,53,.15)' };
 const mapPinPrice = { fontSize: 11, fontWeight: 800 };
 const mapResults = { display: 'grid', alignContent: 'start', gap: 8, maxHeight: 430, overflowY: 'auto' };
-const mapResult = { display: 'grid', gap: 5, padding: 13, color: '#fff', background: '#121b3f', border: '1px solid rgba(94,128,202,.28)', borderRadius: 13, textDecoration: 'none', fontSize: 13 };
+const mapResult = { display: 'grid', gap: 5, padding: 13, color: '#fff', background: '#0d1010', border: '1px solid rgba(94,128,202,.28)', borderRadius: 13, textDecoration: 'none', fontSize: 13 };
 const mapEmpty = { padding: 28, border: '1px dashed rgba(143,183,255,.3)', borderRadius: 16, color: 'rgba(235,241,255,.72)', lineHeight: 1.6, textAlign: 'center' };
-const menuBtn = { border: '1px solid rgba(94,128,202,0.28)', borderRadius: 999, background: '#0b1431', color: '#fff', width: 34, height: 34, fontSize: 18, lineHeight: 1, cursor: 'pointer' };
-const menuPanel = { position: 'absolute', right: 0, top: 40, background: '#0f1732', border: '1px solid rgba(94,128,202,0.28)', borderRadius: 10, minWidth: 180, display: 'grid', zIndex: 5, boxShadow: '0 10px 24px rgba(0,0,0,0.2)' };
-const menuItem = { border: 0, borderBottom: '1px solid rgba(94,128,202,0.18)', background: '#0f1732', textAlign: 'left', padding: '10px 12px', cursor: 'pointer', color: '#fff' };
+const menuBtn = { border: '1px solid rgba(94,128,202,0.28)', borderRadius: 999, background: '#090b0b', color: '#fff', width: 34, height: 34, fontSize: 18, lineHeight: 1, cursor: 'pointer' };
+const menuPanel = { position: 'absolute', right: 0, top: 40, background: '#101413', border: '1px solid rgba(94,128,202,0.28)', borderRadius: 10, minWidth: 180, display: 'grid', zIndex: 5, boxShadow: '0 10px 24px rgba(0,0,0,0.2)' };
+const menuItem = { border: 0, borderBottom: '1px solid rgba(94,128,202,0.18)', background: '#101413', textAlign: 'left', padding: '10px 12px', cursor: 'pointer', color: '#fff' };
 const menuLink = { padding: '10px 12px', textDecoration: 'none', color: '#fff', borderBottom: '1px solid rgba(94,128,202,0.18)' };
+const emptyMarket = { minHeight: 330, padding: 'clamp(28px, 6vw, 70px)', display: 'grid', alignContent: 'center', justifyItems: 'start', borderRadius: 16, background: 'radial-gradient(circle at 80% 20%, rgba(185,255,90,.12), transparent 32%), #090b0b', border: '1px solid rgba(229,255,242,.08)' };
+const emptyMarketKicker = { color: '#b9ff5a', fontSize: 11, fontWeight: 800, letterSpacing: '.15em', textTransform: 'uppercase' };
+const emptyMarketTitle = { maxWidth: 620, margin: '12px 0', color: '#f4f7f5', fontSize: 'clamp(30px,5vw,54px)', lineHeight: 1 };
+const emptyMarketCopy = { maxWidth: 560, margin: '0 0 24px', color: '#98a39e', lineHeight: 1.6 };
+const emptyMarketPrimary = { display: 'inline-flex', alignItems: 'center', padding: '11px 15px', borderRadius: 11, color: '#0a1205', background: '#b9ff5a', textDecoration: 'none', fontWeight: 800 };
 
 const modalBackdrop = { position: 'fixed', inset: 0, background: 'rgba(17,24,39,0.72)', display: 'grid', placeItems: 'center', zIndex: 1200, padding: 16 };
 const modalCard = { width: 'min(780px, 96vw)', background: '#0b1228', border: '1px solid #2e3f73', borderRadius: 14, padding: 10 };

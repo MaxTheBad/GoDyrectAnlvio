@@ -420,10 +420,10 @@ export default function NewListingPage() {
   );
 }
 
-const wrap = { minHeight: '100vh', padding: 24, background: '#0b1020', color: '#fff' };
-const card = { maxWidth: 700, display: 'grid', gap: 10, background: '#121b3f', padding: 20, borderRadius: 12 };
+const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#fff' };
+const card = { maxWidth: 700, display: 'grid', gap: 10, background: '#0d1010', padding: 20, borderRadius: 12 };
 const label = { fontSize: 13, opacity: 0.85 };
-const input = { borderRadius: 8, border: '1px solid #304178', background: '#0b1431', color: '#fff', padding: '10px 12px' };
+const input = { borderRadius: 8, border: '1px solid rgba(229,255,242,0.14)', background: '#090b0b', color: '#fff', padding: '10px 12px' };
 const btn = { border: 0, borderRadius: 8, background: '#2e7dff', color: '#fff', padding: '10px 12px' };
-const infoBox = { border: '1px solid #304178', borderRadius: 10, background: '#0e1738', padding: 10, display: 'grid', gap: 6 };
+const infoBox = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, background: '#141817', padding: 10, display: 'grid', gap: 6 };
 const small = { fontSize: 13, opacity: 0.85 };

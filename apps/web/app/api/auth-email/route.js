@@ -16,10 +16,10 @@ function buildEmailHtml({ email, confirmationUrl, siteUrl = 'https://godyrect.co
   const safeConfirmationUrl = escapeHtml(confirmationUrl);
   return `<!doctype html>
 <html>
-  <body style="margin:0;padding:0;background:#0b1020;font-family:Arial,Helvetica,sans-serif;color:#fff;">
+  <body style="margin:0;padding:0;background:#070909;font-family:Arial,Helvetica,sans-serif;color:#fff;">
     <div style="max-width:640px;margin:0 auto;padding:32px 20px;">
-      <div style="background:#121b3f;border:1px solid #2a3c78;border-radius:20px;overflow:hidden;">
-        <div style="padding:28px 28px 16px;text-align:center;background:linear-gradient(180deg,#16275f 0%,#0b1020 100%);">
+      <div style="background:#0d1010;border:1px solid rgba(229,255,242,0.11);border-radius:20px;overflow:hidden;">
+        <div style="padding:28px 28px 16px;text-align:center;background:linear-gradient(180deg,#16275f 0%,#070909 100%);">
           <img src="${logo}" alt="GoDyrect" style="height:42px;width:auto;object-fit:contain;display:block;margin:0 auto 16px;" />
           <div style="font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#8fb7ff;font-weight:700;">Welcome to GoDyrect</div>
           <h1 style="margin:12px 0 0;font-size:32px;line-height:1.1;">Welcome to GoDyrect</h1>

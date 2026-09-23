@@ -110,8 +110,8 @@ const item = {
 };
 
 const center = {
-  background: 'linear-gradient(135deg, #f58529 0%, #dd2a7b 45%, #8134af 75%, #515bd4 100%)',
-  color: '#fff',
+  background: '#b9ff5a',
+  color: '#0a1205',
   border: '0',
 };
 

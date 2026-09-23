@@ -289,71 +289,40 @@ export function FeedHero({
   peopleCount,
   compact = false,
 }) {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const sync = () => setIsMobile(window.innerWidth < 768);
-    sync();
-    window.addEventListener('resize', sync);
-    return () => window.removeEventListener('resize', sync);
-  }, []);
-
-  const mobileHero = compact || isMobile;
   return (
-    <section style={mobileHero ? compactHeroShell : heroShell}>
-      <div style={heroOverlay} />
-      <div style={mobileHero ? compactHeroContent : heroContent}>
-        <div style={heroPanel}>
-          <div style={mobileHero ? heroToplineMobile : heroTopline}>Discover deals, businesses, and brokers</div>
-          <h1 style={mobileHero ? heroTitleMobile : heroTitle}>Find a business for sale</h1>
-          <p style={mobileHero ? heroSubtitleMobile : heroSubtitle}>Search by business name, city, state, or ZIP. Keep your feed focused on what you actually want to buy.</p>
-
-          <div style={heroSearchWrap}>
-            <div style={heroTabs}>
-              <button type='button' style={industry === 'all' ? activeTab : tabButton} onClick={() => setIndustry('all')}>Businesses</button>
-              <button type='button' style={industry === 'startup' ? activeTab : tabButton} onClick={() => setIndustry('startup')}>Franchises</button>
-            </div>
-
-            <div style={mobileHero ? searchBarMobile : searchBar}>
-              <div style={searchFieldWrap}>
-                <label style={srOnly} htmlFor='feed-search'>Search</label>
-                <input
-                  id='feed-search'
-                  value={searchDraft}
-                  onChange={(e) => setSearchDraft(e.target.value)}
-                  placeholder='California, Miami, 33101, coffee shop...'
-                  style={mobileHero ? searchInputMobile : searchInput}
-                />
-              </div>
-              {mobileHero ? null : <div style={divider} />}
-              <div style={searchFieldWrap}>
-                <label style={srOnly} htmlFor='feed-industry'>Industry</label>
-                <select id='feed-industry' value={industry} onChange={(e) => setIndustry(e.target.value)} style={mobileHero ? searchSelectMobile : searchSelect}>
-                  <option value='all'>All Industries</option>
-                  <option value='established'>Established Businesses</option>
-                  <option value='asset_sale'>Asset Sales</option>
-                  <option value='real_estate'>Real Estate</option>
-                  <option value='startup'>Start-Ups</option>
-                </select>
-              </div>
-              <button type='button' style={mobileHero ? searchBtnMobile : searchBtn} onClick={onSearch}>Search</button>
-            </div>
-          </div>
-
-          <div style={mobileHero ? statsRowMobile : statsRow}>
-            <div style={statCard}>
-              <span style={statLabel}>Posts</span>
-              <strong style={statValue}>{rowsCount.toLocaleString()}</strong>
-            </div>
-            <div style={statCard}>
-              <span style={statLabel}>Businesses</span>
-              <strong style={statValue}>{businessCount.toLocaleString()}</strong>
-            </div>
-            <div style={statCard}>
-              <span style={statLabel}>People</span>
-              <strong style={statValue}>{peopleCount.toLocaleString()}</strong>
-            </div>
-          </div>
+    <section className={`market-hero${compact ? ' market-hero--compact' : ''}`}>
+      <div className='market-hero__glow' />
+      <div className='market-hero__inner'>
+        <div className='market-hero__eyebrow'><span /> Private-market discovery, made direct</div>
+        <h1>Find the deal.<br /><em>Skip the runaround.</em></h1>
+        <p className='market-hero__copy'>Search businesses, assets, and opportunities from owners and representatives ready to talk.</p>
+        <div className='market-search'>
+          <label className='market-search__field' htmlFor='feed-search'>
+            <span>What are you looking for?</span>
+            <input id='feed-search' value={searchDraft} onChange={(e) => setSearchDraft(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && onSearch()} placeholder='Coffee shop, Miami, 33101…' />
+          </label>
+          <label className='market-search__field' htmlFor='feed-industry'>
+            <span>Deal type</span>
+            <select id='feed-industry' value={industry} onChange={(e) => setIndustry(e.target.value)}>
+              <option value='all'>Every opportunity</option>
+              <option value='established'>Established business</option>
+              <option value='asset_sale'>Asset sale</option>
+              <option value='real_estate'>Real estate</option>
+              <option value='startup'>Start-up</option>
+            </select>
+          </label>
+          <button type='button' onClick={onSearch}>Explore deals <span>↗</span></button>
+        </div>
+        <div className='market-chips' aria-label='Quick filters'>
+          {[
+            ['all', 'All deals'],
+            ['established', 'Established'],
+            ['asset_sale', 'Assets'],
+            ['real_estate', 'Real estate'],
+            ['startup', 'Start-ups'],
+          ].map(([value, label]) => (
+            <button key={value} type='button' className={industry === value ? 'is-active' : ''} onClick={() => setIndustry(value)}>{label}</button>
+          ))}
         </div>
       </div>
     </section>
@@ -399,7 +368,7 @@ export const searchInput = { width: '100%', border: 0, padding: '22px 20px', fon
 export const searchInputMobile = { ...searchInput, minHeight: 56, padding: '18px 18px', fontSize: 16 };
 export const searchSelect = { width: '100%', border: 0, padding: '22px 18px', fontSize: 18, outline: 'none', color: '#334155', background: 'transparent' };
 export const searchSelectMobile = { ...searchSelect, minHeight: 52, padding: '16px 18px', fontSize: 16, borderTop: '1px solid #e1e7f2' };
-export const searchBtn = { border: '1px solid #2a3c78', background: '#2e7dff', color: '#fff', padding: '0 34px', fontSize: 18, fontWeight: 800, cursor: 'pointer', boxShadow: '0 8px 20px rgba(46,125,255,0.28)' };
+export const searchBtn = { border: '1px solid rgba(229,255,242,0.11)', background: '#2e7dff', color: '#fff', padding: '0 34px', fontSize: 18, fontWeight: 800, cursor: 'pointer', boxShadow: '0 8px 20px rgba(46,125,255,0.28)' };
 export const searchBtnMobile = { ...searchBtn, minHeight: 54, padding: '0 18px', fontSize: 16, borderRadius: 0 };
 export const statsRow = { width: 'min(100%, 980px)', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, marginTop: 14 };
 export const statsRowMobile = { width: 'min(100%, 980px)', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 8, marginTop: 10 };
@@ -429,8 +398,8 @@ const bookmarkBtn = (active) => ({
 });
 const bookmarkIcon = (active) => ({ display: 'grid', placeItems: 'center', color: active ? '#2e7dff' : '#111827' });
 const menuBtn = { border: '1px solid rgba(215,219,229,0.9)', borderRadius: 999, background: '#fff', color: '#111827', width: 48, height: 48, fontSize: 24, lineHeight: 1, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.08)' };
-const menuPanel = { position: 'absolute', right: 0, top: 52, background: '#0f1732', border: '1px solid rgba(94,128,202,0.28)', borderRadius: 10, minWidth: 180, display: 'grid', zIndex: 5, boxShadow: '0 10px 24px rgba(0,0,0,0.2)' };
-const menuItem = { border: 0, borderBottom: '1px solid rgba(94,128,202,0.18)', background: '#0f1732', textAlign: 'left', padding: '10px 12px', cursor: 'pointer', color: '#fff' };
+const menuPanel = { position: 'absolute', right: 0, top: 52, background: '#101413', border: '1px solid rgba(94,128,202,0.28)', borderRadius: 10, minWidth: 180, display: 'grid', zIndex: 5, boxShadow: '0 10px 24px rgba(0,0,0,0.2)' };
+const menuItem = { border: 0, borderBottom: '1px solid rgba(94,128,202,0.18)', background: '#101413', textAlign: 'left', padding: '10px 12px', cursor: 'pointer', color: '#fff' };
 const menuLink = { padding: '10px 12px', textDecoration: 'none', color: '#fff', borderBottom: '1px solid rgba(94,128,202,0.18)' };
 const heroMediaFrame = {
   position: 'relative',
@@ -484,7 +453,7 @@ function buildFallbackPoster(title, businessName) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
     <defs>
       <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#0f1732"/>
+        <stop offset="0%" stop-color="#101413"/>
         <stop offset="100%" stop-color="#1e3a8a"/>
       </linearGradient>
     </defs>
@@ -510,4 +479,4 @@ const emptyTitle = { margin: 0, fontSize: 18 };
 const emptyCopy = { margin: '6px 0 0', color: 'rgba(255,255,255,0.82)', lineHeight: 1.5 };
 const emptyActions = { display: 'flex', gap: 10, flexWrap: 'wrap' };
 const primaryAction = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '10px 14px', borderRadius: 10, background: '#2e7dff', color: '#fff', textDecoration: 'none', fontWeight: 700 };
-const secondaryAction = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '10px 14px', borderRadius: 10, background: '#0e1738', color: '#fff', textDecoration: 'none', fontWeight: 700, border: '1px solid #304178' };
+const secondaryAction = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '10px 14px', borderRadius: 10, background: '#141817', color: '#fff', textDecoration: 'none', fontWeight: 700, border: '1px solid rgba(229,255,242,0.14)' };

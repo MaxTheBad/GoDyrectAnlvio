@@ -440,8 +440,8 @@ export default function MyBusinessesPage() {
   );
 }
 
-const wrap = { minHeight: '100vh', padding: '16px 12px 96px', background: '#0b1020', color: '#fff', overflowX: 'hidden' };
-const card = { maxWidth: 980, margin: '0 auto', width: '100%', background: '#121b3f', border: '1px solid #2a3c78', borderRadius: 12, padding: 16, display: 'grid', gap: 12, boxSizing: 'border-box' };
+const wrap = { minHeight: '100vh', padding: '16px 12px 96px', background: '#070909', color: '#fff', overflowX: 'hidden' };
+const card = { maxWidth: 980, margin: '0 auto', width: '100%', background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 12, padding: 16, display: 'grid', gap: 12, boxSizing: 'border-box' };
 const createWrap = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 };
 const bizCard = {
   border: '1px solid rgba(143,183,255,0.22)',
@@ -461,9 +461,9 @@ const bizName = { fontSize: 20, lineHeight: 1.15 };
 const bizSubline = { marginTop: 6, opacity: 0.82, fontSize: 13 };
 const bizStats = { marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 12, fontSize: 12, color: '#b7c7ea' };
 const bizDivider = { height: 1, background: 'linear-gradient(90deg, rgba(143,183,255,0.22), rgba(143,183,255,0.05))' };
-const memberRow = { border: '1px solid #304178', borderRadius: 8, padding: 8, display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center' };
-const input = { borderRadius: 8, border: '1px solid #304178', background: '#0b1431', color: '#fff', padding: '10px 12px' };
-const btn = { border: '1px solid #304178', borderRadius: 8, background: '#0e1738', color: '#fff', padding: '8px 10px', textDecoration: 'none', cursor: 'pointer' };
+const memberRow = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 8, padding: 8, display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center' };
+const input = { borderRadius: 8, border: '1px solid rgba(229,255,242,0.14)', background: '#090b0b', color: '#fff', padding: '10px 12px' };
+const btn = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 8, background: '#141817', color: '#fff', padding: '8px 10px', textDecoration: 'none', cursor: 'pointer' };
 const btnPrimary = { border: 0, borderRadius: 8, background: '#2e7dff', color: '#fff', padding: '10px 12px', cursor: 'pointer' };
 const postAsBtn = {
   display: 'inline-flex',
@@ -497,7 +497,7 @@ const summaryLabel = { fontSize: 11, textTransform: 'uppercase', letterSpacing: 
 const summaryValue = { fontSize: 14, lineHeight: 1.45, color: '#fff', whiteSpace: 'pre-wrap', wordBreak: 'break-word' };
 const summaryActions = { display: 'flex', justifyContent: 'flex-end' };
 const editActions = { gridColumn: '1 / -1', display: 'flex', gap: 8, flexWrap: 'wrap' };
-const inviteBanner = { marginTop: 10, border: '1px dashed #304178', borderRadius: 10, background: 'rgba(255,255,255,0.03)', padding: '10px 12px', display: 'grid', gap: 4 };
+const inviteBanner = { marginTop: 10, border: '1px dashed rgba(229,255,242,0.14)', borderRadius: 10, background: 'rgba(255,255,255,0.03)', padding: '10px 12px', display: 'grid', gap: 4 };
 const bizPill = (active) => ({
   display: 'inline-flex',
   alignItems: 'center',

@@ -287,8 +287,8 @@ function initial(name) {
   return name.trim().charAt(0).toUpperCase();
 }
 
-const wrap = { minHeight: '100vh', padding: 24, background: '#0b1020', color: '#fff' };
-const card = { maxWidth: 1000, margin: '0 auto', background: '#121b3f', border: '1px solid #2a3c78', borderRadius: 24, padding: 18, boxShadow: '0 24px 60px rgba(0,0,0,0.28)' };
+const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#fff' };
+const card = { maxWidth: 1000, margin: '0 auto', background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 24, padding: 18, boxShadow: '0 24px 60px rgba(0,0,0,0.28)' };
 const heroTop = { display: 'grid', gridTemplateColumns: '56px minmax(0, 1fr) auto', gap: 14, alignItems: 'center' };
 const brandMark = { width: 56, height: 56, borderRadius: 18, display: 'grid', placeItems: 'center', background: 'linear-gradient(135deg, #ffd6e8, #c7d6ff)', color: '#0f172a', fontWeight: 800, fontSize: 22 };
 const section = { marginTop: 14, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(42,60,120,0.8)', borderRadius: 16, padding: 14 };
@@ -297,7 +297,7 @@ const avatar = { width: 40, height: 40, borderRadius: 999, objectFit: 'cover', b
 const avatarFallback = { width: 40, height: 40, borderRadius: 999, display: 'grid', placeItems: 'center', background: '#f3f4f6', border: '1px solid #e5e7eb' };
 const businessIdentityWrap = { marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: '#fff' };
 const businessLogoFallback = { width: 34, height: 34, borderRadius: 10, display: 'grid', placeItems: 'center', background: '#eef2ff', border: '1px solid #e5e7eb', color: '#334155', fontWeight: 700 };
-const mediaCard = { border: '1px solid rgba(42,60,120,0.8)', borderRadius: 16, overflow: 'hidden', background: '#0e1738' };
+const mediaCard = { border: '1px solid rgba(42,60,120,0.8)', borderRadius: 16, overflow: 'hidden', background: '#141817' };
 const mediaEl = { width: '100%', height: 170, objectFit: 'cover', display: 'block' };
-const btn = { border: '1px solid #2a3c78', borderRadius: 8, background: '#2e7dff', color: '#fff', padding: '10px 12px', textDecoration: 'none' };
-const ghostBtn = { border: '1px solid #304178', borderRadius: 8, background: '#0e1738', color: '#fff', padding: '10px 12px', textDecoration: 'none' };
+const btn = { border: '1px solid rgba(229,255,242,0.11)', borderRadius: 8, background: '#2e7dff', color: '#fff', padding: '10px 12px', textDecoration: 'none' };
+const ghostBtn = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 8, background: '#141817', color: '#fff', padding: '10px 12px', textDecoration: 'none' };

@@ -133,13 +133,13 @@ export default function SettingsPage() {
   );
 }
 
-const wrap = { minHeight: '100vh', padding: 24, background: '#0b1020', color: '#fff' };
-const card = { maxWidth: 760, margin: '0 auto', background: '#121b3f', border: '1px solid #2a3c78', borderRadius: 24, padding: 18, boxShadow: '0 24px 60px rgba(0,0,0,0.28)' };
+const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#fff' };
+const card = { maxWidth: 760, margin: '0 auto', background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 24, padding: 18, boxShadow: '0 24px 60px rgba(0,0,0,0.28)' };
 const section = { marginTop: 12, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(42,60,120,0.8)', borderRadius: 16, padding: 14 };
 const muted = { color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 };
-const input = { borderRadius: 10, border: '1px solid #304178', background: '#0b1431', color: '#fff', padding: '11px 12px' };
-const btn = { border: '1px solid #304178', borderRadius: 10, background: '#0e1738', color: '#fff', padding: '10px 12px', textDecoration: 'none' };
-const btnPrimary = { border: '1px solid #2a3c78', borderRadius: 10, background: '#2e7dff', color: '#fff', padding: '10px 12px', cursor: 'pointer' };
+const input = { borderRadius: 10, border: '1px solid rgba(229,255,242,0.14)', background: '#090b0b', color: '#fff', padding: '11px 12px' };
+const btn = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, background: '#141817', color: '#fff', padding: '10px 12px', textDecoration: 'none' };
+const btnPrimary = { border: '1px solid rgba(229,255,242,0.11)', borderRadius: 10, background: '#2e7dff', color: '#fff', padding: '10px 12px', cursor: 'pointer' };
 const btnReset = { border: '1px solid rgba(255,92,92,0.55)', borderRadius: 10, background: 'rgba(255,92,92,0.14)', color: '#fff', padding: '10px 12px', cursor: 'pointer' };
 const copyText = { margin: '8px 0 0', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5 };
 const onboardingCopy = (role) => ({ marginTop: 12, borderRadius: 14, padding: 14, background: role === 'seller' ? 'rgba(18,77,47,0.2)' : role === 'buyer' ? 'rgba(30,58,138,0.2)' : role === 'broker' ? 'rgba(91,75,22,0.2)' : 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' });

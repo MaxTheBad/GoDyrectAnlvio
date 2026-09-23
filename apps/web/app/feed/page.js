@@ -226,7 +226,7 @@ function badge(role) {
   };
 }
 
-const wrap = { minHeight: '100vh', background: '#0b1020', color: '#fff', overflowX: 'hidden' };
+const wrap = { minHeight: '100vh', background: '#070909', color: '#fff', overflowX: 'hidden' };
 const loginPrompt = { display: 'grid', gap: 8 };
 const heroShell = {
   position: 'relative',
@@ -277,7 +277,7 @@ const divider = { width: 1, background: '#e1e7f2' };
 const searchInput = { width: '100%', border: 0, padding: '22px 20px', fontSize: 18, outline: 'none', color: '#0f172a' };
 const searchSelect = { width: '100%', border: 0, padding: '22px 18px', fontSize: 18, outline: 'none', color: '#334155', background: 'transparent' };
 const searchBtn = {
-  border: '1px solid #2a3c78',
+  border: '1px solid rgba(229,255,242,0.11)',
   background: '#2e7dff',
   color: '#fff',
   padding: '0 34px',
@@ -304,12 +304,12 @@ const feedColumnTight = {
 const statusText = { margin: '16px 0 0', color: '#cdd9ff' };
 const loginBtn = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 'fit-content', padding: '10px 14px', borderRadius: 10, background: '#2e7dff', color: '#fff', textDecoration: 'none', fontWeight: 700 };
 const bottomExploreWrap = { marginTop: 16, display: 'flex', justifyContent: 'center' };
-const exploreBtn = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #304178', borderRadius: 8, background: '#0e1738', color: '#fff', padding: '10px 14px', textDecoration: 'none', fontWeight: 600 };
+const exploreBtn = { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(229,255,242,0.14)', borderRadius: 8, background: '#141817', color: '#fff', padding: '10px 14px', textDecoration: 'none', fontWeight: 600 };
 const postShell = {
   color: '#fff',
   padding: 0,
 };
-const btnGhost = { border: '1px solid #304178', borderRadius: 8, background: '#0e1738', color: '#fff', padding: '8px 12px', textDecoration: 'none', fontWeight: 600 };
+const btnGhost = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 8, background: '#141817', color: '#fff', padding: '8px 12px', textDecoration: 'none', fontWeight: 600 };
 const heroMediaFrame = { position: 'relative', width: '100%', maxWidth: 470, margin: '0 auto', borderRadius: 20, overflow: 'hidden', background: '#0f172a', border: '1px solid #e5e7eb' };
 const heroMediaAsset = { width: '100%', aspectRatio: '1 / 1', objectFit: 'cover', display: 'block' };
 const mediaCaption = {

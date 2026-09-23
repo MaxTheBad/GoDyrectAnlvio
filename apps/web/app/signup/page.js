@@ -91,40 +91,28 @@ export default function SignupPage() {
   }
 
   return (
-    <main style={wrap}>
-      <div style={card}>
-        <a href='/' style={brandWrap} aria-label="GoDyrect Home">
-          <img src="/logo.png" alt="GoDyrect" style={{ width: 140, height: 40, objectFit: 'contain' }} />
-        </a>
-
+    <main className='auth-shell auth-shell--signup'>
+      <section className='auth-story'>
+        <div className='auth-story__content'><div className='auth-kicker'>Start moving</div><h1>Your next move starts <em>here.</em></h1><p>Discover opportunities, reach decision-makers directly, and keep every conversation in one focused workspace.</p></div>
+      </section>
+      <div className='auth-card'>
         {!confirmationSent ? (
-          <form onSubmit={submit} style={{ display: 'grid', gap: 10 }}>
-            <h1 style={{ marginBottom: 0 }}>Create your GoDyrect account</h1>
-            <p style={{ marginTop: 4, opacity: 0.85 }}>Start as a buyer, seller, or choose later.</p>
+          <form onSubmit={submit} className='auth-form'>
+            <div><div className='auth-kicker'>Join GoDyrect</div><h2>Create your account</h2><p>Free to join. Set up takes less than a minute.</p></div>
 
-            <label style={label}>Full name</label>
-            <input style={inputError(errors.fullName)} placeholder='John Smith' value={fullName} onChange={(e) => setFullName(e.target.value)} onInvalid={(e)=>{e.preventDefault(); markInvalid('fullName','Full name is required.');}} onInput={()=>setErrors((p)=>({ ...p, fullName: '' }))} required />
+            <label>Full name<input className={errors.fullName ? 'is-error' : ''} placeholder='John Smith' value={fullName} onChange={(e) => setFullName(e.target.value)} onInvalid={(e)=>{e.preventDefault(); markInvalid('fullName','Full name is required.');}} onInput={()=>setErrors((p)=>({ ...p, fullName: '' }))} required /></label>
             {errors.fullName ? <small style={errText}>{errors.fullName}</small> : null}
 
-            <label style={label}>Email (confirmation required)</label>
-            <input style={inputError(errors.email)} type='email' name='email' autoComplete='email' placeholder='you@email.com' value={email} onChange={(e) => setEmail(e.target.value)} onInvalid={(e)=>{e.preventDefault(); markInvalid('email','Valid email is required.');}} onInput={()=>setErrors((p)=>({ ...p, email: '' }))} required />
+            <label>Email address<input className={errors.email ? 'is-error' : ''} type='email' name='email' autoComplete='email' placeholder='you@company.com' value={email} onChange={(e) => setEmail(e.target.value)} onInvalid={(e)=>{e.preventDefault(); markInvalid('email','Valid email is required.');}} onInput={()=>setErrors((p)=>({ ...p, email: '' }))} required /></label>
             {errors.email ? <small style={errText}>{errors.email}</small> : null}
 
-            <label style={label}>Phone number</label>
-            <input style={inputError(errors.phone)} placeholder='+1 (555) 555-5555' value={phone} onChange={(e) => setPhone(e.target.value)} onInvalid={(e)=>{e.preventDefault(); markInvalid('phone','Phone number is required.');}} onInput={()=>setErrors((p)=>({ ...p, phone: '' }))} required />
+            <label>Phone number<input className={errors.phone ? 'is-error' : ''} placeholder='+1 (555) 555-5555' value={phone} onChange={(e) => setPhone(e.target.value)} onInvalid={(e)=>{e.preventDefault(); markInvalid('phone','Phone number is required.');}} onInput={()=>setErrors((p)=>({ ...p, phone: '' }))} required /></label>
             {errors.phone ? <small style={errText}>{errors.phone}</small> : null}
 
-            <label style={label}>I am joining as</label>
-            <select style={input} value={role} onChange={(e) => setRole(e.target.value)}>
-              <option value='buyer'>Buyer</option>
-              <option value='seller'>Seller</option>
-              <option value='broker'>Broker</option>
-              <option value='not_sure'>Not sure yet</option>
-            </select>
+            <fieldset className='choice-group'><legend>I’m joining as</legend><div className='choice-row'>{[['buyer','Buyer'],['seller','Seller'],['broker','Broker'],['not_sure','Exploring']].map(([value,label]) => <button key={value} type='button' className={role === value ? 'is-active' : ''} onClick={() => setRole(value)}>{label}</button>)}</div></fieldset>
 
-            <label style={label}>Password</label>
-            <input
-              style={inputError(errors.password)}
+            <label>Password<input
+              className={errors.password ? 'is-error' : ''}
               placeholder='Create a password'
               type='password'
               name='password'
@@ -135,35 +123,35 @@ export default function SignupPage() {
               onInvalid={(e)=>{e.preventDefault(); markInvalid('password','Password is required.');}}
               onInput={()=>setErrors((p)=>({ ...p, password: '' }))}
               required
-            />
+            /></label>
             {errors.password ? <small style={errText}>{errors.password}</small> : null}
 
-            <label style={{ ...label, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <label className='check-row'>
               <input type='checkbox' checked={agree} onChange={(e) => setAgree(e.target.checked)} onInvalid={(e)=>{e.preventDefault(); markInvalid('agree','You must agree before creating an account.');}} onInput={()=>setErrors((p)=>({ ...p, agree: '' }))} required />
-              I agree to the <a href='/legal/privacy' style={{ color: '#8fb7ff' }}>Privacy & Terms</a>
+              <span>I agree to the <a href='/legal/privacy'>Privacy & Terms</a></span>
             </label>
             {errors.agree ? <small style={errText}>{errors.agree}</small> : null}
 
-            <label style={{ ...label, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <label className='check-row'>
               <input type='checkbox' checked={marketingOptIn} onChange={(e) => setMarketingOptIn(e.target.checked)} />
               Subscribe to product and listing email updates (optional)
             </label>
 
-            <button style={btn} type='submit'>Create Account</button>
-            {msg ? <p style={{ marginBottom: 0 }}>{msg}</p> : null}
-            <a href='/login' style={{ color: '#8fb7ff' }}>Already have an account? Sign in</a>
+            <button className='auth-submit' type='submit'>Create account →</button>
+            {msg ? <p className='auth-message'>{msg}</p> : null}
+            <p className='auth-switch'>Already have an account? <a href='/login'>Sign in</a></p>
           </form>
         ) : (
-          <div style={{ display: 'grid', gap: 10 }}>
-            <h1 style={{ marginBottom: 0 }}>Check your email</h1>
-            <p style={{ marginTop: 4, opacity: 0.9 }}>
+          <div className='auth-form'>
+            <div className='auth-kicker'>One last step</div><h2>Check your email</h2>
+            <p>
               We sent a confirmation link to <strong>{email}</strong>. Please confirm your account, and check spam/promotions if you don't see it.
             </p>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <button style={btn} onClick={resendConfirmation} disabled={cooldown > 0}>
+              <button className='auth-submit' onClick={resendConfirmation} disabled={cooldown > 0}>
                 {cooldown > 0 ? `For security purposes, you can only request this after ${cooldown} seconds.` : 'Resend confirmation'}
               </button>
-              <a href='/login' style={{ ...ghostBtn, textDecoration: 'none' }}>Go to login</a>
+              <a href='/login' className='auth-secondary'>Go to login</a>
             </div>
             <p style={{ opacity: 0.75, marginBottom: 0 }}>Reminder: setup CAPTCHA before launch to prevent signup abuse.</p>
             {msg ? <p style={{ marginBottom: 0 }}>{msg}</p> : null}
@@ -174,51 +162,4 @@ export default function SignupPage() {
   );
 }
 
-const wrap = {
-  minHeight: '100vh',
-  display: 'grid',
-  placeItems: 'center',
-  background: 'radial-gradient(circle at 20% 20%, #16275f 0%, #0b1020 55%)',
-  color: '#fff',
-  padding: 16,
-};
-const card = {
-  width: 'min(540px, 100%)',
-  display: 'grid',
-  gap: 10,
-  background: '#121b3f',
-  border: '1px solid #2a3c78',
-  padding: 24,
-  borderRadius: 14,
-};
-const brandWrap = { display: 'flex', gap: 10, alignItems: 'center', textDecoration: 'none', marginBottom: 8 };
-const brandIcon = { width: 32, height: 32, borderRadius: 9, background: '#2e7dff' };
-const label = { fontSize: 13, opacity: 0.85 };
-const input = {
-  borderRadius: 10,
-  border: '1px solid #304178',
-  background: '#0b1431',
-  color: '#fff',
-  padding: '11px 12px',
-};
-const btn = {
-  border: 0,
-  borderRadius: 10,
-  background: '#2e7dff',
-  color: '#fff',
-  padding: '12px 12px',
-  cursor: 'pointer',
-  marginTop: 6,
-};
-const ghostBtn = {
-  border: '1px solid #304178',
-  borderRadius: 10,
-  background: '#0e1738',
-  color: '#fff',
-  padding: '12px 12px',
-};
-const inputError = (message) => ({
-  ...input,
-  border: message ? '1px solid #ef5350' : input.border,
-});
 const errText = { color: '#ff8a80', fontSize: 12, marginTop: -4 };
