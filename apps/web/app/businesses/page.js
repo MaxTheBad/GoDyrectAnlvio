@@ -100,9 +100,9 @@ export default function MyBusinessesPage() {
 
     if (membershipsErr) {
       if (membershipsErr.message?.includes("businesses_1.zip") || membershipsErr.message?.includes('zip does not exist')) {
-        setMsg('Your Supabase database is missing the businesses.zip column. Run the latest supabase/schema.sql migration, then refresh.');
+        setMsg('Your Supabase database is missing the businesses.zip column. Apply the latest Supabase migration, then refresh.');
       } else if (membershipsErr.message?.includes("public.business_memberships")) {
-        setMsg('Business tables are not created yet in Supabase. Run latest supabase/schema.sql in SQL editor, then refresh.');
+        setMsg('Business tables are not created yet in Supabase. Apply the latest Supabase migration, then refresh.');
       } else {
         setMsg(membershipsErr.message);
       }

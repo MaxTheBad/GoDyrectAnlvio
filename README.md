@@ -18,7 +18,7 @@ Cross-platform business marketplace:
    - `cp .env.example .env.local`
    - `cp apps/mobile/.env.example apps/mobile/.env`
 2. Fill in API keys.
-3. Create Supabase project and run SQL in `supabase/schema.sql`.
+3. Link a Supabase project and run `npx supabase db push`.
 4. Build web and mobile apps.
 
 ## Stack decisions

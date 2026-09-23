@@ -96,7 +96,7 @@ export default function NewListingPage() {
 
         if (error) {
           if (error.message?.includes("public.business_memberships")) {
-            setMsg('Business tables are not created yet in Supabase. Run latest supabase/schema.sql in SQL editor, then refresh.');
+            setMsg('Business tables are not created yet in Supabase. Apply the latest Supabase migration, then refresh.');
           } else {
             setMsg(error.message);
           }

@@ -1,4 +1,4 @@
--- GoDyrect initial schema
+-- GoDyrect initial schema migration
 create extension if not exists "uuid-ossp";
 create extension if not exists "pg_trgm";
 
@@ -21,7 +21,7 @@ create table if not exists public.profiles (
 );
 
 create table if not exists public.businesses (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   name text not null,
   slug text unique,
   description text,
@@ -43,7 +43,7 @@ create table if not exists public.businesses (
 );
 
 create table if not exists public.business_memberships (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   business_id uuid not null references public.businesses(id) on delete cascade,
   user_id uuid not null references public.profiles(id) on delete cascade,
   role text not null default 'owner',
@@ -64,7 +64,7 @@ create type public.listing_category as enum (
 );
 
 create table if not exists public.listings (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   seller_id uuid not null references public.profiles(id) on delete cascade,
   business_id uuid references public.businesses(id) on delete set null,
   title text not null,
@@ -93,7 +93,7 @@ create index if not exists idx_listings_geo on public.listings(lat, lng);
 create index if not exists idx_listings_business on public.listings(business_id);
 
 create table if not exists public.listing_media (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   listing_id uuid not null references public.listings(id) on delete cascade,
   media_type text check (media_type in ('image','video')) not null,
   url text not null,
@@ -128,7 +128,7 @@ create index if not exists idx_user_follows_followed on public.user_follows(foll
 create index if not exists idx_business_follows_business on public.business_follows(business_id);
 
 create table if not exists public.conversations (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   buyer_id uuid not null references public.profiles(id) on delete cascade,
   seller_id uuid not null references public.profiles(id) on delete cascade,
   business_id uuid references public.businesses(id) on delete set null,
@@ -141,7 +141,7 @@ alter table public.conversations
   drop constraint if exists conversations_buyer_id_seller_id_listing_id_key;
 
 create table if not exists public.messages (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   conversation_id uuid not null references public.conversations(id) on delete cascade,
   sender_id uuid not null references public.profiles(id) on delete cascade,
   listing_id uuid references public.listings(id) on delete set null,
