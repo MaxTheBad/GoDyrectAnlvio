@@ -12,7 +12,9 @@ const ALLOWED_HEADERS = [
 ];
 
 export async function onRequest(context) {
-  const configuredUrl = context.env.NEXT_PUBLIC_SUPABASE_URL || context.env.SUPABASE_URL;
+  const configuredUrl = context.env.NEXT_PUBLIC_SUPABASE_URL
+    || context.env.SUPABASE_URL
+    || 'https://elcoibbmnjejkdbourjv.supabase.co';
   if (!configuredUrl) return json({ message: 'Authentication proxy is not configured.' }, 503);
 
   const incomingUrl = new URL(context.request.url);
