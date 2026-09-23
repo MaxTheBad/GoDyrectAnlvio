@@ -240,70 +240,30 @@ export default function NewListingPage() {
 
     const renderClips = Array.isArray(editorState.clips) ? editorState.clips : [];
     if (renderClips.length) {
-      let pub;
-      if (renderClips.length === 1) {
-        const clip = renderClips[0];
-        const pathName = `${user.id}/${listing.id}/final-${Date.now()}-${clip.name || 'clip.mp4'}`;
-        const upload = await supabase.storage.from('listing-media').upload(pathName, clip, { upsert: true });
-        if (upload.error) return setMsg(upload.error.message);
-        pub = supabase.storage.from('listing-media').getPublicUrl(pathName).data;
-      } else {
-      const renderForm = new FormData();
-      renderClips.forEach((clip) => renderForm.append('clips', clip, clip.name));
-      renderForm.append('manifest', JSON.stringify({
-        ...(editorState.manifest || {}),
-        listing_id: listing.id,
-        user_id: user.id,
-      }));
-
-      const renderResponse = await fetch('/api/render', {
-        method: 'POST',
-        body: renderForm,
-      });
-
-      if (!renderResponse.ok) {
-        const payload = await renderResponse.json().catch(() => ({}));
-        return setMsg(payload?.error || 'Could not render final video.');
-      }
-
-      const renderedBlob = await renderResponse.blob();
-      const renderFile = new File([renderedBlob], `listing-${listing.id}.mp4`, { type: 'video/mp4' });
-      const pathName = `${user.id}/${listing.id}/final-${Date.now()}.mp4`;
-      const upload = await supabase.storage.from('listing-media').upload(pathName, renderFile, { upsert: true });
-      if (upload.error) return setMsg(upload.error.message);
-      pub = supabase.storage.from('listing-media').getPublicUrl(pathName).data;
-      }
-      let thumbnailUrl = null;
       const chosenThumbnail = dataUrlToFile(editorState.thumbnailDataUrl, `listing-${listing.id}-thumbnail.jpg`);
-      try {
-        if (chosenThumbnail) {
+      let chosenThumbnailUrl = null;
+      if (chosenThumbnail) {
+        try {
           const thumbPath = `${user.id}/${listing.id}/thumb-${Date.now()}.jpg`;
           const thumbUpload = await supabase.storage.from('listing-media').upload(thumbPath, chosenThumbnail, { upsert: true });
           if (!thumbUpload.error) {
             const { data: thumbPub } = supabase.storage.from('listing-media').getPublicUrl(thumbPath);
-            thumbnailUrl = thumbPub.publicUrl;
+            chosenThumbnailUrl = thumbPub.publicUrl;
           }
-        } else {
-          const thumbResponse = await fetch('/api/video-thumbnail?src=' + encodeURIComponent(pub.publicUrl));
-          if (thumbResponse.ok) {
-            const thumbBlob = await thumbResponse.blob();
-            const thumbFile = new File([thumbBlob], `listing-${listing.id}.jpg`, { type: 'image/jpeg' });
-            const thumbPath = `${user.id}/${listing.id}/thumb-${Date.now()}.jpg`;
-            const thumbUpload = await supabase.storage.from('listing-media').upload(thumbPath, thumbFile, { upsert: true });
-            if (!thumbUpload.error) {
-              const { data: thumbPub } = supabase.storage.from('listing-media').getPublicUrl(thumbPath);
-              thumbnailUrl = thumbPub.publicUrl;
-            }
-          }
-        }
-      } catch {}
-      const mediaInsert = await supabase.from('listing_media').insert({
-        listing_id: listing.id,
-        media_type: 'video',
-        url: pub.publicUrl,
-        thumbnail_url: thumbnailUrl,
-        sort_order: 0,
-      });
+        } catch {}
+      }
+
+      const mediaRows = [];
+      for (let index = 0; index < renderClips.length; index += 1) {
+        const clip = renderClips[index];
+        const safeName = String(clip.name || `clip-${index + 1}.mp4`).replace(/[^a-zA-Z0-9._-]/g, '-');
+        const pathName = `${user.id}/${listing.id}/${Date.now()}-${index}-${safeName}`;
+        const upload = await supabase.storage.from('listing-media').upload(pathName, clip, { upsert: true });
+        if (upload.error) return setMsg(upload.error.message);
+        const pub = supabase.storage.from('listing-media').getPublicUrl(pathName).data;
+        mediaRows.push({ listing_id: listing.id, media_type: 'video', url: pub.publicUrl, thumbnail_url: index === 0 ? chosenThumbnailUrl : null, sort_order: index });
+      }
+      const mediaInsert = await supabase.from('listing_media').insert(mediaRows);
       if (mediaInsert.error) return setMsg(mediaInsert.error.message);
     }
 
@@ -397,14 +357,14 @@ export default function NewListingPage() {
           </div>
         ) : null}
 
-        {/* Video editor queues a single render manifest instead of uploading raw clips */}
+        {/* Clips upload directly so publishing works on the static edge deployment. */}
         <VideoEditor onChange={({ clips, manifest, thumbnailDataUrl }) => {
           setEditorState({ clips: Array.isArray(clips) ? clips : [], manifest: manifest || null, thumbnailDataUrl: thumbnailDataUrl || '' });
           setFiles(Array.isArray(clips) ? clips : []);
         }} />
 
         <div style={{ display: 'grid', gap: 6 }}>
-          <div style={{ color: '#9fb7ff', fontSize: 13 }}>{files.length} file(s) ready to upload</div>
+          <div style={{ color: '#b9ff5a', fontSize: 13 }}>{files.length} file(s) ready to upload</div>
           <button style={btn} type='submit'>Publish Listing</button>
         </div>
         {msg ? <p>{msg}</p> : null}
@@ -424,6 +384,6 @@ const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#
 const card = { maxWidth: 700, display: 'grid', gap: 10, background: '#0d1010', padding: 20, borderRadius: 12 };
 const label = { fontSize: 13, opacity: 0.85 };
 const input = { borderRadius: 8, border: '1px solid rgba(229,255,242,0.14)', background: '#090b0b', color: '#fff', padding: '10px 12px' };
-const btn = { border: 0, borderRadius: 8, background: '#2e7dff', color: '#fff', padding: '10px 12px' };
+const btn = { border: 0, borderRadius: 8, background: '#b9ff5a', color: '#0a1205', padding: '10px 12px', fontWeight: 800 };
 const infoBox = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, background: '#141817', padding: 10, display: 'grid', gap: 6 };
 const small = { fontSize: 13, opacity: 0.85 };

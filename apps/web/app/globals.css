@@ -64,11 +64,13 @@ a { color:inherit; } button,a { -webkit-tap-highlight-color:transparent; } butto
 
 .site-footer { border-top:1px solid var(--line); background:var(--bg); } .site-footer__inner { max-width:var(--max); margin:auto; padding:34px 28px; display:flex; justify-content:space-between; align-items:center; gap:20px; }
 .site-footer__brand { color:var(--muted); font-size:13px; } .site-footer__links { display:flex; gap:20px; } .site-footer__links a { color:var(--muted); text-decoration:none; font-size:13px; } .site-footer__links a:hover { color:var(--ink); }
+.messages-shell { display:grid; grid-template-columns:minmax(240px,320px) minmax(0,1fr); gap:12px; } .messages-pane { min-width:0; padding:14px; border:1px solid var(--line); border-radius:16px; background:var(--surface); } .messages-pane--list { max-height:80vh; overflow:auto; } .messages-pane--thread { display:grid; align-content:start; }
 
 @media (max-width:900px) {
   body { padding-bottom:76px; } .site-nav__inner { min-height:64px; padding:0 16px; } .auth-nav>.nav-link,.auth-nav>.nav-primary { display:none; } .nav-menu__button { display:grid; place-items:center; }
   .market-hero__inner { padding:64px 18px 42px; } .market-search { grid-template-columns:1fr; } .market-search__field+ .market-search__field { border-left:0; border-top:1px solid var(--line); } .market-search>button { min-height:52px; }
   .auth-shell { grid-template-columns:1fr; gap:30px; padding:42px 18px; } .auth-story h1 { font-size:46px; } .auth-story p { font-size:16px; } .auth-card { padding:24px; } .choice-row { grid-template-columns:repeat(2,1fr); }
   .dash-shell { padding:38px 18px 100px; } .dash-grid { grid-template-columns:1fr; } .site-footer__inner { padding:28px 20px 104px; align-items:flex-start; flex-direction:column; }
+  .messages-shell { grid-template-columns:1fr; } .messages-pane--list { max-height:280px; }
 }
 @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; } }

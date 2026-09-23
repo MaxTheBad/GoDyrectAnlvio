@@ -15,13 +15,16 @@ export default function SignupPage() {
   const [confirmationSent, setConfirmationSent] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
   async function submit(e) {
     e.preventDefault();
     setErrors({});
     if (!supabase) return setMsg('Supabase env vars are missing.');
     if (!agree) return setMsg('Please agree to the policy before creating an account.');
+    if (password.length < 8) return setMsg('Use at least 8 characters for your password.');
 
+    setSubmitting(true);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -38,6 +41,7 @@ export default function SignupPage() {
     });
 
     if (error) {
+      setSubmitting(false);
       const errMsg = String(error.message || '').toLowerCase();
       if (errMsg.includes('already registered') || errMsg.includes('user already registered') || errMsg.includes('duplicate')) {
         return setMsg('That email already exists. Please sign in instead.');
@@ -59,6 +63,7 @@ export default function SignupPage() {
 
     setConfirmationSent(true);
     setMsg('');
+    setSubmitting(false);
   }
 
   async function resendConfirmation() {
@@ -123,6 +128,7 @@ export default function SignupPage() {
               onInvalid={(e)=>{e.preventDefault(); markInvalid('password','Password is required.');}}
               onInput={()=>setErrors((p)=>({ ...p, password: '' }))}
               required
+              minLength={8}
             /></label>
             {errors.password ? <small style={errText}>{errors.password}</small> : null}
 
@@ -137,7 +143,7 @@ export default function SignupPage() {
               Subscribe to product and listing email updates (optional)
             </label>
 
-            <button className='auth-submit' type='submit'>Create account →</button>
+            <button className='auth-submit' type='submit' disabled={submitting}>{submitting ? 'Creating account…' : 'Create account →'}</button>
             {msg ? <p className='auth-message'>{msg}</p> : null}
             <p className='auth-switch'>Already have an account? <a href='/login'>Sign in</a></p>
           </form>
@@ -153,7 +159,6 @@ export default function SignupPage() {
               </button>
               <a href='/login' className='auth-secondary'>Go to login</a>
             </div>
-            <p style={{ opacity: 0.75, marginBottom: 0 }}>Reminder: setup CAPTCHA before launch to prevent signup abuse.</p>
             {msg ? <p style={{ marginBottom: 0 }}>{msg}</p> : null}
           </div>
         )}

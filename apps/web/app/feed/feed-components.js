@@ -28,7 +28,7 @@ export function FeedPost({
   const [isPlaying, setIsPlaying] = useState(false);
   const [previewErrored, setPreviewErrored] = useState(false);
   const poster = activeMedia?.thumbnail_url || listing?.thumbnail_url || '';
-  const thumbnailSrc = poster || (activeMedia?.media_type === 'video' && activeMedia?.url ? `/api/video-thumbnail?src=${encodeURIComponent(activeMedia.url)}` : '');
+  const thumbnailSrc = poster;
   const fallbackVisual = poster || buildFallbackPoster(listing.title, businessName);
   const previewVisual = previewErrored ? fallbackVisual : (thumbnailSrc || fallbackVisual);
 

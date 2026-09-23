@@ -191,8 +191,8 @@ export default function MessagesPage() {
 
   return (
     <main style={wrap}>
-      <div style={shell}>
-        <aside style={leftPane}>
+      <div className='messages-shell'>
+        <aside className='messages-pane messages-pane--list'>
           <h2 style={{ marginTop: 0 }}>Inbox</h2>
           {conversations.length === 0 ? <p style={{ opacity: 0.8 }}>No conversations yet.</p> : null}
           {conversations.map((c) => {
@@ -212,7 +212,7 @@ export default function MessagesPage() {
           })}
         </aside>
 
-        <section style={rightPane}>
+        <section className='messages-pane messages-pane--thread'>
           <h2 style={{ marginTop: 0 }}>Conversation</h2>
           {activeConversation ? (
             <>
@@ -250,7 +250,7 @@ export default function MessagesPage() {
                               <div style={avatarFallback}>{initial(sender?.full_name)}</div>
                             )}
                           </a>
-                          <div style={{ ...bubble, background: mine ? '#2e7dff' : '#1a2754' }}>{m.body}</div>
+                          <div style={{ ...bubble, background: mine ? '#315c20' : '#1a201e' }}>{m.body}</div>
                         </div>
                       </div>
                     </div>
@@ -281,9 +281,6 @@ function initial(name) {
 
 const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#fff' };
 const card = { maxWidth: 520, display: 'grid', gap: 10, background: '#0d1010', padding: 20, borderRadius: 12, border: '1px solid rgba(229,255,242,0.11)' };
-const shell = { display: 'grid', gridTemplateColumns: '320px 1fr', gap: 12 };
-const leftPane = { background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 12, padding: 12, maxHeight: '80vh', overflow: 'auto' };
-const rightPane = { background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 12, padding: 12, display: 'grid', alignContent: 'start' };
 const threadBtn = { width: '100%', textAlign: 'left', border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, background: '#141817', color: '#fff', padding: 10, marginBottom: 8, display: 'grid', gap: 6, cursor: 'pointer' };
 const badge = (role) => ({ display: 'inline-block', width: 'fit-content', padding: '4px 8px', borderRadius: 999, background: role === 'seller' ? '#124d2f' : role === 'buyer' ? '#1e3a8a' : '#5b4b16', border: '1px solid #3a4f8f', fontSize: 11 });
 const messagesWrap = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, background: '#090b0b', padding: 10, minHeight: 280, maxHeight: 480, overflow: 'auto', display: 'grid', gap: 8 };
@@ -291,7 +288,7 @@ const bubble = { maxWidth: 340, borderRadius: 12, padding: '6px 9px', fontSize: 
 const avatar = { width: 28, height: 28, borderRadius: 999, objectFit: 'cover', border: '1px solid #3a4f8f' };
 const avatarFallback = { width: 28, height: 28, borderRadius: 999, display: 'grid', placeItems: 'center', background: '#243569', border: '1px solid #3a4f8f', fontSize: 12 };
 const input = { borderRadius: 8, border: '1px solid rgba(229,255,242,0.14)', background: '#090b0b', color: '#fff', padding: '10px 12px' };
-const btn = { border: 0, borderRadius: 8, background: '#2e7dff', color: '#fff', padding: '10px 12px' };
+const btn = { border: 0, borderRadius: 8, background: '#b9ff5a', color: '#0a1205', padding: '10px 12px', fontWeight: 800 };
 const listingHeaderBlock = { padding: '8px 10px', border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, background: '#141817', display: 'grid', gap: 4 };
 const listingHeaderTitle = { fontWeight: 700, fontSize: 13, color: '#fff' };
 const listingLink = { color: '#8fb7ff', fontSize: 12, textDecoration: 'none' };

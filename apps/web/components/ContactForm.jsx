@@ -1,5 +1,6 @@
 'use client'
 import {useState,useEffect} from 'react'
+import { supabase } from '../lib/supabase'
 
 export default function ContactForm(){
   const [name,setName]=useState('')
@@ -20,19 +21,18 @@ export default function ContactForm(){
     e.preventDefault()
     setStatus('sending')
     try{
-      // Replace the URL below with your Formspree endpoint
-      const endpoint = 'https://formspree.io/f/your-form-id'
-      const res = await fetch(endpoint,{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body: JSON.stringify({name,email,role,message})
+      if(!supabase) throw new Error('Contact service is unavailable.')
+      const { error } = await supabase.from('contact_submissions').insert({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        role: role || null,
+        message: message.trim(),
       })
-      if(res.ok){
+      if(!error){
         setStatus('sent')
-        setName('');setEmail('');setMessage('')
+        setName('');setEmail('');setRole('');setMessage('')
       } else {
-        const data = await res.json()
-        setStatus('error:'+ (data?.error || res.status))
+        throw error
       }
     }catch(err){
       setStatus('error')
@@ -67,22 +67,22 @@ export default function ContactForm(){
       </div>
 
       <div style={{display:'flex',gap:12,alignItems:'center'}}>
-        <button type="submit" className="submit">Send</button>
-        {status && <p style={{margin:0}}>Status: {status}</p>}
+        <button type="submit" className="submit" disabled={status === 'sending'}>{status === 'sending' ? 'Sending…' : 'Send message'}</button>
+        {status === 'sent' ? <p className="success" role="status">Message received. We’ll be in touch.</p> : null}
+        {status === 'error' ? <p className="error" role="alert">Couldn’t send that message. Please try again.</p> : null}
       </div>
-
-      <p className="note">Note: replace the Formspree endpoint in components/ContactForm.jsx with your form ID or set up a server endpoint.</p>
 
       <style jsx>{`
         .form{display:flex;flex-direction:column;gap:14px;max-width:680px}
         .field{display:flex;flex-direction:column;gap:8px}
         .label{font-size:14px;color:rgba(230,238,248,0.85);font-weight:700}
         .input{padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:#e6eef8}
-        .input:focus{outline:none;box-shadow:0 6px 18px rgba(6,182,212,0.12);border-color:#06b6d4}
+        .input:focus{outline:none;box-shadow:0 0 0 3px rgba(185,255,90,.1);border-color:#b9ff5a}
         .textarea{min-height:140px}
-        .submit{background:#06b6d4;color:#fff;border:0;padding:10px 18px;border-radius:10px;font-weight:700;cursor:pointer}
+        .submit{background:#b9ff5a;color:#0a1205;border:0;padding:11px 18px;border-radius:10px;font-weight:800;cursor:pointer}
+        .submit:disabled{opacity:.6;cursor:wait}
         .submit:hover{transform:translateY(-2px)}
-        .note{font-size:12px;color:rgba(230,238,248,0.7);margin:6px 0 0}
+        .success{color:#b9ff5a;margin:0}.error{color:#ff8b94;margin:0}
       `}</style>
     </form>
   )
