@@ -1,157 +1,20 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 
-const roleOptions = [
-  { value: 'buyer', label: 'Buyer' },
-  { value: 'seller', label: 'Seller' },
-  { value: 'broker', label: 'Broker' },
-  { value: 'not_sure', label: 'Not sure yet' },
-];
+const modes = [['buyer','Buyer','Find and save opportunities.'],['seller','Seller','Present a business with confidence.'],['broker','Broker','Manage represented opportunities.'],['not_sure','Exploring','Keep both paths open for now.']];
 
 export default function SettingsPage() {
-  const [userId, setUserId] = useState('');
-  const [role, setRole] = useState('not_sure');
-  const [msg, setMsg] = useState('');
-
-  useEffect(() => {
-    async function load() {
-      if (!supabase) return;
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth?.user?.id || '';
-      setUserId(uid);
-      if (!uid) return;
-      const { data } = await supabase.from('profiles').select('role').eq('id', uid).maybeSingle();
-      setRole(data?.role || 'not_sure');
-    }
-    load();
-  }, []);
-
-  async function saveRole(nextRole) {
-    if (!supabase || !userId) return setMsg('Please sign in first.');
-    const { error } = await supabase.from('profiles').upsert({ id: userId, role: nextRole });
-    if (error) return setMsg(error.message);
-    setRole(nextRole);
-    setMsg(nextRole === 'not_sure' ? 'Onboarding reset.' : 'Role saved.');
-  }
-
-  async function signOut() {
-    if (!supabase) return setMsg('Supabase env vars are missing.');
-    const { error } = await supabase.auth.signOut();
-    if (error) return setMsg(error.message);
-    window.location.href = '/login';
-  }
-
-  return (
-    <main style={wrap}>
-      <div style={card}>
-        <div style={hero}>
-          <p style={eyebrow}>Onboarding controls</p>
-          <h1 style={{ margin: '0 0 8px', color: '#fff' }}>Settings</h1>
-          <p style={{ opacity: 0.85, color: 'rgba(255,255,255,0.75)', margin: 0 }}>Manage your account and onboarding preferences from here.</p>
-        </div>
-
-        {!userId ? (
-          <div style={section}>
-            <h3 style={{ marginTop: 0, color: '#fff' }}>Sign in required</h3>
-            <p style={muted}>Please sign in to manage your profile, onboarding, and preferences.</p>
-            <a href='/login?returnTo=%2Fsettings' style={btnPrimary}>Sign in</a>
-          </div>
-        ) : null}
-
-        <section style={section}>
-          <h3 style={{ marginTop: 0, color: '#fff' }}>Onboarding</h3>
-          <p style={muted}>Pick the path that matches what you’re here to do. You can change it anytime or reset it back to “not sure yet.”</p>
-
-          <div style={roleGrid}>
-            {roleOptions.map((opt) => (
-              opt.value === 'buyer' || opt.value === 'seller' ? (
-                <a
-                  key={opt.value}
-                  href={`/onboarding/${opt.value}`}
-                  style={{ ...roleButton(role === opt.value), textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  {opt.label}
-                </a>
-              ) : (
-                <button
-                  key={opt.value}
-                  type='button'
-                  style={roleButton(role === opt.value)}
-                  onClick={() => saveRole(opt.value)}
-                >
-                  {opt.label}
-                </button>
-              )
-            ))}
-          </div>
-
-          <div style={{ display: 'grid', gap: 10, marginTop: 14 }}>
-            <select style={input} value={role} onChange={(e) => saveRole(e.target.value)}>
-              {roleOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-            </select>
-
-            <button type='button' style={btnReset} onClick={() => saveRole('not_sure')}>Reset onboarding to not sure yet</button>
-          </div>
-
-          <div style={onboardingCopy(role)}>
-            {role === 'seller' ? (
-              <>
-                <strong>Seller path</strong>
-                <p style={copyText}>Complete your business details, post a listing, then share your business profile so buyers can follow and message you.</p>
-              </>
-            ) : role === 'buyer' ? (
-              <>
-                <strong>Buyer path</strong>
-                <p style={copyText}>Follow businesses you like, save listings, and use Explore to find opportunities in your area.</p>
-              </>
-            ) : role === 'broker' ? (
-              <>
-                <strong>Broker path</strong>
-                <p style={copyText}>Build out your profile, follow deal flow, and use business pages to manage multiple listings in one place.</p>
-              </>
-            ) : (
-              <>
-                <strong>Not sure yet</strong>
-                <p style={copyText}>You’ll see a mixed path with both buyer and seller actions until you choose a direction.</p>
-              </>
-            )}
-          </div>
-        </section>
-
-        <div style={{ display: 'grid', gap: 10, marginTop: 12 }}>
-          <a href='/profile' style={btn}>Profile Settings</a>
-          <a href='/businesses' style={btn}>My Businesses</a>
-          <a href='/legal/privacy' style={btn}>Privacy Policy</a>
-          <button type='button' onClick={signOut} style={btnReset}>Sign out</button>
-        </div>
-
-        {msg ? <p style={{ color: '#cdd9ff' }}>{msg}</p> : null}
-      </div>
-    </main>
-  );
+  const [user,setUser] = useState(null); const [role,setRole] = useState('not_sure'); const [message,setMessage] = useState(''); const [acknowledged,setAcknowledged] = useState(false); const [deleting,setDeleting] = useState(false);
+  useEffect(() => { (async () => { if (!supabase) return; const { data: auth } = await supabase.auth.getUser(); const current = auth?.user || null; setUser(current); if (!current) return; const { data } = await supabase.from('profiles').select('role').eq('id',current.id).maybeSingle(); setRole(data?.role || 'not_sure'); })(); },[]);
+  async function saveRole(next) { if (!supabase || !user) return setMessage('Please sign in first.'); setMessage(''); const { error } = await supabase.from('profiles').upsert({ id:user.id, role:next }); if (error) return setMessage(error.message); setRole(next); setMessage('Your workspace is updated.'); }
+  async function signOut() { const { error } = await supabase.auth.signOut(); if (error) return setMessage(error.message); window.location.assign('/explore'); }
+  async function deleteAccount() { if (!supabase || !user || !acknowledged || deleting) return; if (!window.confirm('Delete your GoDyrect account and all associated marketplace data? This cannot be undone.')) return; setDeleting(true); setMessage('Deleting your account…'); const { error } = await supabase.functions.invoke('delete-account',{ body:{ confirm:true } }); if (error) { setDeleting(false); return setMessage(error.message || 'We could not delete your account. Please try again.'); } await supabase.auth.signOut(); window.location.assign('/goodbye'); }
+  if (!user) return <main className='account-shell'><section className='account-panel account-panel--narrow'><p className='account-kicker'>Account</p><h1>Sign in to manage your space.</h1><p className='account-lede'>Your profile, preferences, and privacy controls live here.</p><a href='/login?returnTo=%2Fsettings' className='account-primary'>Sign in</a></section></main>;
+  return <main className='account-shell'>
+    <section className='account-heading'><p className='account-kicker'>Account studio</p><h1>Make it yours.</h1><p className='account-lede'>A quieter control room for the way you use GoDyrect.</p></section>
+    <div className='account-layout'><section className='account-panel account-panel--main'><div className='section-heading'><div><p className='account-kicker'>Your mode</p><h2>What brings you here?</h2></div><a href='/profile' className='account-text-link'>Edit profile →</a></div><div className='mode-grid'>{modes.map(([value,label,note]) => <button key={value} type='button' onClick={() => saveRole(value)} className={`mode-card ${role === value ? 'is-active' : ''}`}><strong>{label}</strong><span>{note}</span><i>{role === value ? 'Selected' : 'Choose'}</i></button>)}</div>{message ? <p className='account-status' role='status'>{message}</p> : null}</section>
+      <aside className='account-stack'><section className='account-panel account-panel--compact'><p className='account-kicker'>Workspace</p><h2>Useful shortcuts</h2><div className='account-links'><a href='/businesses'>Businesses <span>→</span></a><a href='/listings'>Listings <span>→</span></a><a href='/favorites'>Saved opportunities <span>→</span></a><a href='/messages'>Messages <span>→</span></a></div></section><section className='account-panel account-panel--compact'><p className='account-kicker'>Privacy</p><h2>You are in control.</h2><p className='account-copy'>Read exactly what we collect, how social sign-in works, and how to remove your data.</p><a className='account-text-link' href='/legal/privacy'>Read privacy & terms →</a></section></aside></div>
+    <section id='delete-account' className='danger-zone'><div><p className='account-kicker'>Account deletion</p><h2>Leave GoDyrect</h2><p>Deleting your account permanently removes your profile, listings, businesses you created, saved opportunities, follows, messages, and uploaded marketplace media.</p></div><div className='danger-zone__action'><label><input type='checkbox' checked={acknowledged} onChange={e => setAcknowledged(e.target.checked)} /> I understand this cannot be undone.</label><button type='button' onClick={deleteAccount} disabled={!acknowledged || deleting}>{deleting ? 'Deleting account…' : 'Delete my account'}</button></div></section>
+    <button type='button' className='signout-button' onClick={signOut}>Sign out</button></main>;
 }
-
-const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#fff' };
-const card = { maxWidth: 760, margin: '0 auto', background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 24, padding: 18, boxShadow: '0 24px 60px rgba(0,0,0,0.28)' };
-const section = { marginTop: 12, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(42,60,120,0.8)', borderRadius: 16, padding: 14 };
-const muted = { color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 };
-const input = { borderRadius: 10, border: '1px solid rgba(229,255,242,0.14)', background: '#090b0b', color: '#fff', padding: '11px 12px' };
-const btn = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, background: '#141817', color: '#fff', padding: '10px 12px', textDecoration: 'none' };
-const btnPrimary = { border: '1px solid rgba(229,255,242,0.11)', borderRadius: 10, background: '#2e7dff', color: '#fff', padding: '10px 12px', cursor: 'pointer' };
-const btnReset = { border: '1px solid rgba(255,92,92,0.55)', borderRadius: 10, background: 'rgba(255,92,92,0.14)', color: '#fff', padding: '10px 12px', cursor: 'pointer' };
-const copyText = { margin: '8px 0 0', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5 };
-const onboardingCopy = (role) => ({ marginTop: 12, borderRadius: 14, padding: 14, background: role === 'seller' ? 'rgba(18,77,47,0.2)' : role === 'buyer' ? 'rgba(30,58,138,0.2)' : role === 'broker' ? 'rgba(91,75,22,0.2)' : 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' });
-const hero = { marginBottom: 14 };
-const eyebrow = { margin: '0 0 10px', color: '#8fb7ff', letterSpacing: '0.18em', textTransform: 'uppercase', fontSize: 12, fontWeight: 700 };
-const roleGrid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, marginTop: 12 };
-const roleButton = (active) => ({
-  borderRadius: 14,
-  border: active ? '1px solid rgba(143,183,255,0.85)' : '1px solid rgba(255,255,255,0.08)',
-  background: active ? 'rgba(46,125,255,0.25)' : 'rgba(255,255,255,0.04)',
-  color: '#fff',
-  padding: '12px 14px',
-  cursor: 'pointer',
-  fontWeight: 700,
-});
