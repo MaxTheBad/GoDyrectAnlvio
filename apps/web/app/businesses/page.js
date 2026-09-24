@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { US_STATES } from '../../lib/us-states';
+import IndustryPicker from '../../components/IndustryPicker';
 
 function formatCurrency(value) {
   const num = Number(value);
@@ -33,7 +34,8 @@ function yearsSince(startDate) {
 function completeness(details) {
   const fields = [
     !!details.description,
-    !!details.category,
+  !!details.category,
+    !!details.industry,
     !!details.start_date,
     details.annual_revenue !== '' && details.annual_revenue !== null,
     details.annual_profit !== '' && details.annual_profit !== null,
@@ -67,6 +69,7 @@ const emptyDetails = {
   country: 'United States',
   county: '',
   keywords: '',
+  industry: '',
 };
 
 export default function MyBusinessesPage() {
@@ -80,6 +83,7 @@ export default function MyBusinessesPage() {
   const [newBusinessState, setNewBusinessState] = useState('Florida');
   const [newBusinessZip, setNewBusinessZip] = useState('');
   const [newBusinessCountry, setNewBusinessCountry] = useState('United States');
+  const [newBusinessIndustry, setNewBusinessIndustry] = useState('');
   const [focusBusinessId, setFocusBusinessId] = useState('');
   const [savedBusinessId, setSavedBusinessId] = useState('');
   const [editingByBusiness, setEditingByBusiness] = useState({});
@@ -94,7 +98,7 @@ export default function MyBusinessesPage() {
 
     const { data: memberships, error: membershipsErr } = await supabase
       .from('business_memberships')
-      .select('id,business_id,user_id,role,is_admin,status,businesses(id,name,status,created_by,description,category,start_date,annual_revenue,annual_profit,default_asking_price,city,state,zip,country,county,keywords)')
+      .select('id,business_id,user_id,role,is_admin,status,businesses(id,name,status,created_by,description,category,industry,start_date,annual_revenue,annual_profit,default_asking_price,city,state,zip,country,county,keywords)')
       .eq('user_id', uid)
       .eq('status', 'approved');
 
@@ -134,6 +138,7 @@ export default function MyBusinessesPage() {
         country: b.country || 'United States',
         county: b.county || '',
         keywords: Array.isArray(b.keywords) ? b.keywords.join(', ') : '',
+        industry: b.industry || '',
       };
     });
     setDetailsByBusiness(details);
@@ -182,6 +187,7 @@ export default function MyBusinessesPage() {
         state: newBusinessState || null,
         zip: newBusinessZip || null,
         country: newBusinessCountry || null,
+        industry: newBusinessIndustry.trim() || null,
         created_by: userId,
         status: 'approved',
       })
@@ -203,6 +209,7 @@ export default function MyBusinessesPage() {
     setNewBusinessName('');
     setNewBusinessCity('');
     setNewBusinessZip('');
+    setNewBusinessIndustry('');
     setMsg('Business created. Fill out details below once, then post without retyping.');
     loadAll();
   }
@@ -222,6 +229,7 @@ export default function MyBusinessesPage() {
       country: details.country || null,
       county: details.county || null,
       keywords: (details.keywords || '').split(',').map((k) => k.trim()).filter(Boolean),
+      industry: details.industry || null,
     };
 
     const { error } = await supabase.from('businesses').update(payload).eq('id', businessId);
@@ -255,11 +263,12 @@ export default function MyBusinessesPage() {
   return (
     <main style={wrap}>
       <div style={card}>
-        <h1 style={{ marginTop: 0 }}>My Businesses</h1>
-        <p style={{ opacity: 0.8 }}>Businesses you control ({businessCount}).</p>
+        <p style={eyebrow}>Business studio</p><h1 style={{ marginTop: 0 }}>Your businesses</h1>
+        <p style={{ opacity: 0.8 }}>Keep the profile, team, and every opportunity in one professional workspace ({businessCount}).</p>
 
         <form onSubmit={createBusiness} style={createWrap}>
           <input style={input} placeholder='Business name' value={newBusinessName} onChange={(e) => setNewBusinessName(e.target.value)} required />
+          <IndustryPicker id='new-business-industry' value={newBusinessIndustry} onChange={setNewBusinessIndustry} />
           <select style={input} value={newBusinessRole} onChange={(e) => setNewBusinessRole(e.target.value)}>
             <option>Owner</option><option>CEO</option><option>Founder</option><option>Broker</option><option>Managing Partner</option><option>Authorized Representative</option>
           </select>
@@ -288,6 +297,7 @@ export default function MyBusinessesPage() {
             const summaryRows = [
               ['Description', details.description || 'Not set'],
               ['Category', details.category === 'asset_sale' ? 'Asset Sales' : details.category === 'real_estate' ? 'Real Estate' : details.category === 'startup' ? 'Start-up Businesses' : 'Established Businesses'],
+              ['Industry', details.industry || 'Not set'],
               ['Start date', details.start_date || 'Not set'],
               ['Annual revenue', details.annual_revenue || 'Not set'],
               ['Annual profit', details.annual_profit || 'Not set'],
@@ -346,6 +356,7 @@ export default function MyBusinessesPage() {
                       <option value='real_estate'>Real Estate</option>
                       <option value='startup'>Start-up Businesses</option>
                     </select>
+                    <IndustryPicker id={`industry-${row.business_id}`} value={details.industry} onChange={(industry) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, industry } }))} />
                     <input style={input} type='date' value={details.start_date} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, start_date: e.target.value } }))} />
                     <input
                       style={input}
@@ -444,9 +455,9 @@ const wrap = { minHeight: '100vh', padding: '16px 12px 96px', background: '#0709
 const card = { maxWidth: 980, margin: '0 auto', width: '100%', background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 12, padding: 16, display: 'grid', gap: 12, boxSizing: 'border-box' };
 const createWrap = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 };
 const bizCard = {
-  border: '1px solid rgba(143,183,255,0.22)',
+  border: '1px solid rgba(229,255,242,0.14)',
   borderRadius: 18,
-  background: 'linear-gradient(180deg, rgba(18,27,63,0.98) 0%, rgba(10,16,37,0.98) 100%)',
+  background: 'linear-gradient(180deg, rgba(20,24,23,.98) 0%, rgba(10,12,12,.98) 100%)',
   padding: 16,
   display: 'grid',
   gap: 12,
@@ -454,17 +465,17 @@ const bizCard = {
   position: 'relative',
   overflow: 'hidden',
 };
-const bizCardFocused = { border: '1px solid #8fb7ff', boxShadow: '0 0 0 2px rgba(143,183,255,0.25), 0 14px 34px rgba(0,0,0,0.24)' };
+const bizCardFocused = { border: '1px solid #b9ff5a', boxShadow: '0 0 0 2px rgba(185,255,90,0.18), 0 14px 34px rgba(0,0,0,0.24)' };
 const bizHead = { display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', alignItems: 'flex-start' };
 const bizTopLine = { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10 };
 const bizName = { fontSize: 20, lineHeight: 1.15 };
 const bizSubline = { marginTop: 6, opacity: 0.82, fontSize: 13 };
-const bizStats = { marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 12, fontSize: 12, color: '#b7c7ea' };
-const bizDivider = { height: 1, background: 'linear-gradient(90deg, rgba(143,183,255,0.22), rgba(143,183,255,0.05))' };
+const bizStats = { marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 12, fontSize: 12, color: '#a9b4ae' };
+const bizDivider = { height: 1, background: 'linear-gradient(90deg, rgba(185,255,90,.25), rgba(185,255,90,.02))' };
 const memberRow = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 8, padding: 8, display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center' };
 const input = { borderRadius: 8, border: '1px solid rgba(229,255,242,0.14)', background: '#090b0b', color: '#fff', padding: '10px 12px' };
 const btn = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 8, background: '#141817', color: '#fff', padding: '8px 10px', textDecoration: 'none', cursor: 'pointer' };
-const btnPrimary = { border: 0, borderRadius: 8, background: '#2e7dff', color: '#fff', padding: '10px 12px', cursor: 'pointer' };
+const btnPrimary = { border: 0, borderRadius: 8, background: '#b9ff5a', color: '#0a1205', padding: '10px 12px', cursor: 'pointer', fontWeight: 800 };
 const postAsBtn = {
   display: 'inline-flex',
   alignItems: 'center',
@@ -472,12 +483,12 @@ const postAsBtn = {
   minWidth: 220,
   padding: '14px 18px',
   borderRadius: 14,
-  border: '1px solid rgba(46,125,255,0.56)',
-  background: 'linear-gradient(135deg, #2e7dff 0%, #4aa3ff 100%)',
-  color: '#fff',
+  border: '1px solid #b9ff5a',
+  background: '#b9ff5a',
+  color: '#0a1205',
   textDecoration: 'none',
   fontWeight: 800,
-  boxShadow: '0 12px 24px rgba(46,125,255,0.28)',
+  boxShadow: '0 12px 24px rgba(185,255,90,0.15)',
 };
 const label = { display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 };
 const savedBanner = { marginTop: 10, border: '1px solid #2f8f5b', borderRadius: 10, background: '#123825', color: '#d8ffe9', padding: '10px 12px', display: 'grid', gap: 6 };
@@ -493,7 +504,7 @@ const summaryItem = {
   display: 'grid',
   gap: 6,
 };
-const summaryLabel = { fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#8fb7ff', opacity: 0.9 };
+const summaryLabel = { fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#b9ff5a', opacity: 0.9 };
 const summaryValue = { fontSize: 14, lineHeight: 1.45, color: '#fff', whiteSpace: 'pre-wrap', wordBreak: 'break-word' };
 const summaryActions = { display: 'flex', justifyContent: 'flex-end' };
 const editActions = { gridColumn: '1 / -1', display: 'flex', gap: 8, flexWrap: 'wrap' };
@@ -505,7 +516,8 @@ const bizPill = (active) => ({
   padding: '5px 10px',
   fontSize: 12,
   fontWeight: 700,
-  background: active ? 'rgba(46,125,255,0.18)' : 'rgba(255,255,255,0.06)',
-  color: active ? '#bcd4ff' : '#d7e1f7',
-  border: active ? '1px solid rgba(46,125,255,0.42)' : '1px solid rgba(255,255,255,0.08)',
+  background: active ? 'rgba(185,255,90,.12)' : 'rgba(255,255,255,0.06)',
+  color: active ? '#dfffc0' : '#d7e1d9',
+  border: active ? '1px solid rgba(185,255,90,.42)' : '1px solid rgba(255,255,255,0.08)',
 });
+const eyebrow = { margin: '0 0 10px', color: '#b9ff5a', letterSpacing: '.16em', textTransform: 'uppercase', fontSize: 11, fontWeight: 800 };
