@@ -492,7 +492,7 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
         ) : null}
       </section>
 
-      <section style={listingSection}>
+      <section style={isMobile ? mobileListingSection : listingSection}>
         <h3 style={{ marginTop: 4, color: '#fff' }}>{viewMode === 'map' ? 'Listing locations' : 'Business listings'}</h3>
         {loadingListings ? <p style={{ opacity: 0.8, color: 'rgba(235,241,255,0.78)' }}>Loading listings...</p> : null}
         {!loadingListings && filteredListings.length === 0 ? (
@@ -532,10 +532,6 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
                   onToggleBusinessFollow={l.business_id ? () => toggleFollowBusiness(l.business_id) : null}
                   onEdit={isOwner ? () => window.location.assign(`/listings/edit?id=${l.id}`) : null}
                 />
-                <div style={cardBottom}>
-                  <strong style={{ color: '#fff' }}>${Number(l.asking_price || 0).toLocaleString()}</strong>
-                  <span style={listingFooterNote}>{prettyCategory(l.category)} · {l.business_age_years ?? 0} years</span>
-                </div>
               </div>
             );
           })}
@@ -628,6 +624,7 @@ function milesBetween(lat1, lon1, lat2, lon2) {
 const filterSection = { width: 'min(calc(100% - 36px), 1240px)', margin: '28px auto 0', background: '#0d1010', border: '1px solid rgba(229,255,242,.11)', borderRadius: 20, padding: 18 };
 const mobileFilterToggle = { width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(229,255,242,.11)', borderRadius: 12, background: '#141817', color: '#f4f7f5', padding: '11px 12px', cursor: 'pointer', fontWeight: 600 };
 const listingSection = { width: 'min(calc(100% - 36px), 1240px)', margin: '18px auto 72px', background: '#0d1010', border: '1px solid rgba(229,255,242,.11)', borderRadius: 20, padding: 22 };
+const mobileListingSection = { width: 'calc(100% - 16px)', margin: '18px auto 110px', background: 'transparent', border: 0, padding: 0 };
 const primaryBtn = { border: 0, borderRadius: 12, background: '#b9ff5a', color: '#0a1205', padding: '10px 14px', cursor: 'pointer', fontWeight: 700 };
 const ghostBtn = { border: '1px solid rgba(229,255,242,.11)', borderRadius: 11, background: '#141817', color: '#f4f7f5', padding: '10px 12px', cursor: 'pointer', fontWeight: 600 };
 const input = { borderRadius: 10, border: '1px solid rgba(229,255,242,.11)', background: '#090b0b', color: '#f4f7f5', padding: '10px 12px', width: '100%' };

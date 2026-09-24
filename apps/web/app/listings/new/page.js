@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic';
 const VideoEditor = dynamic(() => import('../../../components/VideoEditor'), { ssr: false });
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../../lib/supabase';
+import { composeVideo } from '../../../lib/compose-video';
+import { uploadVideo } from '../../../lib/upload-video';
 
 function formatCurrency(value) {
   const num = Number(value);
@@ -19,18 +21,6 @@ function parseCurrencyInput(value) {
   const num = Number(cleaned);
   if (!Number.isFinite(num)) return '';
   return String(num);
-}
-
-function dataUrlToFile(dataUrl, filename) {
-  if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) return null;
-  const [meta, content] = dataUrl.split(',');
-  if (!meta || !content) return null;
-  const mimeMatch = meta.match(/data:([^;]+);base64/);
-  const mime = mimeMatch?.[1] || 'image/jpeg';
-  const binary = atob(content);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
-  return new File([bytes], filename, { type: mime });
 }
 
 function yearsSince(startDate) {
@@ -61,6 +51,19 @@ function completeness(business) {
   return Math.round((fields.filter(Boolean).length / fields.length) * 100);
 }
 
+function requiredProfileFields(business) {
+  if (!business) return [];
+  const missing = [];
+  if (!business.description?.trim()) missing.push('business description');
+  if (!business.category) missing.push('business type');
+  if (!business.start_date) missing.push('start date');
+  if (business.annual_revenue == null) missing.push('annual revenue');
+  if (business.annual_profit == null) missing.push('annual profit');
+  if (!business.city || !business.state || !business.country) missing.push('city, state, and country');
+  if (!Array.isArray(business.keywords) || business.keywords.length === 0) missing.push('search keywords');
+  return missing;
+}
+
 export default function NewListingPage() {
   const router = useRouter();
   const [form, setForm] = useState({ business_id: '', title: '', description: '', lister_role: 'Owner', asking_price: '' });
@@ -71,6 +74,9 @@ export default function NewListingPage() {
   const [selectedBusiness, setSelectedBusiness] = useState(null);
   const [useDefaultAskingPrice, setUseDefaultAskingPrice] = useState(true);
   const [missingFields, setMissingFields] = useState([]);
+  const [businessesWithPosts, setBusinessesWithPosts] = useState([]);
+  const [profileCheckReady, setProfileCheckReady] = useState(false);
+  const [publishing, setPublishing] = useState(false);
   const [errors, setErrors] = useState({});
   const [editorState, setEditorState] = useState({ clips: [], manifest: null, thumbnailDataUrl: '', overlayText: '', textPosition: { x: 50, y: 50 }, textSize: 23 });
   const [loadingAccess, setLoadingAccess] = useState(true);
@@ -113,6 +119,12 @@ export default function NewListingPage() {
           }));
 
         setApprovedBusinesses(options);
+        if (options.length) {
+          const { data: existingPosts, error: postsError } = await supabase.from('listings').select('business_id').in('business_id', options.map((option) => option.id));
+          if (postsError) setMsg(postsError.message);
+          setBusinessesWithPosts((existingPosts || []).map((post) => post.business_id));
+        }
+        setProfileCheckReady(true);
 
         if (options.length) {
           const picked = options.find((o) => o.id === requestedBusiness) || options[0];
@@ -151,6 +163,7 @@ export default function NewListingPage() {
 
   const computedAge = useMemo(() => yearsSince(selectedBusiness?.start_date), [selectedBusiness]);
   const completenessPct = useMemo(() => completeness(selectedBusiness || {}), [selectedBusiness]);
+  const profileMissingFields = useMemo(() => selectedBusiness && !businessesWithPosts.includes(selectedBusiness.id) ? requiredProfileFields(selectedBusiness) : [], [selectedBusiness, businessesWithPosts]);
 
   useEffect(() => {
     if (useDefaultAskingPrice && selectedBusiness?.default_asking_price) {
@@ -170,6 +183,7 @@ export default function NewListingPage() {
       });
     };
     if (!form.business_id) return setErrors((p) => ({ ...p, business_id: 'Choose an approved business first.' }));
+    if (profileMissingFields.length) return setMissingFields(profileMissingFields);
     if (!form.title.trim()) return showTitleError();
     const parsedAskingPrice = Number(parseCurrencyInput(form.asking_price));
     if (!form.asking_price || !Number.isFinite(parsedAskingPrice) || parsedAskingPrice <= 0) return setErrors((p) => ({ ...p, asking_price: 'Enter a valid asking price.' }));
@@ -199,19 +213,25 @@ export default function NewListingPage() {
 
     const isFirstPostForBusiness = !existingListingsCount;
     if (isFirstPostForBusiness) {
-      const missing = [];
-      if (!business.description) missing.push('description');
-      if (!business.category) missing.push('category');
-      if (!business.start_date) missing.push('start date');
-      if (business.annual_revenue == null) missing.push('annual revenue');
-      if (business.annual_profit == null) missing.push('annual profit');
-      if (!business.city || !business.state || !business.country) missing.push('location (city/state/country)');
-      if (!Array.isArray(business.keywords) || business.keywords.length === 0) missing.push('keywords');
+      const missing = requiredProfileFields(business);
 
       if (missing.length) {
         setMissingFields(missing);
         return setMsg(`Before first post, complete business profile fields in My Businesses.`);
       }
+    }
+
+    setPublishing(true);
+    let finishedVideo = null;
+    try {
+      if (editorState.clips.length) finishedVideo = await composeVideo(editorState.clips, setMsg);
+    } catch (error) {
+      setPublishing(false);
+      return setMsg(error?.message || 'Could not prepare this video. Please try again.');
+    }
+    if (finishedVideo?.video.size > 48 * 1024 * 1024) {
+      setPublishing(false);
+      return setMsg('The finished video is over this account’s 50 MB upload limit. Please shorten the clips and try again.');
     }
 
     const { data: listing, error } = await supabase
@@ -232,42 +252,37 @@ export default function NewListingPage() {
         country: business.country || null,
         county: business.county || null,
         keywords: Array.isArray(business.keywords) ? business.keywords : [],
+        is_active: !finishedVideo,
       })
       .select('id')
       .single();
 
-    if (error) return setMsg(error.message);
+    if (error) { setPublishing(false); return setMsg(error.message); }
 
-    const renderClips = Array.isArray(editorState.clips) ? editorState.clips : [];
-    if (renderClips.length) {
-      const chosenThumbnail = dataUrlToFile(editorState.thumbnailDataUrl, `listing-${listing.id}-thumbnail.jpg`);
-      let chosenThumbnailUrl = null;
-      if (chosenThumbnail) {
-        try {
-          const thumbPath = `${user.id}/${listing.id}/thumb-${Date.now()}.jpg`;
-          const thumbUpload = await supabase.storage.from('listing-media').upload(thumbPath, chosenThumbnail, { upsert: true });
-          if (!thumbUpload.error) {
-            const { data: thumbPub } = supabase.storage.from('listing-media').getPublicUrl(thumbPath);
-            chosenThumbnailUrl = thumbPub.publicUrl;
-          }
-        } catch {}
+    if (finishedVideo) {
+      setMsg('Uploading your finished video…');
+      const basePath = `${user.id}/${listing.id}/${Date.now()}`;
+      const videoPath = `${basePath}-post.mp4`;
+      const coverPath = `${basePath}-cover.jpg`;
+      try {
+        const videoUrl = await uploadVideo(videoPath, finishedVideo.video, (percent) => setMsg(`Uploading your video… ${percent}%`));
+        const coverUpload = await supabase.storage.from('listing-media').upload(coverPath, finishedVideo.cover, { contentType: 'image/jpeg' });
+        if (coverUpload.error) throw coverUpload.error;
+        const coverUrl = supabase.storage.from('listing-media').getPublicUrl(coverPath).data.publicUrl;
+        const { error: mediaError } = await supabase.from('listing_media').insert({ listing_id: listing.id, media_type: 'video', url: videoUrl, thumbnail_url: coverUrl, overlay_text: editorState.overlayText || null, overlay_x: editorState.textPosition.x, overlay_y: editorState.textPosition.y, overlay_size: editorState.textSize, sort_order: 0 });
+        if (mediaError) throw mediaError;
+        const { error: publishError } = await supabase.from('listings').update({ is_active: true }).eq('id', listing.id);
+        if (publishError) throw publishError;
+      } catch (uploadError) {
+        await supabase.from('listings').delete().eq('id', listing.id);
+        await supabase.storage.from('listing-media').remove([videoPath, coverPath]);
+        setPublishing(false);
+        return setMsg(uploadError?.message || 'Video upload failed. Your post was not published; please retry.');
       }
-
-      const mediaRows = [];
-      for (let index = 0; index < renderClips.length; index += 1) {
-        const clip = renderClips[index];
-        const safeName = String(clip.name || `clip-${index + 1}.mp4`).replace(/[^a-zA-Z0-9._-]/g, '-');
-        const pathName = `${user.id}/${listing.id}/${Date.now()}-${index}-${safeName}`;
-        const upload = await supabase.storage.from('listing-media').upload(pathName, clip, { upsert: true });
-        if (upload.error) return setMsg(upload.error.message);
-        const pub = supabase.storage.from('listing-media').getPublicUrl(pathName).data;
-        mediaRows.push({ listing_id: listing.id, media_type: 'video', url: pub.publicUrl, thumbnail_url: index === 0 ? chosenThumbnailUrl : null, overlay_text: editorState.overlayText || null, overlay_x: editorState.textPosition.x, overlay_y: editorState.textPosition.y, overlay_size: editorState.textSize, sort_order: index });
-      }
-      const mediaInsert = await supabase.from('listing_media').insert(mediaRows);
-      if (mediaInsert.error) return setMsg(mediaInsert.error.message);
     }
 
-    setMsg('Listing posted. Redirecting...');
+    setPublishing(false);
+    setMsg('Business post published. Redirecting…');
     setTimeout(() => router.push('/listings'), 450);
   }
 
@@ -276,14 +291,14 @@ export default function NewListingPage() {
   if (loadingAccess) {
     return (
       <main style={wrap}>
-        <div style={card}><h1>Sell My Business</h1><p>Checking your account and approved businesses…</p></div>
+        <div style={card}><h1>Create a business post</h1><p>Checking your account and approved businesses…</p></div>
       </main>
     );
   }
 
   if (!isAuthed) {
     return (
-      <main style={wrap}><div style={card}><h1>Sell My Business</h1><p>You need an account to post.</p><a href='/signup' style={{ color: '#8fb7ff' }}>Create account</a></div></main>
+      <main style={wrap}><div style={card}><h1>Create a business post</h1><p>You need an account to post.</p><a href='/signup' style={{ color: '#b9ff5a' }}>Create account</a></div></main>
     );
   }
 
@@ -291,11 +306,11 @@ export default function NewListingPage() {
     return (
       <main style={wrap}>
         <div style={card}>
-          <h1>Post Business</h1>
+          <h1>Create a business post</h1>
           <p>You need an approved business before posting.</p>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <a href='/businesses' style={{ color: '#8fb7ff' }}>Go to My Businesses</a>
-            <a href='/businesses?create=1' style={{ color: '#8fb7ff' }}>Create business</a>
+            <a href='/businesses' style={{ color: '#b9ff5a' }}>Go to My Businesses</a>
+            <a href='/businesses?create=1' style={{ color: '#b9ff5a' }}>Create business</a>
           </div>
           {msg ? <p>{msg}</p> : null}
         </div>
@@ -306,7 +321,7 @@ export default function NewListingPage() {
   return (
     <main style={wrap}>
       <form onSubmit={submit} style={card}>
-        <h1>Post Business</h1>
+        <h1>Create a business post</h1>
         <p style={{ opacity: 0.82, marginTop: -4 }}>Business profile fields are pulled from My Businesses so you only fill them once.</p>
 
         <label style={label}>Business (approved)</label>
@@ -314,6 +329,15 @@ export default function NewListingPage() {
           <option value=''>Select your business</option>
           {approvedBusinesses.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
         </select>
+
+        {!profileCheckReady ? <p style={small}>Checking this business profile…</p> : null}
+        {profileCheckReady && profileMissingFields.length ? <div style={readinessCard} role='status'>
+          <strong>Finish your business profile before creating a post</strong>
+          <p style={{ margin: 0, color: '#b9c4b9' }}>Add {profileMissingFields.join(', ')}. Your post editor will open as soon as those details are complete.</p>
+          <a href={`/businesses?business=${form.business_id}`} style={readyLink}>Complete business profile →</a>
+        </div> : null}
+
+        {profileCheckReady && !profileMissingFields.length ? <>
 
         <div style={{ display: 'grid', gap: 6 }}>
           <input
@@ -365,24 +389,25 @@ export default function NewListingPage() {
           </div>
         ) : null}
 
-        {/* Clips upload directly so publishing works on the static edge deployment. */}
+        {/* Compose one video in the browser before uploading it. */}
         <VideoEditor onChange={({ clips, manifest, thumbnailDataUrl, overlayText, textPosition, textSize }) => {
           setEditorState({ clips: Array.isArray(clips) ? clips : [], manifest: manifest || null, thumbnailDataUrl: thumbnailDataUrl || '', overlayText: overlayText || '', textPosition: textPosition || { x: 50, y: 50 }, textSize: textSize || 23 });
           setFiles(Array.isArray(clips) ? clips : []);
         }} />
 
         <div style={{ display: 'grid', gap: 6 }}>
-          <div style={{ color: '#b9ff5a', fontSize: 13 }}>{files.length} file(s) ready to upload</div>
-          <button style={btn} type='submit'>Publish Listing</button>
+          <div style={{ color: '#b9ff5a', fontSize: 13 }}>{files.length ? `${files.length} clip${files.length === 1 ? '' : 's'} ready to merge into one video` : 'A video is optional'}</div>
+          <button style={btn} type='submit' disabled={publishing}>{publishing ? 'Preparing your post…' : 'Publish business post'}</button>
         </div>
         {msg ? <p>{msg}</p> : null}
         {missingFields.length ? (
           <div style={infoBox}>
             <strong>Missing before first post</strong>
             <div style={small}>{missingFields.join(', ')}</div>
-            <a href={`/businesses?business=${form.business_id}`} style={{ color: '#8fb7ff' }}>Open this business and fill missing fields</a>
+            <a href={`/businesses?business=${form.business_id}`} style={{ color: '#b9ff5a' }}>Open this business and fill missing fields</a>
           </div>
         ) : null}
+        </> : null}
       </form>
     </main>
   );
@@ -395,3 +420,5 @@ const input = { borderRadius: 8, border: '1px solid rgba(229,255,242,0.14)', bac
 const btn = { border: 0, borderRadius: 8, background: '#b9ff5a', color: '#0a1205', padding: '10px 12px', fontWeight: 800 };
 const infoBox = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, background: '#141817', padding: 10, display: 'grid', gap: 6 };
 const small = { fontSize: 13, opacity: 0.85 };
+const readinessCard = { display: 'grid', gap: 12, padding: 18, borderRadius: 16, border: '1px solid rgba(185,255,90,.35)', background: 'rgba(185,255,90,.06)', lineHeight: 1.5 };
+const readyLink = { display: 'inline-flex', width: 'fit-content', color: '#0a1205', background: '#b9ff5a', borderRadius: 10, padding: '10px 13px', textDecoration: 'none', fontWeight: 800 };

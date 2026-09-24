@@ -62,7 +62,7 @@ export default function MyListingsPage() {
       <div style={card}>
         <h1 style={{ marginTop: 0 }}>My Listings</h1>
         <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-          <a href='/listings/new' style={primaryBtn}>Post New Listing</a>
+          <a href='/listings/new' style={primaryBtn}>Create business post</a>
           <a href='/feed' style={ghostBtn}>Back to Feed</a>
         </div>
 
@@ -94,6 +94,6 @@ export default function MyListingsPage() {
 const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#fff' };
 const card = { maxWidth: 900, margin: '0 auto', background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 12, padding: 16 };
 const row = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, background: '#141817', padding: 12, display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' };
-const primaryBtn = { border: 0, borderRadius: 10, background: '#2e7dff', color: '#fff', padding: '10px 12px', textDecoration: 'none' };
+const primaryBtn = { border: 0, borderRadius: 10, background: '#b9ff5a', color: '#0a1205', padding: '10px 12px', textDecoration: 'none', fontWeight: 800 };
 const ghostBtn = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, background: '#141817', color: '#fff', padding: '10px 12px', textDecoration: 'none' };
 const dangerBtn = { border: '1px solid #7a3040', borderRadius: 10, background: '#3a1520', color: '#ffd7dd', padding: '10px 12px', cursor: 'pointer' };

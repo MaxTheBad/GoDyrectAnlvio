@@ -293,7 +293,7 @@ const feedHeaderCopy = { display: 'grid', gap: 6 };
 const feedEyebrow = { margin: 0, fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase', color: '#b9ff5a', fontWeight: 800 };
 const feedTitle = { margin: 0, fontSize: 'clamp(24px, 4vw, 34px)', lineHeight: 1.1, color: '#fff' };
 const feedColumn = {
-  width: 'min(470px, calc(100vw - 24px))',
+  width: 'min(640px, 100%)',
   margin: '6px auto 0',
   display: 'grid',
   gap: 16,

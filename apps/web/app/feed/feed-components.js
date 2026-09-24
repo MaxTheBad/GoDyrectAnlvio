@@ -27,22 +27,17 @@ export function FeedPost({
   const [mediaProgress, setMediaProgress] = useState(0);
   const [showPlayer, setShowPlayer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [previewErrored, setPreviewErrored] = useState(false);
   const poster = activeMedia?.thumbnail_url || listing?.thumbnail_url || '';
-  const thumbnailSrc = poster;
-  const fallbackVisual = poster || buildFallbackPoster(listing.title, businessName);
-  const previewVisual = previewErrored ? fallbackVisual : (thumbnailSrc || fallbackVisual);
 
   useEffect(() => {
     setShowActions(false);
     setMediaProgress(0);
     setShowPlayer(false);
     setIsPlaying(false);
-    setPreviewErrored(false);
   }, [activeMedia?.url]);
 
   return (
-    <article style={postShell}>
+    <article className='feed-post' style={postShell}>
       <div style={postTopRow}>
         <div style={avatar}>{(listing.title || 'B').slice(0, 1).toUpperCase()}</div>
         <div style={{ minWidth: 0 }}>
@@ -85,31 +80,17 @@ export function FeedPost({
       </div>
 
       {activeMedia ? (
-        <div style={heroMediaFrame}>
-          <div style={heroMediaBackdrop}>
-            <img
-              src={previewVisual || activeMedia.thumbnail_url || activeMedia.url}
-              alt=''
-              aria-hidden='true'
-              style={heroMediaBackdropAsset}
-              onError={() => setPreviewErrored(true)}
-            />
-          </div>
-          <div style={mediaTitleOverlay}>
-            <div style={mediaTitle}>{listing.title}</div>
-          </div>
+        <div className='feed-post__media' style={heroMediaFrame}>
           {activeMedia.overlay_text ? <div style={{ ...videoTextOverlay, left: `${activeMedia.overlay_x ?? 50}%`, top: `${activeMedia.overlay_y ?? 50}%`, fontSize: activeMedia.overlay_size ?? 23 }}>{activeMedia.overlay_text}</div> : null}
           {activeMedia.media_type === 'video' ? (
             <>
               <video
                 ref={videoRef}
                 src={activeMedia.url}
-                poster={thumbnailSrc || fallbackVisual}
+                poster={poster || undefined}
                 playsInline
-                controls={false}
-                preload='auto'
-                muted
-                crossOrigin='anonymous'
+                controls={isPlaying}
+                preload='metadata'
                 onClick={() => {
                   const video = videoRef.current;
                   if (!video) return;
@@ -130,35 +111,16 @@ export function FeedPost({
                   if (!video?.duration) return;
                   setMediaProgress((video.currentTime / video.duration) * 100);
                 }}
-                onCanPlay={() => {
-                  const video = videoRef.current;
-                  if (video && !isPlaying) {
-                    video.pause();
-                  }
-                }}
                 onPlay={() => {
                   setIsPlaying(true);
                 }}
                 onPause={() => setIsPlaying(false)}
                 style={{
                   ...heroMediaAsset,
-                  display: isPlaying ? 'block' : 'none',
-                  pointerEvents: 'none',
+                  pointerEvents: isPlaying ? 'auto' : 'none',
                   opacity: 1,
                 }}
               />
-              {!isPlaying ? (
-                <img
-                  src={previewVisual}
-                  alt='listing media preview'
-                  onError={() => setPreviewErrored(true)}
-                  style={{
-                    ...heroMediaAsset,
-                    display: 'block',
-                    zIndex: 1,
-                  }}
-                />
-              ) : null}
               <button
                 type='button'
                 aria-label='Play video'
@@ -169,11 +131,11 @@ export function FeedPost({
                 }}
                 style={{ ...videoCoverButton, opacity: isPlaying ? 0 : 1, pointerEvents: isPlaying ? 'none' : 'auto' }}
               >
-                <div style={videoCoverPill}>Tap to play</div>
+                <div style={videoCoverPill}>▶</div>
               </button>
             </>
           ) : (
-            <img src={activeMedia.thumbnail_url || activeMedia.url} alt='listing media' style={heroMediaAsset} onError={() => setPreviewErrored(true)} />
+            <img src={activeMedia.thumbnail_url || activeMedia.url} alt='listing media' style={heroMediaAsset} />
           )}
           {activeMedia.media_type === 'video' ? (
             <input
@@ -202,7 +164,6 @@ export function FeedPost({
               ⤢
             </button>
           ) : null}
-          {listing.description ? <div style={mediaCaption}>{listing.description}</div> : null}
           {mediaCount > 1 ? (
             <>
               <button type='button' aria-label='Previous media' style={carouselArrowLeft} onClick={onPrev}>‹</button>
@@ -227,7 +188,7 @@ export function FeedPost({
                 {activeMedia.media_type === 'video' ? (
                   <video
                     src={activeMedia.url}
-                    poster={previewVisual || poster || undefined}
+                    poster={poster || undefined}
                     playsInline
                     controls
                     autoPlay
@@ -242,6 +203,12 @@ export function FeedPost({
           ) : null}
         </div>
       ) : null}
+      <div style={postDetails}>
+        <div style={postDetailsTop}><span style={postType}>Business opportunity</span><strong style={postPrice}>${Number(listing.asking_price || 0).toLocaleString()}</strong></div>
+        <h3 style={postTitle}>{listing.title}</h3>
+        {listing.description ? <p style={postDescription}>{listing.description}</p> : null}
+        <a href={onOpen} style={postViewLink}>View opportunity <span aria-hidden='true'>↗</span></a>
+      </div>
     </article>
   );
 }
@@ -360,104 +327,62 @@ export const statLabel = { display: 'block', fontSize: 12, letterSpacing: 0.6, t
 export const statValue = { display: 'block', marginTop: 8, fontSize: 24, color: '#fff' };
 export const srOnly = { position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 };
 
-const postShell = { color: '#fff', padding: 0 };
-const postTopRow = { display: 'grid', gridTemplateColumns: '42px minmax(0, 1fr) auto', gap: 14, alignItems: 'center', marginBottom: 10 };
-const postActions = { display: 'flex', alignItems: 'center', gap: 10, position: 'relative' };
-const avatar = { width: 42, height: 42, borderRadius: 999, display: 'grid', placeItems: 'center', background: 'linear-gradient(135deg, #ffd6e8, #c7d6ff)', color: '#0f172a', fontWeight: 800, fontSize: 18 };
-const postMeta = { display: 'flex', flexWrap: 'wrap', gap: 6, fontSize: 13, color: 'rgba(255,255,255,0.82)', alignItems: 'center' };
+const postShell = { width: 'min(100%, 640px)', margin: '0 auto', color: '#fff', padding: 0, overflow: 'hidden', background: '#101413', border: '1px solid rgba(229,255,242,.12)', borderRadius: 22, boxShadow: '0 18px 50px rgba(0,0,0,.24)' };
+const postTopRow = { display: 'grid', gridTemplateColumns: '40px minmax(0, 1fr) auto', gap: 10, alignItems: 'center', padding: '12px 14px' };
+const postActions = { display: 'flex', alignItems: 'center', gap: 6, position: 'relative' };
+const avatar = { width: 40, height: 40, borderRadius: 999, display: 'grid', placeItems: 'center', background: '#b9ff5a', color: '#0a1205', fontWeight: 850, fontSize: 17 };
+const postMeta = { display: 'flex', flexWrap: 'wrap', gap: 4, fontSize: 12, color: '#98a39e', alignItems: 'center' };
 const postBusiness = { fontWeight: 700, color: '#fff' };
-const postLocation = { marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.72)' };
+const postLocation = { marginTop: 3, fontSize: 12, color: '#98a39e' };
 const bookmarkBtn = (active) => ({
-  width: 48,
-  height: 48,
+  width: 36,
+  height: 36,
   borderRadius: 999,
-  border: '1px solid rgba(215,219,229,0.9)',
-  background: active ? 'rgba(46,125,255,0.14)' : '#fff',
-  color: active ? '#2e7dff' : '#111827',
+  border: '1px solid rgba(229,255,242,.16)',
+  background: active ? 'rgba(185,255,90,.16)' : '#1a1f1d',
+  color: active ? '#b9ff5a' : '#f4f7f5',
   display: 'grid',
   placeItems: 'center',
   cursor: 'pointer',
-  boxShadow: '0 4px 14px rgba(0,0,0,0.08)',
 });
-const bookmarkIcon = (active) => ({ display: 'grid', placeItems: 'center', color: active ? '#2e7dff' : '#111827' });
-const menuBtn = { border: '1px solid rgba(215,219,229,0.9)', borderRadius: 999, background: '#fff', color: '#111827', width: 48, height: 48, fontSize: 24, lineHeight: 1, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.08)' };
-const menuPanel = { position: 'absolute', right: 0, top: 52, background: '#101413', border: '1px solid rgba(94,128,202,0.28)', borderRadius: 10, minWidth: 180, display: 'grid', zIndex: 5, boxShadow: '0 10px 24px rgba(0,0,0,0.2)' };
-const menuItem = { border: 0, borderBottom: '1px solid rgba(94,128,202,0.18)', background: '#101413', textAlign: 'left', padding: '10px 12px', cursor: 'pointer', color: '#fff' };
-const menuLink = { padding: '10px 12px', textDecoration: 'none', color: '#fff', borderBottom: '1px solid rgba(94,128,202,0.18)' };
+const bookmarkIcon = (active) => ({ display: 'grid', placeItems: 'center', color: active ? '#b9ff5a' : '#f4f7f5' });
+const menuBtn = { border: '1px solid rgba(229,255,242,.16)', borderRadius: 999, background: '#1a1f1d', color: '#f4f7f5', width: 36, height: 36, fontSize: 22, lineHeight: 1, cursor: 'pointer' };
+const menuPanel = { position: 'absolute', right: 0, top: 42, background: '#101413', border: '1px solid rgba(229,255,242,.14)', borderRadius: 12, minWidth: 180, display: 'grid', zIndex: 5, boxShadow: '0 10px 24px rgba(0,0,0,0.3)' };
+const menuItem = { border: 0, borderBottom: '1px solid rgba(229,255,242,.1)', background: '#101413', textAlign: 'left', padding: '10px 12px', cursor: 'pointer', color: '#fff' };
+const menuLink = { padding: '10px 12px', textDecoration: 'none', color: '#fff', borderBottom: '1px solid rgba(229,255,242,.1)' };
 const heroMediaFrame = {
   position: 'relative',
-  width: 'min(100%, 470px)',
-  aspectRatio: '9 / 16',
-  maxHeight: '78vh',
+  width: '100%',
+  height: 'min(72svh, 760px)',
+  minHeight: 380,
   margin: '0 auto',
-  borderRadius: 20,
   overflow: 'hidden',
-  background: '#050a1a',
-  border: '1px solid #e5e7eb',
+  background: '#070909',
 };
-const heroMediaBackdrop = {
-  position: 'absolute',
-  inset: 0,
-  overflow: 'hidden',
-  background: 'linear-gradient(180deg, rgba(5,10,26,0.96) 0%, rgba(5,10,26,0.92) 100%)',
-  pointerEvents: 'none',
-};
-const heroMediaBackdropAsset = {
-  position: 'absolute',
-  inset: '-8%',
-  width: '116%',
-  height: '116%',
-  objectFit: 'cover',
-  filter: 'blur(24px) saturate(0.95) brightness(0.78)',
-  transform: 'scale(1.12)',
-  opacity: 0.9,
-};
-const heroMediaAsset = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#050a1a' };
-const videoCoverButton = { position: 'absolute', inset: 0, zIndex: 2, border: 0, padding: 0, margin: 0, background: 'linear-gradient(135deg, rgba(15,23,42,0.08) 0%, rgba(15,23,42,0.2) 100%)', display: 'grid', placeItems: 'center', cursor: 'pointer' };
-const videoCoverPill = { padding: '10px 14px', borderRadius: 999, background: 'rgba(15,23,42,0.56)', border: '1px solid rgba(255,255,255,0.16)', color: '#fff', fontWeight: 700, letterSpacing: 0.2 };
-const mediaTitleOverlay = { position: 'absolute', left: 0, right: 0, top: 0, padding: '10px 14px 0', zIndex: 2, pointerEvents: 'none', background: 'linear-gradient(180deg, rgba(5,10,26,0.86) 0%, rgba(5,10,26,0) 100%)' };
+const heroMediaAsset = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#070909' };
+const videoCoverButton = { position: 'absolute', inset: 0, zIndex: 2, border: 0, padding: '0 0 30px 16px', margin: 0, background: 'transparent', display: 'grid', alignItems: 'end', justifyItems: 'start', cursor: 'pointer' };
+const videoCoverPill = { width: 52, height: 52, display: 'grid', placeItems: 'center', borderRadius: 999, background: 'rgba(5,9,7,.82)', border: '1px solid rgba(185,255,90,.65)', color: '#b9ff5a', fontWeight: 800, fontSize: 22, paddingLeft: 4, boxShadow: '0 10px 30px rgba(0,0,0,.35)' };
 const videoTextOverlay = { position: 'absolute', maxWidth: '76%', transform: 'translate(-50%,-50%)', zIndex: 3, pointerEvents: 'none', textAlign: 'center', color: '#fff', lineHeight: 1.15, fontWeight: 800, textShadow: '0 2px 12px rgba(0,0,0,.85)', overflowWrap: 'anywhere' };
-const mediaTitle = { color: '#fff', fontWeight: 800, fontSize: 16, lineHeight: 1.15, textShadow: '0 1px 2px rgba(0,0,0,0.5)' };
-const mediaCaption = { position: 'absolute', left: 0, right: 0, bottom: 44, padding: '16px 16px 14px', fontSize: 14, lineHeight: 1.4, color: '#fff', background: 'linear-gradient(180deg, rgba(15,23,42,0) 0%, rgba(15,23,42,0.72) 100%)', textShadow: '0 1px 2px rgba(0,0,0,0.35)', whiteSpace: 'pre-wrap', pointerEvents: 'none', zIndex: 2 };
 const carouselArrowBase = { position: 'absolute', top: '50%', transform: 'translateY(-50%)', width: 30, height: 30, borderRadius: 999, border: 0, background: 'rgba(255,255,255,0.88)', color: '#111827', fontSize: 24, lineHeight: '30px', display: 'grid', placeItems: 'center', cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.18)' };
 const carouselArrowLeft = { ...carouselArrowBase, left: 10 };
 const carouselArrowRight = { ...carouselArrowBase, right: 10 };
 const carouselDots = { position: 'absolute', left: '50%', bottom: 10, transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 999, background: 'rgba(15,23,42,0.45)', backdropFilter: 'blur(6px)' };
 const dot = { width: 7, height: 7, borderRadius: 999, border: 0, background: 'rgba(255,255,255,0.45)', padding: 0, cursor: 'pointer' };
 const activeDot = { ...dot, background: '#fff', width: 8, height: 8 };
-const videoProgress = { position: 'absolute', left: 14, right: 14, bottom: 8, width: 'calc(100% - 28px)', accentColor: '#2e7dff', zIndex: 3 };
+const videoProgress = { position: 'absolute', left: 14, right: 14, bottom: 8, width: 'calc(100% - 28px)', accentColor: '#b9ff5a', zIndex: 3 };
 const fullscreenBtn = { position: 'absolute', right: 12, bottom: 30, width: 34, height: 34, borderRadius: 999, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(15,23,42,0.72)', color: '#fff', cursor: 'pointer', zIndex: 4, display: 'grid', placeItems: 'center', fontSize: 18, lineHeight: 1 };
 const playerModal = { position: 'fixed', inset: 0, background: 'rgba(3,7,18,0.85)', display: 'grid', placeItems: 'center', zIndex: 50, padding: 16 };
 const playerModalInner = { position: 'relative', width: 'min(96vw, 720px)', borderRadius: 20, overflow: 'hidden', background: '#050a1a', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 30px 90px rgba(0,0,0,0.55)' };
 const closePlayerBtn = { position: 'absolute', right: 10, top: 10, zIndex: 2, width: 34, height: 34, borderRadius: 999, border: 0, background: 'rgba(15,23,42,0.82)', color: '#fff', cursor: 'pointer', fontSize: 22, lineHeight: 1 };
 const playerMedia = { width: '100%', height: 'auto', display: 'block', background: '#050a1a' };
+const postDetails = { display: 'grid', gap: 8, padding: '15px 16px 18px', background: '#101413' };
+const postDetailsTop = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 };
+const postType = { color: '#b9ff5a', fontSize: 11, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase' };
+const postPrice = { fontSize: 17, color: '#f4f7f5' };
+const postTitle = { margin: 0, color: '#fff', fontSize: 'clamp(19px,4vw,24px)', lineHeight: 1.15 };
+const postDescription = { margin: 0, color: '#b9c4be', fontSize: 14, lineHeight: 1.45, display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 3, overflow: 'hidden', whiteSpace: 'pre-wrap' };
+const postViewLink = { display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between', color: '#b9ff5a', textDecoration: 'none', fontSize: 13, fontWeight: 800, marginTop: 3 };
 
-function buildFallbackPoster(title, businessName) {
-  const text = [title, businessName].filter(Boolean).join(' · ') || 'GoDyrect listing';
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
-    <defs>
-      <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#101413"/>
-        <stop offset="100%" stop-color="#1e3a8a"/>
-      </linearGradient>
-    </defs>
-    <rect width="1280" height="720" fill="url(#g)"/>
-    <circle cx="640" cy="360" r="88" fill="rgba(255,255,255,0.12)"/>
-    <polygon points="610,315 610,405 690,360" fill="#ffffff"/>
-    <text x="640" y="510" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" text-anchor="middle">${escapeXml(text)}</text>
-    <text x="640" y="560" fill="rgba(255,255,255,0.84)" font-family="Arial, Helvetica, sans-serif" font-size="22" text-anchor="middle">Tap to play</text>
-  </svg>`;
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-
-function escapeXml(value = '') {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-}
 const emptyState = { marginTop: 18, padding: 'clamp(22px, 5vw, 42px)', borderRadius: 20, border: '1px solid rgba(229,255,242,.11)', background: 'radial-gradient(circle at 90% 10%, rgba(185,255,90,.1), transparent 35%), #0d1010', display: 'grid', gap: 18, color: '#f4f7f5' };
 const emptyTitle = { margin: 0, fontSize: 18 };
 const emptyCopy = { margin: '6px 0 0', color: 'rgba(255,255,255,0.82)', lineHeight: 1.5 };
