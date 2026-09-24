@@ -72,7 +72,7 @@ export default function NewListingPage() {
   const [useDefaultAskingPrice, setUseDefaultAskingPrice] = useState(true);
   const [missingFields, setMissingFields] = useState([]);
   const [errors, setErrors] = useState({});
-  const [editorState, setEditorState] = useState({ clips: [], manifest: null, thumbnailDataUrl: '', overlayText: '' });
+  const [editorState, setEditorState] = useState({ clips: [], manifest: null, thumbnailDataUrl: '', overlayText: '', textPosition: { x: 50, y: 50 }, textSize: 23 });
   const [loadingAccess, setLoadingAccess] = useState(true);
   const titleRef = useRef(null);
 
@@ -261,7 +261,7 @@ export default function NewListingPage() {
         const upload = await supabase.storage.from('listing-media').upload(pathName, clip, { upsert: true });
         if (upload.error) return setMsg(upload.error.message);
         const pub = supabase.storage.from('listing-media').getPublicUrl(pathName).data;
-        mediaRows.push({ listing_id: listing.id, media_type: 'video', url: pub.publicUrl, thumbnail_url: index === 0 ? chosenThumbnailUrl : null, overlay_text: editorState.overlayText || null, sort_order: index });
+        mediaRows.push({ listing_id: listing.id, media_type: 'video', url: pub.publicUrl, thumbnail_url: index === 0 ? chosenThumbnailUrl : null, overlay_text: editorState.overlayText || null, overlay_x: editorState.textPosition.x, overlay_y: editorState.textPosition.y, overlay_size: editorState.textSize, sort_order: index });
       }
       const mediaInsert = await supabase.from('listing_media').insert(mediaRows);
       if (mediaInsert.error) return setMsg(mediaInsert.error.message);
@@ -319,7 +319,7 @@ export default function NewListingPage() {
           <input
             ref={titleRef}
             style={withError('title')}
-            placeholder='Listing title / headline'
+            placeholder='e.g. Profitable Miami car dealership for sale'
             value={form.title}
             onChange={(e) => update('title', e.target.value)}
             required
@@ -330,7 +330,7 @@ export default function NewListingPage() {
         <textarea
           id='listing-description'
           style={{ ...input, minHeight: 118, resize: 'vertical' }}
-          placeholder='Tell buyers what makes this opportunity worth a conversation. Include the important context, strengths, and next step.'
+          placeholder='e.g. Established laundromat with loyal customers, newer machines, and room to grow. Owner is ready to discuss a smooth handover.'
           value={form.description}
           onChange={(e) => update('description', e.target.value)}
         />
@@ -343,7 +343,7 @@ export default function NewListingPage() {
         </label>
         <input
           style={withError('asking_price')}
-          placeholder='Asking price'
+          placeholder='e.g. $450,000'
           value={form.asking_price}
           onChange={(e) => update('asking_price', e.target.value)}
           onBlur={() => {
@@ -366,8 +366,8 @@ export default function NewListingPage() {
         ) : null}
 
         {/* Clips upload directly so publishing works on the static edge deployment. */}
-        <VideoEditor onChange={({ clips, manifest, thumbnailDataUrl, overlayText }) => {
-          setEditorState({ clips: Array.isArray(clips) ? clips : [], manifest: manifest || null, thumbnailDataUrl: thumbnailDataUrl || '', overlayText: overlayText || '' });
+        <VideoEditor onChange={({ clips, manifest, thumbnailDataUrl, overlayText, textPosition, textSize }) => {
+          setEditorState({ clips: Array.isArray(clips) ? clips : [], manifest: manifest || null, thumbnailDataUrl: thumbnailDataUrl || '', overlayText: overlayText || '', textPosition: textPosition || { x: 50, y: 50 }, textSize: textSize || 23 });
           setFiles(Array.isArray(clips) ? clips : []);
         }} />
 

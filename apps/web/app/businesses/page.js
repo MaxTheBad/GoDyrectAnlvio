@@ -277,18 +277,18 @@ export default function MyBusinessesPage() {
         <p style={{ opacity: 0.8 }}>Keep the profile, team, and every opportunity in one professional workspace ({businessCount}).</p>
 
         <form onSubmit={createBusiness} style={createWrap}>
-          <input style={input} placeholder='Business name' value={newBusinessName} onChange={(e) => setNewBusinessName(e.target.value)} required />
+          <input style={input} placeholder='e.g. Sunrise Auto Sales or Main Street Laundromat' value={newBusinessName} onChange={(e) => setNewBusinessName(e.target.value)} required />
           <IndustryPicker id='new-business-industry' value={newBusinessIndustry} onChange={setNewBusinessIndustry} />
           <input style={input} type='date' aria-label='Business started' value={newBusinessStartDate} onChange={(e) => setNewBusinessStartDate(e.target.value)} required />
-          <input style={input} inputMode='decimal' placeholder='Asking price' value={newBusinessAskingPrice} onChange={(e) => setNewBusinessAskingPrice(e.target.value)} onBlur={() => { const raw = parseCurrencyInput(newBusinessAskingPrice); setNewBusinessAskingPrice(raw ? formatCurrency(raw) : ''); }} required />
+          <input style={input} inputMode='decimal' placeholder='e.g. $450,000 asking price' value={newBusinessAskingPrice} onChange={(e) => setNewBusinessAskingPrice(e.target.value)} onBlur={() => { const raw = parseCurrencyInput(newBusinessAskingPrice); setNewBusinessAskingPrice(raw ? formatCurrency(raw) : ''); }} required />
           <select style={input} value={newBusinessRole} onChange={(e) => setNewBusinessRole(e.target.value)}>
             <option>Owner</option><option>CEO</option><option>Founder</option><option>Broker</option><option>Managing Partner</option><option>Authorized Representative</option>
           </select>
-          <input style={input} placeholder='City' value={newBusinessCity} onChange={(e) => setNewBusinessCity(e.target.value)} />
+          <input style={input} placeholder='e.g. Miami' value={newBusinessCity} onChange={(e) => setNewBusinessCity(e.target.value)} />
           <select style={input} value={newBusinessState} onChange={(e) => setNewBusinessState(e.target.value)}>
             {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
-          <input style={input} placeholder='ZIP code' value={newBusinessZip} onChange={(e) => setNewBusinessZip(e.target.value)} />
+          <input style={input} placeholder='e.g. 33101' value={newBusinessZip} onChange={(e) => setNewBusinessZip(e.target.value)} />
           <select style={input} value={newBusinessCountry} onChange={(e) => setNewBusinessCountry(e.target.value)}>
             {countries.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
@@ -360,12 +360,12 @@ export default function MyBusinessesPage() {
                   </div>
                 ) : (
                   <div style={detailsGrid}>
-                    <textarea style={{ ...input, gridColumn: '1 / -1' }} rows={3} placeholder='Business description' value={details.description} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, description: e.target.value } }))} />
+                    <textarea style={{ ...input, gridColumn: '1 / -1' }} rows={3} placeholder='e.g. Family-run car dealership serving Miami for 12 years, or a neighborhood laundromat with 25 machines and steady repeat customers.' value={details.description} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, description: e.target.value } }))} />
                     <IndustryPicker id={`industry-${row.business_id}`} value={details.industry} onChange={(industry) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, industry } }))} />
                     <input style={input} type='date' value={details.start_date} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, start_date: e.target.value } }))} />
                     <input
                       style={input}
-                      placeholder='Annual revenue'
+                      placeholder='e.g. $1,000,000 annual revenue'
                       value={details.annual_revenue}
                       onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, annual_revenue: e.target.value } }))}
                       onBlur={() => setDetailsByBusiness((prev) => {
@@ -375,7 +375,7 @@ export default function MyBusinessesPage() {
                     />
                     <input
                       style={input}
-                      placeholder='Annual profit'
+                      placeholder='e.g. $180,000 annual profit'
                       value={details.annual_profit}
                       onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, annual_profit: e.target.value } }))}
                       onBlur={() => setDetailsByBusiness((prev) => {
@@ -385,7 +385,7 @@ export default function MyBusinessesPage() {
                     />
                     <input
                       style={input}
-                      placeholder='Default asking price'
+                      placeholder='e.g. $450,000 asking price'
                       value={details.default_asking_price}
                       onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, default_asking_price: e.target.value } }))}
                       onBlur={() => setDetailsByBusiness((prev) => {
@@ -393,18 +393,18 @@ export default function MyBusinessesPage() {
                         return { ...prev, [row.business_id]: { ...details, default_asking_price: raw ? formatCurrency(raw) : '' } };
                       })}
                     />
-                    <input style={input} placeholder='City' value={details.city} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, city: e.target.value } }))} />
+                    <input style={input} placeholder='e.g. Miami' value={details.city} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, city: e.target.value } }))} />
                     <select style={input} value={details.state} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, state: e.target.value } }))}>
                       <option value=''>State</option>
                       {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
                     </select>
-                    <input style={input} placeholder='ZIP code' value={details.zip} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, zip: e.target.value } }))} />
+                    <input style={input} placeholder='e.g. 33101' value={details.zip} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, zip: e.target.value } }))} />
                     <select style={input} value={details.country} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, country: e.target.value } }))}>
                       <option value=''>Country</option>
                       {countries.map((c) => <option key={c} value={c}>{c}</option>)}
                     </select>
-                    <input style={input} placeholder='County' value={details.county} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, county: e.target.value } }))} />
-                    <input style={{ ...input, gridColumn: '1 / -1' }} placeholder='Keywords (comma separated)' value={details.keywords} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, keywords: e.target.value } }))} />
+                    <input style={input} placeholder='e.g. Miami-Dade' value={details.county} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, county: e.target.value } }))} />
+                    <input style={{ ...input, gridColumn: '1 / -1' }} placeholder='e.g. car dealership, used cars, service center' value={details.keywords} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, keywords: e.target.value } }))} />
                     <div style={editActions}>
                       <button style={{ ...btnPrimary, flex: 1 }} type='button' onClick={() => saveDetails(row.business_id)}>Save details</button>
                       <button type='button' style={btn} onClick={() => setBusinessEditing(row.business_id, false)}>
