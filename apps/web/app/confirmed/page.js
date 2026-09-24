@@ -5,7 +5,7 @@ export default function ConfirmedPage() {
     <main style={wrap}>
       <div style={card}>
         <a href='/' style={brand} aria-label='GoDyrect Home'>
-          <img src='/logo.png' alt='GoDyrect' style={{ width: 140, height: 40, objectFit: 'contain' }} />
+          <img src='/godyrect-logo-transparent.png' alt='GoDyrect' style={{ width: 164, height: 44, objectFit: 'contain' }} />
         </a>
         <p style={eyebrow}>Confirmed</p>
         <h1 style={title}>Your email is confirmed</h1>

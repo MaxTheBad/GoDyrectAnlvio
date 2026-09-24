@@ -11,7 +11,7 @@ function escapeHtml(value = '') {
 }
 
 function buildEmailHtml({ email, confirmationUrl, siteUrl = 'https://godyrect.com' }) {
-  const logo = `${siteUrl}/logo.png`;
+  const logo = `${siteUrl}/godyrect-logo-transparent.png`;
   const safeEmail = escapeHtml(email);
   const safeConfirmationUrl = escapeHtml(confirmationUrl);
   return `<!doctype html>

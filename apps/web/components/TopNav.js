@@ -11,8 +11,7 @@ export default function TopNav() {
     <header className="site-nav">
       <div className="site-nav__inner">
         <a href='/' className="site-nav__brand" aria-label="GoDyrect home">
-          <span className="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h12M13 7l5 5-5 5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
-          <span className="brand-word">Go<span>Dyrect</span></span>
+          <img className="site-nav__logo" src='/godyrect-logo-transparent.png' alt='GoDyrect' />
         </a>
         {isLanding ? (
           <nav className="site-nav__links" aria-label="Main navigation">

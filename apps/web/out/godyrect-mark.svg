@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="240" viewBox="0 0 480 240" role="img" aria-labelledby="title desc">
+  <title id="title">GoDyrect GD monogram</title>
+  <desc id="desc">A G with a left pointing arrow and a D whose vertical stem points upward.</desc>
+  <g fill="none" stroke="#BAFD5A" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M206 60C190 33 157 22 116 22 53 22 18 63 18 120s35 98 98 98c57 0 90-35 90-84v-14h-82"/>
+    <path d="M110 87 76 120l34 33"/>
+    <path d="M326 218V28"/>
+    <path d="m294 58 32-38 32 38"/>
+    <path d="M365 48c58 0 97 28 97 84s-39 86-97 86h-39"/>
+  </g>
+</svg>
