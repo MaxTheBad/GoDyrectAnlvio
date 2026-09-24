@@ -42,7 +42,7 @@ export default function BottomNav() {
         <HomeIcon />
         <span style={label}>Explore</span>
       </a>
-      <a href={userId ? '/listings/new' : '/login?returnTo=%2Flistings%2Fnew'} style={{ ...item, ...center }}>
+      <a href='/listings/new' style={{ ...item, ...center }}>
         <PlusIcon />
         <span style={{ ...label, color: '#0a1205' }}>Post</span>
       </a>
@@ -50,7 +50,7 @@ export default function BottomNav() {
         <MessageIcon />
         <span style={label}>Messages</span>
       </a>
-      <a href={userId ? '/dashboard' : '/login?returnTo=%2Fdashboard'} style={navItem(['/dashboard', '/profile', '/settings', '/favorites'].some((path) => pathname?.startsWith(path)))} aria-label='Your workspace'>
+      <a href='/dashboard' style={navItem(['/dashboard', '/profile', '/settings', '/favorites'].some((path) => pathname?.startsWith(path)))} aria-label='Your workspace'>
         <PersonIcon />
         <span style={label}>You</span>
       </a>

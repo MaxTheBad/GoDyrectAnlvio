@@ -1,6 +1,7 @@
 import TopNav from '../components/TopNav';
 import Footer from '../components/Footer';
 import MobileBottomNav from '../components/MobileBottomNav';
+import AuthModal from '../components/AuthModal';
 import './globals.css';
 
 export const metadata = {
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
         {children}
         <Footer />
         <MobileBottomNav />
+        <AuthModal />
       </body>
     </html>
   );
