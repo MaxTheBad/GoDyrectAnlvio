@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { US_STATES } from '../lib/us-states';
 import { FeedPost } from '../app/feed/feed-components';
+import { INDUSTRIES } from '../lib/industries';
 
 const sortOptions = ['Newest', 'Oldest', 'Price: Low to High', 'Price: High to Low'];
 const businessTypes = ['established', 'asset_sale', 'real_estate', 'startup'];
@@ -20,8 +21,9 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
   const [viewerId, setViewerId] = useState('');
 
   const [selectedTypes, setSelectedTypes] = useState([]);
+  const [selectedIndustries, setSelectedIndustries] = useState([]);
   const [selectedAges, setSelectedAges] = useState([]);
-  const [country, setCountry] = useState('United States');
+  const [country, setCountry] = useState('');
   const [state, setState] = useState('');
   const [city, setCity] = useState('');
   const [county, setCounty] = useState('');
@@ -196,6 +198,7 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
   }
 
   const countries = useMemo(() => [...new Set(['United States', ...listings.map((l) => l.country).filter(Boolean)])], [listings]);
+  const industryOptions = useMemo(() => [...new Set([...INDUSTRIES, ...Object.values(businessNames).map((business) => business?.industry).filter(Boolean)])].sort(), [businessNames]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -207,12 +210,13 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (selectedTypes.length) count += 1;
+    if (selectedIndustries.length) count += 1;
     if (selectedAges.length) count += 1;
     if (minPrice || maxPrice) count += 1;
-    if (country || state || county || city) count += 1;
+    if ((country && country !== 'United States') || state || county || city) count += 1;
     if (miles) count += 1;
     return count;
-  }, [selectedTypes, selectedAges, minPrice, maxPrice, country, state, county, city, miles]);
+  }, [selectedTypes, selectedIndustries, selectedAges, minPrice, maxPrice, country, state, county, city, miles]);
 
   const filteredListings = useMemo(() => {
     let rows = [...listings];
@@ -228,6 +232,7 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
     }
 
     if (selectedTypes.length) rows = rows.filter((l) => selectedTypes.includes(l.category));
+    if (selectedIndustries.length) rows = rows.filter((l) => selectedIndustries.includes(businessNames[l.business_id]?.industry));
     if (selectedAges.length) {
       rows = rows.filter((l) => {
         const age = Number(l.business_age_years || 0);
@@ -259,7 +264,7 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
     if (sortBy === 'Price: High to Low') rows.sort((a, b) => Number(b.asking_price || 0) - Number(a.asking_price || 0));
 
     return rows;
-  }, [listings, searchQuery, selectedTypes, selectedAges, country, state, city, county, minPrice, maxPrice, sortBy, miles, originLatLng]);
+  }, [listings, searchQuery, selectedTypes, selectedIndustries, selectedAges, businessNames, country, state, city, county, minPrice, maxPrice, sortBy, miles, originLatLng]);
 
   function toggleFilter(key) {
     setOpenFilter((curr) => (curr === key ? null : key));
@@ -426,13 +431,23 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
         ) : null}
 
         {!isMobile || mobileFiltersOpen ? (
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(5, minmax(0, 1fr))', gap: 10, marginTop: isMobile ? 10 : 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10, marginTop: isMobile ? 10 : 0 }}>
             <DropdownFilter title='Business type' isOpen={openFilter === 'type'} onToggle={() => toggleFilter('type')}>
               {businessTypes.map((option) => (
                 <label key={option} style={rowLabel}>
                   <input type='checkbox' checked={selectedTypes.includes(option)} onChange={() => toggleInArray(option, selectedTypes, setSelectedTypes)} /> {prettyCategory(option)}
                 </label>
               ))}
+            </DropdownFilter>
+
+            <DropdownFilter title={selectedIndustries.length ? `Industry · ${selectedIndustries.length}` : 'Industry'} isOpen={openFilter === 'industry'} onToggle={() => toggleFilter('industry')}>
+              <div style={industryFilterList}>
+                {industryOptions.map((option) => (
+                  <label key={option} style={rowLabel}>
+                    <input type='checkbox' checked={selectedIndustries.includes(option)} onChange={() => toggleInArray(option, selectedIndustries, setSelectedIndustries)} /> {option}
+                  </label>
+                ))}
+              </div>
             </DropdownFilter>
 
             <DropdownFilter title='Business age' isOpen={openFilter === 'age'} onToggle={() => toggleFilter('age')}>
@@ -630,6 +645,7 @@ const sortWrap = { display: 'grid', gap: 4 };
 const dropWrap = { background: '#090b0b', border: '1px solid rgba(229,255,242,.11)', borderRadius: 14, padding: 10 };
 const dropBtn = { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid rgba(229,255,242,.11)', borderRadius: 10, background: '#141817', color: '#f4f7f5', padding: '10px 12px', cursor: 'pointer', fontWeight: 600 };
 const rowLabel = { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, color: 'rgba(235,241,255,0.78)' };
+const industryFilterList = { maxHeight: 260, overflowY: 'auto', overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch', paddingRight: 4 };
 const toastStyle = { position: 'fixed', bottom: 92, right: 20, background: '#111827', color: '#fff', padding: '10px 14px', borderRadius: 12, boxShadow: '0 10px 24px rgba(17,24,39,0.25)' };
 const listingCard = { border: '1px solid rgba(94,128,202,0.28)', borderRadius: 18, background: '#0d1010', padding: 14, display: 'grid', gap: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.18)' };
 const listingTopRow = { display: 'grid', gridTemplateColumns: '42px minmax(0, 1fr) auto', gap: 12, alignItems: 'start' };
