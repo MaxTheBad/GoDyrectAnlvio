@@ -12,6 +12,8 @@ function bytesToText(bytes) {
 export async function composeVideo(clips, onStatus = () => {}) {
   if (!clips.length) throw new Error('Add at least one video clip.');
   const ffmpeg = new FFmpeg();
+  let lastLog = '';
+  ffmpeg.on('log', ({ message }) => { lastLog = message || lastLog; });
   try {
     onStatus('Loading the video engine…');
     await ffmpeg.load({
@@ -24,10 +26,15 @@ export async function composeVideo(clips, onStatus = () => {}) {
     const segments = [];
 
     for (let index = 0; index < clips.length; index += 1) {
+      const clip = clips[index]?.file ? clips[index] : { file: clips[index], trimStart: 0, trimEnd: null };
+      const sourceFile = clip.file;
+      const trimStart = Math.max(0, Number(clip.trimStart) || 0);
+      const trimEnd = Number(clip.trimEnd);
+      const trimDuration = Number.isFinite(trimEnd) ? Math.max(0.25, trimEnd - trimStart) : null;
       onStatus(`Preparing clip ${index + 1} of ${clips.length}…`);
-      const input = `source-${index}.${clips[index].name.split('.').pop()?.replace(/[^a-z0-9]/gi, '') || 'mp4'}`;
+      const input = `source-${index}.${sourceFile.name.split('.').pop()?.replace(/[^a-z0-9]/gi, '') || 'mp4'}`;
       const segment = `segment-${index}.mp4`;
-      await ffmpeg.writeFile(input, await fetchFile(clips[index]));
+      await ffmpeg.writeFile(input, await fetchFile(sourceFile));
 
       if (index === 0) {
         await ffmpeg.ffprobe(['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0:s=x', input, '-o', 'video-info.txt']);
@@ -43,12 +50,18 @@ export async function composeVideo(clips, onStatus = () => {}) {
       const fit = `scale=${targetWidth}:${targetHeight}:force_original_aspect_ratio=decrease,pad=${targetWidth}:${targetHeight}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,fps=30`;
       const args = ['-i', input];
       if (!hasAudio) args.push('-f', 'lavfi', '-i', 'anullsrc=channel_layout=stereo:sample_rate=44100');
+      if (trimStart > 0) args.push('-ss', trimStart.toFixed(3));
+      if (trimDuration) args.push('-t', trimDuration.toFixed(3));
       args.push('-map', '0:v:0', '-map', hasAudio ? '0:a:0' : '1:a:0', '-vf', fit,
         '-c:v', 'libx264', '-preset', 'superfast', '-crf', '22', '-pix_fmt', 'yuv420p',
         '-c:a', 'aac', '-b:a', '128k', '-ar', '44100', '-ac', '2');
       if (!hasAudio) args.push('-shortest');
       args.push(segment);
-      if (await ffmpeg.exec(args) !== 0) throw new Error(`Could not process clip ${index + 1}. Try a shorter MP4 video.`);
+      if (await ffmpeg.exec(args) !== 0) {
+        const processingError = new Error(`Could not process clip ${index + 1}. Try a shorter MP4 video.`);
+        processingError.detail = lastLog;
+        throw processingError;
+      }
       segments.push(segment);
       await ffmpeg.deleteFile(input);
     }
