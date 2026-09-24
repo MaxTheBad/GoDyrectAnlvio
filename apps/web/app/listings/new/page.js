@@ -90,7 +90,7 @@ export default function NewListingPage() {
 
         const { data: memberships, error } = await supabase
           .from('business_memberships')
-          .select('business_id,role,businesses(id,name,status,description,category,start_date,annual_revenue,annual_profit,default_asking_price,city,state,country,county,keywords)')
+          .select('business_id,role,businesses(id,name,status,description,industry,category,start_date,annual_revenue,annual_profit,default_asking_price,city,state,country,county,keywords)')
           .eq('user_id', user.id)
           .eq('status', 'approved');
 
@@ -181,7 +181,7 @@ export default function NewListingPage() {
 
     const { data: membership, error: membershipErr } = await supabase
       .from('business_memberships')
-      .select('role,status,businesses(id,name,description,category,start_date,annual_revenue,annual_profit,city,state,country,county,keywords)')
+      .select('role,status,businesses(id,name,description,industry,category,start_date,annual_revenue,annual_profit,city,state,country,county,keywords)')
       .eq('user_id', user.id)
       .eq('business_id', form.business_id)
       .eq('status', 'approved')
@@ -349,7 +349,7 @@ export default function NewListingPage() {
         {selectedBusiness ? (
           <div style={infoBox}>
             <strong>Business details used in this post</strong>
-            <div style={small}>Category: {selectedBusiness.category || '—'}</div>
+            <div style={small}>Industry: {selectedBusiness.industry || '—'}</div>
             <div style={small}>Business age: {computedAge !== null ? `${computedAge} years (from start date)` : '—'}</div>
             <div style={small}>Revenue: {selectedBusiness.annual_revenue != null ? formatCurrency(selectedBusiness.annual_revenue) : '—'} · Profit: {selectedBusiness.annual_profit != null ? formatCurrency(selectedBusiness.annual_profit) : '—'}</div>
             <div style={small}>Location: {[selectedBusiness.city, selectedBusiness.state, selectedBusiness.country].filter(Boolean).join(', ') || '—'}</div>

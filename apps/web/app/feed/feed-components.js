@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { INDUSTRIES } from '../../lib/industries';
 
 export function FeedPost({
   listing,
@@ -302,26 +303,17 @@ export function FeedHero({
             <input id='feed-search' value={searchDraft} onChange={(e) => setSearchDraft(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && onSearch()} placeholder='Coffee shop, Miami, 33101…' />
           </label>
           <label className='market-search__field' htmlFor='feed-industry'>
-            <span>Deal type</span>
+            <span>Industry</span>
             <select id='feed-industry' value={industry} onChange={(e) => setIndustry(e.target.value)}>
-              <option value='all'>Every opportunity</option>
-              <option value='established'>Established business</option>
-              <option value='asset_sale'>Asset sale</option>
-              <option value='real_estate'>Real estate</option>
-              <option value='startup'>Start-up</option>
+              <option value='all'>All industries</option>
+              {INDUSTRIES.map((item) => <option key={item} value={item}>{item}</option>)}
             </select>
           </label>
           <button type='button' onClick={onSearch}>Explore deals <span>↗</span></button>
         </div>
-        <div className='market-chips' aria-label='Quick filters'>
-          {[
-            ['all', 'All deals'],
-            ['established', 'Established'],
-            ['asset_sale', 'Assets'],
-            ['real_estate', 'Real estate'],
-            ['startup', 'Start-ups'],
-          ].map(([value, label]) => (
-            <button key={value} type='button' className={industry === value ? 'is-active' : ''} onClick={() => setIndustry(value)}>{label}</button>
+        <div className='market-chips' aria-label='Browse industries'>
+          {['all', ...INDUSTRIES].map((value) => (
+            <button key={value} type='button' className={industry === value ? 'is-active' : ''} onClick={() => setIndustry(value)}>{value === 'all' ? 'All industries' : value}</button>
           ))}
         </div>
       </div>

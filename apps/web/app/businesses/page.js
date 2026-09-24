@@ -84,6 +84,8 @@ export default function MyBusinessesPage() {
   const [newBusinessZip, setNewBusinessZip] = useState('');
   const [newBusinessCountry, setNewBusinessCountry] = useState('United States');
   const [newBusinessIndustry, setNewBusinessIndustry] = useState('');
+  const [newBusinessStartDate, setNewBusinessStartDate] = useState('');
+  const [newBusinessAskingPrice, setNewBusinessAskingPrice] = useState('');
   const [focusBusinessId, setFocusBusinessId] = useState('');
   const [savedBusinessId, setSavedBusinessId] = useState('');
   const [editingByBusiness, setEditingByBusiness] = useState({});
@@ -178,6 +180,9 @@ export default function MyBusinessesPage() {
     e.preventDefault();
     setMsg('');
     if (!supabase || !userId || !newBusinessName.trim()) return;
+    const price = parseCurrencyInput(newBusinessAskingPrice);
+    if (!newBusinessStartDate) return setMsg('Add the date the business started.');
+    if (!price || Number(price) <= 0) return setMsg('Add a valid asking price.');
 
     const { data: created, error: createErr } = await supabase
       .from('businesses')
@@ -188,6 +193,9 @@ export default function MyBusinessesPage() {
         zip: newBusinessZip || null,
         country: newBusinessCountry || null,
         industry: newBusinessIndustry.trim() || null,
+        category: 'established',
+        start_date: newBusinessStartDate,
+        default_asking_price: Number(price),
         created_by: userId,
         status: 'approved',
       })
@@ -210,6 +218,8 @@ export default function MyBusinessesPage() {
     setNewBusinessCity('');
     setNewBusinessZip('');
     setNewBusinessIndustry('');
+    setNewBusinessStartDate('');
+    setNewBusinessAskingPrice('');
     setMsg('Business created. Fill out details below once, then post without retyping.');
     loadAll();
   }
@@ -269,6 +279,8 @@ export default function MyBusinessesPage() {
         <form onSubmit={createBusiness} style={createWrap}>
           <input style={input} placeholder='Business name' value={newBusinessName} onChange={(e) => setNewBusinessName(e.target.value)} required />
           <IndustryPicker id='new-business-industry' value={newBusinessIndustry} onChange={setNewBusinessIndustry} />
+          <input style={input} type='date' aria-label='Business started' value={newBusinessStartDate} onChange={(e) => setNewBusinessStartDate(e.target.value)} required />
+          <input style={input} inputMode='decimal' placeholder='Asking price' value={newBusinessAskingPrice} onChange={(e) => setNewBusinessAskingPrice(e.target.value)} onBlur={() => { const raw = parseCurrencyInput(newBusinessAskingPrice); setNewBusinessAskingPrice(raw ? formatCurrency(raw) : ''); }} required />
           <select style={input} value={newBusinessRole} onChange={(e) => setNewBusinessRole(e.target.value)}>
             <option>Owner</option><option>CEO</option><option>Founder</option><option>Broker</option><option>Managing Partner</option><option>Authorized Representative</option>
           </select>
@@ -296,7 +308,6 @@ export default function MyBusinessesPage() {
             const isEditing = !!editingByBusiness[row.business_id];
             const summaryRows = [
               ['Description', details.description || 'Not set'],
-              ['Category', details.category === 'asset_sale' ? 'Asset Sales' : details.category === 'real_estate' ? 'Real Estate' : details.category === 'startup' ? 'Start-up Businesses' : 'Established Businesses'],
               ['Industry', details.industry || 'Not set'],
               ['Start date', details.start_date || 'Not set'],
               ['Annual revenue', details.annual_revenue || 'Not set'],
@@ -350,12 +361,6 @@ export default function MyBusinessesPage() {
                 ) : (
                   <div style={detailsGrid}>
                     <textarea style={{ ...input, gridColumn: '1 / -1' }} rows={3} placeholder='Business description' value={details.description} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, description: e.target.value } }))} />
-                    <select style={input} value={details.category} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, category: e.target.value } }))}>
-                      <option value='established'>Established Businesses</option>
-                      <option value='asset_sale'>Asset Sales</option>
-                      <option value='real_estate'>Real Estate</option>
-                      <option value='startup'>Start-up Businesses</option>
-                    </select>
                     <IndustryPicker id={`industry-${row.business_id}`} value={details.industry} onChange={(industry) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, industry } }))} />
                     <input style={input} type='date' value={details.start_date} onChange={(e) => setDetailsByBusiness((prev) => ({ ...prev, [row.business_id]: { ...details, start_date: e.target.value } }))} />
                     <input

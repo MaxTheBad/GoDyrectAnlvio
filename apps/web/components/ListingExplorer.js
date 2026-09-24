@@ -7,7 +7,6 @@ import { FeedPost } from '../app/feed/feed-components';
 import { INDUSTRIES } from '../lib/industries';
 
 const sortOptions = ['Newest', 'Oldest', 'Price: Low to High', 'Price: High to Low'];
-const businessTypes = ['established', 'asset_sale', 'real_estate', 'startup'];
 const ageOptions = ['0-1 years', '2-5 years', '6-10 years', '10+ years'];
 const milesOptions = ['5', '10', '25', '50', '100', '250'];
 
@@ -20,7 +19,6 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
   const [loadingListings, setLoadingListings] = useState(true);
   const [viewerId, setViewerId] = useState('');
 
-  const [selectedTypes, setSelectedTypes] = useState([]);
   const [selectedIndustries, setSelectedIndustries] = useState([]);
   const [selectedAges, setSelectedAges] = useState([]);
   const [country, setCountry] = useState('');
@@ -154,7 +152,9 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
 
   useEffect(() => {
     if (initialIndustry && initialIndustry !== 'all') {
-      setSelectedTypes([initialIndustry].filter(Boolean));
+      setSelectedIndustries([initialIndustry].filter(Boolean));
+    } else {
+      setSelectedIndustries([]);
     }
   }, [initialIndustry]);
 
@@ -209,14 +209,13 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (selectedTypes.length) count += 1;
     if (selectedIndustries.length) count += 1;
     if (selectedAges.length) count += 1;
     if (minPrice || maxPrice) count += 1;
     if ((country && country !== 'United States') || state || county || city) count += 1;
     if (miles) count += 1;
     return count;
-  }, [selectedTypes, selectedIndustries, selectedAges, minPrice, maxPrice, country, state, county, city, miles]);
+  }, [selectedIndustries, selectedAges, minPrice, maxPrice, country, state, county, city, miles]);
 
   const filteredListings = useMemo(() => {
     let rows = [...listings];
@@ -231,7 +230,6 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
       });
     }
 
-    if (selectedTypes.length) rows = rows.filter((l) => selectedTypes.includes(l.category));
     if (selectedIndustries.length) rows = rows.filter((l) => selectedIndustries.includes(businessNames[l.business_id]?.industry));
     if (selectedAges.length) {
       rows = rows.filter((l) => {
@@ -264,7 +262,7 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
     if (sortBy === 'Price: High to Low') rows.sort((a, b) => Number(b.asking_price || 0) - Number(a.asking_price || 0));
 
     return rows;
-  }, [listings, searchQuery, selectedTypes, selectedIndustries, selectedAges, businessNames, country, state, city, county, minPrice, maxPrice, sortBy, miles, originLatLng]);
+  }, [listings, searchQuery, selectedIndustries, selectedAges, businessNames, country, state, city, county, minPrice, maxPrice, sortBy, miles, originLatLng]);
 
   function toggleFilter(key) {
     setOpenFilter((curr) => (curr === key ? null : key));
@@ -432,14 +430,6 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
 
         {!isMobile || mobileFiltersOpen ? (
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10, marginTop: isMobile ? 10 : 0 }}>
-            <DropdownFilter title='Business type' isOpen={openFilter === 'type'} onToggle={() => toggleFilter('type')}>
-              {businessTypes.map((option) => (
-                <label key={option} style={rowLabel}>
-                  <input type='checkbox' checked={selectedTypes.includes(option)} onChange={() => toggleInArray(option, selectedTypes, setSelectedTypes)} /> {prettyCategory(option)}
-                </label>
-              ))}
-            </DropdownFilter>
-
             <DropdownFilter title={selectedIndustries.length ? `Industry · ${selectedIndustries.length}` : 'Industry'} isOpen={openFilter === 'industry'} onToggle={() => toggleFilter('industry')}>
               <div style={industryFilterList}>
                 {industryOptions.map((option) => (
