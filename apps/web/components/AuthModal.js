@@ -56,11 +56,13 @@ export default function AuthModal() {
     if (!supabase) return setMessage('Sign-in is temporarily unavailable.');
     if (mode === 'signup' && !agree) return setMessage('Please agree to Privacy & Terms before continuing.');
     setBusy(true); setMessage('');
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}${intent}` },
+      options: { redirectTo: `${window.location.origin}${intent}`, skipBrowserRedirect: true },
     });
     if (error) { setBusy(false); setMessage(error.message); }
+    else if (data?.url) window.location.assign(data.url);
+    else { setBusy(false); setMessage('Google sign-in could not start. Please try again.'); }
   }
 
   async function submit(event) {
@@ -87,7 +89,7 @@ export default function AuthModal() {
       <div className='auth-divider' aria-hidden='true'><span />or<span /></div>
       <form className='auth-modal__form' onSubmit={submit}>
         <input type='email' autoComplete='email' value={email} onChange={(event) => setEmail(event.target.value)} placeholder='Email address' required />
-        <input type='password' autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} value={password} onChange={(event) => setPassword(event.target.value)} placeholder='Password' minLength={8} required />
+        <input type='password' autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} value={password} onChange={(event) => setPassword(event.target.value)} placeholder='Password' minLength={mode === 'signup' ? 8 : undefined} required />
         {mode === 'signup' ? <label className='check-row'><input type='checkbox' checked={agree} onChange={(event) => setAgree(event.target.checked)} /><span>I agree to the <a href='/legal/privacy'>Privacy & Terms</a></span></label> : null}
         <button className='auth-submit' type='submit' disabled={busy}>{busy ? 'Working…' : mode === 'signin' ? 'Sign in →' : 'Create account →'}</button>
       </form>

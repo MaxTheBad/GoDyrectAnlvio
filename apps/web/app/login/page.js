@@ -39,14 +39,15 @@ export default function LoginPage() {
     setSubmitting(true);
     setMsg('');
     const safeReturnTo = returnTo?.startsWith('/') ? returnTo : '/dashboard';
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}${safeReturnTo}` },
-    });
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: `${window.location.origin}${safeReturnTo}`, skipBrowserRedirect: true },
+      });
     if (error) {
       setSubmitting(false);
       setMsg(error.message);
-    }
+    } else if (data?.url) window.location.assign(data.url);
+    else { setSubmitting(false); setMsg('Google sign-in could not start. Please try again.'); }
   }
 
   return (

@@ -72,10 +72,11 @@ export default function SignupPage() {
     if (!agree) return setMsg('Please agree to the policy before continuing with Google.');
     setSubmitting(true);
     setMsg('');
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/dashboard`,
+        skipBrowserRedirect: true,
         data: {
           full_name: fullName || undefined,
           phone: phone || undefined,
@@ -88,7 +89,8 @@ export default function SignupPage() {
     if (error) {
       setSubmitting(false);
       setMsg(error.message);
-    }
+    } else if (data?.url) window.location.assign(data.url);
+    else { setSubmitting(false); setMsg('Google sign-in could not start. Please try again.'); }
   }
 
   async function resendConfirmation() {
