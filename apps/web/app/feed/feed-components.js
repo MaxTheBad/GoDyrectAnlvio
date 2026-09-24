@@ -302,20 +302,9 @@ export function FeedHero({
             <span>What are you looking for?</span>
             <input id='feed-search' value={searchDraft} onChange={(e) => setSearchDraft(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && onSearch()} placeholder='Coffee shop, Miami, 33101…' />
           </label>
-          <label className='market-search__field' htmlFor='feed-industry'>
-            <span>Industry</span>
-            <select id='feed-industry' value={industry} onChange={(e) => setIndustry(e.target.value)}>
-              <option value='all'>All industries</option>
-              {INDUSTRIES.map((item) => <option key={item} value={item}>{item}</option>)}
-            </select>
-          </label>
           <button type='button' onClick={onSearch}>Explore deals <span>↗</span></button>
         </div>
-        <div className='market-chips' aria-label='Browse industries'>
-          {['all', ...INDUSTRIES].map((value) => (
-            <button key={value} type='button' className={industry === value ? 'is-active' : ''} onClick={() => setIndustry(value)}>{value === 'all' ? 'All industries' : value}</button>
-          ))}
-        </div>
+        <p className='market-hero__filter-note'>Choose one or more industries in the filters below.</p>
       </div>
     </section>
   );

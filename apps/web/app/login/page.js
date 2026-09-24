@@ -41,7 +41,7 @@ export default function LoginPage() {
     const safeReturnTo = returnTo?.startsWith('/') ? returnTo : '/dashboard';
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: `${window.location.origin}${safeReturnTo}`, skipBrowserRedirect: true },
+        options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeReturnTo)}`, skipBrowserRedirect: true },
       });
     if (error) {
       setSubmitting(false);

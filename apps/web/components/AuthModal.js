@@ -58,7 +58,9 @@ export default function AuthModal() {
     setBusy(true); setMessage('');
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}${intent}`, skipBrowserRedirect: true },
+      // Complete the PKCE exchange on a dedicated page before sending someone
+      // back to the part of the product they were trying to use.
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(intent)}`, skipBrowserRedirect: true },
     });
     if (error) { setBusy(false); setMessage(error.message); }
     else if (data?.url) window.location.assign(data.url);
