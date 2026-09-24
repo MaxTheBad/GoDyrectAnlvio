@@ -66,6 +66,31 @@ export default function SignupPage() {
     setSubmitting(false);
   }
 
+  async function signUpWithGoogle() {
+    setErrors({});
+    if (!supabase) return setMsg('Supabase env vars are missing.');
+    if (!agree) return setMsg('Please agree to the policy before continuing with Google.');
+    setSubmitting(true);
+    setMsg('');
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+        data: {
+          full_name: fullName || undefined,
+          phone: phone || undefined,
+          role,
+          marketing_opt_in: marketingOptIn,
+          terms_accepted_at: new Date().toISOString(),
+        },
+      },
+    });
+    if (error) {
+      setSubmitting(false);
+      setMsg(error.message);
+    }
+  }
+
   async function resendConfirmation() {
     if (!supabase || !email || cooldown > 0) return;
     const { error } = await supabase.auth.resend({ type: 'signup', email });
@@ -144,6 +169,8 @@ export default function SignupPage() {
             </label>
 
             <button className='auth-submit' type='submit' disabled={submitting}>{submitting ? 'Creating account…' : 'Create account →'}</button>
+            <div className='auth-divider' aria-hidden='true'><span />or<span /></div>
+            <button className='auth-secondary' type='button' onClick={signUpWithGoogle} disabled={submitting}>Continue with Google</button>
             {msg ? <p className='auth-message'>{msg}</p> : null}
             <p className='auth-switch'>Already have an account? <a href='/login'>Sign in</a></p>
           </form>

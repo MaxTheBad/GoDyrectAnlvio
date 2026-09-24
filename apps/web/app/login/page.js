@@ -34,6 +34,21 @@ export default function LoginPage() {
     }
   }
 
+  async function signInWithGoogle() {
+    if (!supabase) return setMsg('Supabase env vars are missing.');
+    setSubmitting(true);
+    setMsg('');
+    const safeReturnTo = returnTo?.startsWith('/') ? returnTo : '/dashboard';
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}${safeReturnTo}` },
+    });
+    if (error) {
+      setSubmitting(false);
+      setMsg(error.message);
+    }
+  }
+
   return (
     <main className='auth-shell'>
       <section className='auth-story'>
@@ -49,6 +64,8 @@ export default function LoginPage() {
         <label>Email address<input placeholder='you@company.com' type='email' name='email' autoComplete='email' value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
         <label>Password<input placeholder='Your password' type='password' name='password' id='login-password' autoComplete='current-password' value={password} onChange={(e) => setPassword(e.target.value)} required /></label>
         <button className='auth-submit' type='submit' disabled={submitting}>{submitting ? 'Signing in…' : 'Sign in →'}</button>
+        <div className='auth-divider' aria-hidden='true'><span />or<span /></div>
+        <button className='auth-secondary' type='button' onClick={signInWithGoogle} disabled={submitting}>Continue with Google</button>
         {msg ? <p className='auth-message' role='status'>{msg}</p> : null}
         <p className='auth-switch'>New here? <a href='/signup'>Create an account</a></p>
       </form>
