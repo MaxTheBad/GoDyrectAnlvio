@@ -25,16 +25,29 @@ export function FeedPost({
   const videoRef = useRef(null);
   const [showActions, setShowActions] = useState(false);
   const [mediaProgress, setMediaProgress] = useState(0);
-  const [showPlayer, setShowPlayer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const poster = activeMedia?.thumbnail_url || listing?.thumbnail_url || '';
 
   useEffect(() => {
     setShowActions(false);
     setMediaProgress(0);
-    setShowPlayer(false);
     setIsPlaying(false);
+    setIsMuted(false);
   }, [activeMedia?.url]);
+
+  function togglePlayback() {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) void video.play().catch(() => {});
+    else video.pause();
+  }
+
+  function openFullscreen() {
+    const frame = videoRef.current?.parentElement;
+    if (frame?.requestFullscreen) void frame.requestFullscreen().catch(() => {});
+    else if (videoRef.current?.webkitEnterFullscreen) videoRef.current.webkitEnterFullscreen();
+  }
 
   return (
     <article className='feed-post' style={postShell}>
@@ -89,18 +102,9 @@ export function FeedPost({
                 src={activeMedia.url}
                 poster={poster || undefined}
                 playsInline
-                controls={isPlaying}
+                controls={false}
                 preload='metadata'
-                onClick={() => {
-                  const video = videoRef.current;
-                  if (!video) return;
-                  if (video.paused) {
-                    void video.play().then(() => setIsPlaying(true)).catch(() => {});
-                  } else {
-                    video.pause();
-                    setIsPlaying(false);
-                  }
-                }}
+                muted={isMuted}
                 onTimeUpdate={() => {
                   const video = videoRef.current;
                   if (!video?.duration) return;
@@ -115,24 +119,12 @@ export function FeedPost({
                   setIsPlaying(true);
                 }}
                 onPause={() => setIsPlaying(false)}
+                onEnded={() => setIsPlaying(false)}
                 style={{
                   ...heroMediaAsset,
-                  pointerEvents: isPlaying ? 'auto' : 'none',
-                  opacity: 1,
+                  pointerEvents: 'none',
                 }}
               />
-              <button
-                type='button'
-                aria-label='Play video'
-                onClick={() => {
-                  const video = videoRef.current;
-                  if (!video) return;
-                  void video.play().then(() => setIsPlaying(true)).catch(() => {});
-                }}
-                style={{ ...videoCoverButton, opacity: isPlaying ? 0 : 1, pointerEvents: isPlaying ? 'none' : 'auto' }}
-              >
-                <div style={videoCoverPill}>▶</div>
-              </button>
             </>
           ) : (
             <img src={activeMedia.thumbnail_url || activeMedia.url} alt='listing media' style={heroMediaAsset} />
@@ -154,16 +146,15 @@ export function FeedPost({
               style={videoProgress}
             />
           ) : null}
-          {activeMedia.media_type === 'video' ? (
-            <button
-              type='button'
-              aria-label='Open full screen viewer'
-              style={fullscreenBtn}
-              onClick={() => setShowPlayer(true)}
-            >
-              ⤢
+          {activeMedia.media_type === 'video' ? <div style={videoControls}>
+            <button type='button' aria-label={isPlaying ? 'Pause video' : 'Play video'} onClick={togglePlayback} style={videoControlButton}>
+              {isPlaying ? <svg viewBox='0 0 24 24' aria-hidden='true' width='18' height='18' fill='currentColor'><rect x='5' y='4' width='5' height='16' rx='1' /><rect x='14' y='4' width='5' height='16' rx='1' /></svg> : <svg viewBox='0 0 24 24' aria-hidden='true' width='18' height='18' fill='currentColor'><path d='M7 4.5v15l12-7.5L7 4.5Z' /></svg>}
             </button>
-          ) : null}
+            <button type='button' aria-label={isMuted ? 'Unmute video' : 'Mute video'} onClick={() => setIsMuted((value) => !value)} style={videoControlButton}>
+              <svg viewBox='0 0 24 24' aria-hidden='true' width='18' height='18' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='M4 9v6h4l5 4V5L8 9H4Z' />{isMuted ? <path d='m17 9 5 6m0-6-5 6' /> : <><path d='M17 9a4 4 0 0 1 0 6' /><path d='M20 6a8 8 0 0 1 0 12' /></>}</svg>
+            </button>
+            <button type='button' aria-label='Full screen' onClick={openFullscreen} style={videoControlButton}><svg viewBox='0 0 24 24' aria-hidden='true' width='18' height='18' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round'><path d='M9 4H4v5m11-5h5v5M4 15v5h5m11-5v5h-5' /></svg></button>
+          </div> : null}
           {mediaCount > 1 ? (
             <>
               <button type='button' aria-label='Previous media' style={carouselArrowLeft} onClick={onPrev}>‹</button>
@@ -180,26 +171,6 @@ export function FeedPost({
                 ))}
               </div>
             </>
-          ) : null}
-          {showPlayer ? (
-            <div style={playerModal} onClick={() => setShowPlayer(false)} role='presentation'>
-              <div style={playerModalInner} onClick={(e) => e.stopPropagation()} role='presentation'>
-                <button type='button' aria-label='Close viewer' style={closePlayerBtn} onClick={() => setShowPlayer(false)}>×</button>
-                {activeMedia.media_type === 'video' ? (
-                  <video
-                    src={activeMedia.url}
-                    poster={poster || undefined}
-                    playsInline
-                    controls
-                    autoPlay
-                    style={playerMedia}
-                  />
-                ) : (
-                  <img src={activeMedia.thumbnail_url || activeMedia.url} alt='listing media' style={playerMedia} />
-                )}
-                {activeMedia.overlay_text ? <div style={{ ...videoTextOverlay, left: `${activeMedia.overlay_x ?? 50}%`, top: `${activeMedia.overlay_y ?? 50}%`, fontSize: activeMedia.overlay_size ?? 23 }}>{activeMedia.overlay_text}</div> : null}
-              </div>
-            </div>
           ) : null}
         </div>
       ) : null}
@@ -360,8 +331,6 @@ const heroMediaFrame = {
   background: '#070909',
 };
 const heroMediaAsset = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: '#070909' };
-const videoCoverButton = { position: 'absolute', inset: 0, zIndex: 2, border: 0, padding: '0 0 30px 16px', margin: 0, background: 'transparent', display: 'grid', alignItems: 'end', justifyItems: 'start', cursor: 'pointer' };
-const videoCoverPill = { width: 52, height: 52, display: 'grid', placeItems: 'center', borderRadius: 999, background: 'rgba(5,9,7,.82)', border: '1px solid rgba(185,255,90,.65)', color: '#b9ff5a', fontWeight: 800, fontSize: 22, paddingLeft: 4, boxShadow: '0 10px 30px rgba(0,0,0,.35)' };
 const videoTextOverlay = { position: 'absolute', maxWidth: '76%', transform: 'translate(-50%,-50%)', zIndex: 3, pointerEvents: 'none', textAlign: 'center', color: '#fff', lineHeight: 1.15, fontWeight: 800, textShadow: '0 2px 12px rgba(0,0,0,.85)', overflowWrap: 'anywhere' };
 const carouselArrowBase = { position: 'absolute', top: '50%', transform: 'translateY(-50%)', width: 30, height: 30, borderRadius: 999, border: 0, background: 'rgba(255,255,255,0.88)', color: '#111827', fontSize: 24, lineHeight: '30px', display: 'grid', placeItems: 'center', cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.18)' };
 const carouselArrowLeft = { ...carouselArrowBase, left: 10 };
@@ -370,11 +339,8 @@ const carouselDots = { position: 'absolute', left: '50%', bottom: 10, transform:
 const dot = { width: 7, height: 7, borderRadius: 999, border: 0, background: 'rgba(255,255,255,0.45)', padding: 0, cursor: 'pointer' };
 const activeDot = { ...dot, background: '#fff', width: 8, height: 8 };
 const videoProgress = { position: 'absolute', left: 14, right: 14, bottom: 8, width: 'calc(100% - 28px)', accentColor: '#b9ff5a', zIndex: 3 };
-const fullscreenBtn = { position: 'absolute', right: 12, bottom: 30, width: 34, height: 34, borderRadius: 999, border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(15,23,42,0.72)', color: '#fff', cursor: 'pointer', zIndex: 4, display: 'grid', placeItems: 'center', fontSize: 18, lineHeight: 1 };
-const playerModal = { position: 'fixed', inset: 0, background: 'rgba(3,7,18,0.85)', display: 'grid', placeItems: 'center', zIndex: 50, padding: 16 };
-const playerModalInner = { position: 'relative', width: 'min(96vw, 720px)', borderRadius: 20, overflow: 'hidden', background: '#050a1a', border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 30px 90px rgba(0,0,0,0.55)' };
-const closePlayerBtn = { position: 'absolute', right: 10, top: 10, zIndex: 2, width: 34, height: 34, borderRadius: 999, border: 0, background: 'rgba(15,23,42,0.82)', color: '#fff', cursor: 'pointer', fontSize: 22, lineHeight: 1 };
-const playerMedia = { width: '100%', height: 'auto', display: 'block', background: '#050a1a' };
+const videoControls = { position: 'absolute', right: 12, bottom: 34, zIndex: 4, display: 'flex', gap: 6 };
+const videoControlButton = { width: 38, height: 38, borderRadius: 999, border: '1px solid rgba(255,255,255,.2)', background: 'rgba(8,12,10,.76)', color: '#fff', display: 'grid', placeItems: 'center', padding: 0, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' };
 const postDetails = { display: 'grid', gap: 8, padding: '15px 16px 18px', background: '#101413' };
 const postDetailsTop = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 };
 const postType = { color: '#b9ff5a', fontSize: 11, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase' };
