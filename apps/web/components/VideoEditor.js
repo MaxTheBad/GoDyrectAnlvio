@@ -60,12 +60,17 @@ export default function VideoEditor({ onChange }) {
   const timelineRef = useRef(null);
   const textDragRef = useRef(false);
   const timelineDragRef = useRef('');
+  const pendingSeekRef = useRef(null);
+  const continuePlaybackRef = useRef(false);
   const urlsRef = useRef(new Set());
   const onChangeRef = useRef(onChange);
 
   const activeClip = clips.find((clip) => clip.id === activeId) || clips[0];
   const activeIndex = clips.findIndex((clip) => clip.id === activeClip?.id);
   const totalTrimmedDuration = useMemo(() => clips.reduce((sum, clip) => sum + Math.max(0, (clip.trimEnd || clip.duration || 0) - (clip.trimStart || 0)), 0), [clips]);
+  const rawTotalDuration = useMemo(() => clips.reduce((sum, clip) => sum + (clip.duration || 0), 0), [clips]);
+  const activeOffset = useMemo(() => clips.slice(0, Math.max(activeIndex, 0)).reduce((sum, clip) => sum + (clip.duration || 0), 0), [clips, activeIndex]);
+  const trimmedElapsed = useMemo(() => clips.slice(0, Math.max(activeIndex, 0)).reduce((sum, clip) => sum + Math.max(0, clip.trimEnd - clip.trimStart), 0) + Math.max(0, playhead - (activeClip?.trimStart || 0)), [clips, activeIndex, activeClip?.trimStart, playhead]);
 
   useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
   useEffect(() => {
@@ -77,10 +82,16 @@ export default function VideoEditor({ onChange }) {
 
   useEffect(() => {
     if (!activeClip || !previewRef.current || !activeClip.duration) return;
-    const nextTime = Math.min(Math.max(activeClip.trimStart, 0), activeClip.trimEnd || activeClip.duration);
+    const requestedTime = pendingSeekRef.current;
+    pendingSeekRef.current = null;
+    const nextTime = requestedTime == null ? activeClip.trimStart : Math.max(activeClip.trimStart, Math.min(activeClip.trimEnd, requestedTime));
     previewRef.current.currentTime = nextTime;
     setPlayhead(nextTime);
     setPlaying(false);
+    if (continuePlaybackRef.current) {
+      continuePlaybackRef.current = false;
+      requestAnimationFrame(() => { void previewRef.current?.play(); });
+    }
   }, [activeClip?.id]);
 
   function updateClip(id, patch) {
@@ -134,23 +145,37 @@ export default function VideoEditor({ onChange }) {
   }
 
   function positionFromPointer(event) {
-    if (!activeClip?.duration || !timelineRef.current) return 0;
+    if (!rawTotalDuration || !timelineRef.current) return 0;
     const rect = timelineRef.current.getBoundingClientRect();
-    return Math.max(0, Math.min(activeClip.duration, ((event.clientX - rect.left) / rect.width) * activeClip.duration));
+    return Math.max(0, Math.min(rawTotalDuration, ((event.clientX - rect.left) / rect.width) * rawTotalDuration));
   }
 
   function applyTimelinePointer(event) {
     if (!activeClip || !timelineDragRef.current) return;
-    const raw = positionFromPointer(event);
-    let value = raw;
+    const globalTime = positionFromPointer(event);
+    let value = globalTime - activeOffset;
+    let canSeekCurrent = true;
     if (timelineDragRef.current === 'start') {
-      value = Math.min(raw, activeClip.trimEnd - MIN_TRIM_SECONDS);
+      value = Math.max(0, Math.min(value, activeClip.trimEnd - MIN_TRIM_SECONDS));
       updateClip(activeClip.id, { trimStart: value });
     } else if (timelineDragRef.current === 'end') {
-      value = Math.max(raw, activeClip.trimStart + MIN_TRIM_SECONDS);
+      value = Math.min(activeClip.duration, Math.max(value, activeClip.trimStart + MIN_TRIM_SECONDS));
       updateClip(activeClip.id, { trimEnd: value });
-    } else value = Math.max(activeClip.trimStart, Math.min(activeClip.trimEnd, raw));
-    if (previewRef.current) previewRef.current.currentTime = value;
+    } else {
+      let cursor = 0;
+      const target = clips.find((clip) => {
+        const inside = globalTime <= cursor + clip.duration;
+        if (!inside) cursor += clip.duration;
+        return inside;
+      }) || clips[clips.length - 1];
+      value = Math.max(target.trimStart, Math.min(target.trimEnd, globalTime - cursor));
+      if (target.id !== activeClip.id) {
+        pendingSeekRef.current = value;
+        setActiveId(target.id);
+        canSeekCurrent = false;
+      }
+    }
+    if (previewRef.current && canSeekCurrent) previewRef.current.currentTime = value;
     setPlayhead(value);
   }
 
@@ -158,6 +183,8 @@ export default function VideoEditor({ onChange }) {
     event.preventDefault();
     event.stopPropagation();
     timelineDragRef.current = mode;
+    continuePlaybackRef.current = false;
+    previewRef.current?.pause();
     event.currentTarget.setPointerCapture(event.pointerId);
     applyTimelinePointer(event);
   }
@@ -173,12 +200,12 @@ export default function VideoEditor({ onChange }) {
     if (video.paused) {
       if (video.currentTime < activeClip.trimStart || video.currentTime >= activeClip.trimEnd) video.currentTime = activeClip.trimStart;
       void video.play();
-    } else video.pause();
+    } else { continuePlaybackRef.current = false; video.pause(); }
   }
 
-  const startPct = activeClip?.duration ? (activeClip.trimStart / activeClip.duration) * 100 : 0;
-  const endPct = activeClip?.duration ? (activeClip.trimEnd / activeClip.duration) * 100 : 100;
-  const playheadPct = activeClip?.duration ? (playhead / activeClip.duration) * 100 : 0;
+  const startPct = rawTotalDuration ? ((activeOffset + (activeClip?.trimStart || 0)) / rawTotalDuration) * 100 : 0;
+  const endPct = rawTotalDuration ? ((activeOffset + (activeClip?.trimEnd || 0)) / rawTotalDuration) * 100 : 100;
+  const playheadPct = rawTotalDuration ? ((activeOffset + playhead) / rawTotalDuration) * 100 : 0;
 
   return <section style={shell}>
     <header style={heading}>
@@ -190,32 +217,43 @@ export default function VideoEditor({ onChange }) {
 
     {!activeClip ? <button type='button' onClick={() => inputRef.current?.click()} style={empty}><strong>Add your first clip</strong><span>Choose a video or capture one now</span></button> : <>
       <div style={previewWrap}>
-        <video ref={previewRef} key={activeClip.id} src={activeClip.url} playsInline preload='auto' onClick={togglePlayback} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onTimeUpdate={(event) => { const current = event.currentTarget; if (current.currentTime >= activeClip.trimEnd) { current.pause(); current.currentTime = activeClip.trimStart; } setPlayhead(current.currentTime); }} style={video} />
+        <video ref={previewRef} key={activeClip.id} src={activeClip.url} playsInline preload='auto' onClick={togglePlayback} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onTimeUpdate={(event) => {
+          const current = event.currentTarget;
+          if (current.currentTime >= activeClip.trimEnd) {
+            current.pause();
+            const nextClip = clips[activeIndex + 1];
+            if (nextClip) {
+              pendingSeekRef.current = nextClip.trimStart;
+              continuePlaybackRef.current = true;
+              setActiveId(nextClip.id);
+            } else current.currentTime = activeClip.trimStart;
+          }
+          setPlayhead(current.currentTime);
+        }} style={video} />
         {activeClip.loading ? <div style={loadingShade}>Preparing timeline…</div> : null}
         {overlayText ? <span role='button' tabIndex={0} aria-label='Drag text to reposition' onPointerDown={(event) => { event.preventDefault(); textDragRef.current = true; event.currentTarget.setPointerCapture(event.pointerId); moveText(event); }} onPointerMove={moveText} onPointerUp={() => { textDragRef.current = false; }} onPointerCancel={() => { textDragRef.current = false; }} style={{ ...previewText, left: `${textPosition.x}%`, top: `${textPosition.y}%`, fontSize: textSize }}>{overlayText}</span> : null}
-        <div style={previewControls}><span>{formatTime(playhead)} / {formatTime(activeClip.trimEnd)}</span><button type='button' onClick={togglePlayback} style={playButton}>{playing ? 'Ⅱ' : '▶'}</button></div>
+        <div style={previewControls}><span>{formatTime(trimmedElapsed)} / {formatTime(totalTrimmedDuration)}</span><button type='button' onClick={togglePlayback} style={playButton}>{playing ? 'Ⅱ' : '▶'}</button></div>
       </div>
 
-      <div style={sequenceHeader}><strong>Sequence</strong><span>{clips.length} clip{clips.length === 1 ? '' : 's'} · {totalTrimmedDuration.toFixed(1)}s final</span></div>
-      <div style={sequenceRail}>
-        {clips.map((clip, index) => <button key={clip.id} type='button' onClick={() => setActiveId(clip.id)} style={{ ...sequenceClip, ...(clip.id === activeClip.id ? sequenceClipActive : {}) }}>
-          {clip.frames[4] ? <img src={clip.frames[4]} alt='' style={sequenceImage} /> : <span style={sequencePlaceholder}>{clip.loading ? '…' : '!'}</span>}
-          <span style={sequenceNumber}>{index + 1}</span><span style={sequenceDuration}>{clip.duration ? `${Math.max(0, clip.trimEnd - clip.trimStart).toFixed(1)}s` : 'Loading'}</span>
-        </button>)}
-        <button type='button' aria-label='Add another clip' onClick={() => inputRef.current?.click()} style={sequenceAdd}>＋</button>
-      </div>
-
-      <div style={timelineHeader}><span>{formatTime(activeClip.trimStart)}</span><strong>Drag to scrub · pull edges to trim</strong><span>{formatTime(activeClip.trimEnd)}</span></div>
+      <div style={timelineHeader}><span><strong>Timeline</strong> · {clips.length} clip{clips.length === 1 ? '' : 's'}</span><span>{totalTrimmedDuration.toFixed(1)}s final</span></div>
+      <div style={timelineHint}>Tap a section to select · drag to scrub · pull its edges to trim</div>
       <div ref={timelineRef} style={timeline} onPointerDown={(event) => startTimelineDrag(event, 'scrub')} onPointerMove={applyTimelinePointer} onPointerUp={stopTimelineDrag} onPointerCancel={stopTimelineDrag}>
-        <div style={frames}>{activeClip.frames.map((frame, index) => <img key={index} src={frame} alt='' draggable='false' style={frameImage} />)}</div>
-        <div style={{ ...trimShade, left: 0, width: `${startPct}%` }} /><div style={{ ...trimShade, left: `${endPct}%`, right: 0 }} />
+        <div style={frames}>{clips.map((clip, clipIndex) => <div key={clip.id} style={{ ...timelineClip, width: `${rawTotalDuration ? (clip.duration / rawTotalDuration) * 100 : 100 / clips.length}%`, ...(clip.id === activeClip.id ? timelineClipActive : {}) }}>
+          <div style={clipFrames}>{clip.frames.map((frame, frameIndex) => <img key={frameIndex} src={frame} alt='' draggable='false' style={frameImage} />)}</div>
+          <div style={{ ...clipInnerShade, left: 0, width: `${clip.duration ? (clip.trimStart / clip.duration) * 100 : 0}%` }} />
+          <div style={{ ...clipInnerShade, right: 0, width: `${clip.duration ? ((clip.duration - clip.trimEnd) / clip.duration) * 100 : 0}%` }} />
+          <span style={timelineClipLabel}>{clipIndex + 1}</span>
+        </div>)}</div>
+        <div style={{ ...trimShade, left: `${rawTotalDuration ? (activeOffset / rawTotalDuration) * 100 : 0}%`, width: `${Math.max(0, startPct - (rawTotalDuration ? (activeOffset / rawTotalDuration) * 100 : 0))}%` }} />
+        <div style={{ ...trimShade, left: `${endPct}%`, width: `${rawTotalDuration ? ((activeClip.duration - activeClip.trimEnd) / rawTotalDuration) * 100 : 0}%` }} />
         <div style={{ ...trimSelection, left: `${startPct}%`, width: `${Math.max(0, endPct - startPct)}%` }} />
         <div aria-label='Trim start' style={{ ...trimHandle, left: `${startPct}%`, transform: 'none' }} onPointerDown={(event) => startTimelineDrag(event, 'start')} onPointerMove={applyTimelinePointer} onPointerUp={stopTimelineDrag} onPointerCancel={stopTimelineDrag}><span>‹</span></div>
         <div aria-label='Trim end' style={{ ...trimHandle, left: `${endPct}%`, transform: 'translateX(-100%)' }} onPointerDown={(event) => startTimelineDrag(event, 'end')} onPointerMove={applyTimelinePointer} onPointerUp={stopTimelineDrag} onPointerCancel={stopTimelineDrag}><span>›</span></div>
         <div style={{ ...playheadLine, left: `${playheadPct}%` }} />
       </div>
 
-      <div style={clipToolbar}><button type='button' disabled={activeIndex <= 0} onClick={() => moveClip(-1)} style={toolButton}>← Earlier</button><button type='button' onClick={() => removeClip(activeClip.id)} style={{ ...toolButton, color: '#ffabb1' }}>⌫ Delete</button><button type='button' disabled={activeIndex === clips.length - 1} onClick={() => moveClip(1)} style={toolButton}>Later →</button></div>
+      <div style={clipToolbar}><button type='button' disabled={activeIndex <= 0} onClick={() => moveClip(-1)} style={toolButton}>← Earlier</button><button type='button' onClick={() => removeClip(activeClip.id)} style={{ ...toolButton, color: '#ffabb1' }}>⌫ Delete clip {activeIndex + 1}</button><button type='button' disabled={activeIndex === clips.length - 1} onClick={() => moveClip(1)} style={toolButton}>Later →</button></div>
+      <button type='button' onClick={() => inputRef.current?.click()} style={timelineAdd}>＋ Add another clip</button>
     </>}
 
     <details style={textPanel}><summary style={textSummary}>Text overlay <span>{overlayText ? 'Added' : 'Optional'}</span></summary><div style={textFields}>
@@ -241,18 +279,15 @@ const loadingShade = { position: 'absolute', inset: 0, display: 'grid', placeIte
 const previewControls = { position: 'absolute', left: 12, right: 12, bottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#fff', fontSize: 12, textShadow: '0 1px 5px #000', pointerEvents: 'none' };
 const playButton = { pointerEvents: 'auto', width: 42, height: 42, borderRadius: 999, border: '1px solid rgba(255,255,255,.25)', background: 'rgba(0,0,0,.72)', color: '#fff', display: 'grid', placeItems: 'center', cursor: 'pointer' };
 const previewText = { position: 'absolute', maxWidth: '76%', transform: 'translate(-50%,-50%)', color: '#fff', fontWeight: 800, textAlign: 'center', textShadow: '0 2px 12px rgba(0,0,0,.85)', overflowWrap: 'anywhere', cursor: 'grab', touchAction: 'none', userSelect: 'none', lineHeight: 1.1 };
-const sequenceHeader = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, color: '#f4f7f5', fontSize: 13 };
-const sequenceRail = { display: 'flex', gap: 8, overflowX: 'auto', padding: '2px 0 7px', WebkitOverflowScrolling: 'touch' };
-const sequenceClip = { position: 'relative', flex: '0 0 92px', height: 74, padding: 0, overflow: 'hidden', borderRadius: 12, border: '2px solid transparent', background: '#171a18', color: '#fff', cursor: 'pointer' };
-const sequenceClipActive = { borderColor: '#b9ff5a', boxShadow: '0 0 0 2px rgba(185,255,90,.14)' };
-const sequenceImage = { width: '100%', height: '100%', objectFit: 'cover', display: 'block' };
-const sequencePlaceholder = { display: 'grid', placeItems: 'center', width: '100%', height: '100%', fontSize: 20 };
-const sequenceNumber = { position: 'absolute', left: 5, top: 5, width: 21, height: 21, display: 'grid', placeItems: 'center', borderRadius: 999, background: 'rgba(0,0,0,.72)', fontSize: 11, fontWeight: 800 };
-const sequenceDuration = { position: 'absolute', right: 5, bottom: 5, padding: '3px 5px', borderRadius: 6, background: 'rgba(0,0,0,.72)', fontSize: 10, fontWeight: 800 };
-const sequenceAdd = { flex: '0 0 58px', height: 74, borderRadius: 12, border: '1px solid rgba(229,255,242,.15)', background: '#171a18', color: '#fff', fontSize: 28, cursor: 'pointer' };
-const timelineHeader = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, color: '#98a39e', fontSize: 11 };
-const timeline = { position: 'relative', width: '100%', height: 86, borderRadius: 12, background: '#111', overflow: 'hidden', touchAction: 'none', userSelect: 'none', cursor: 'ew-resize' };
+const timelineHeader = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, color: '#f4f7f5', fontSize: 13 };
+const timelineHint = { marginTop: -10, color: '#98a39e', fontSize: 11, textAlign: 'center' };
+const timeline = { position: 'relative', width: '100%', height: 96, borderRadius: 14, background: '#111', overflow: 'hidden', touchAction: 'none', userSelect: 'none', cursor: 'ew-resize' };
 const frames = { position: 'absolute', inset: 0, display: 'flex' };
+const timelineClip = { position: 'relative', minWidth: 0, height: '100%', overflow: 'hidden', borderLeft: '2px solid rgba(7,9,9,.9)', boxSizing: 'border-box' };
+const timelineClipActive = { boxShadow: 'inset 0 0 0 2px rgba(185,255,90,.72)' };
+const clipFrames = { position: 'absolute', inset: 0, display: 'flex' };
+const clipInnerShade = { position: 'absolute', top: 0, bottom: 0, background: 'rgba(0,0,0,.58)', pointerEvents: 'none' };
+const timelineClipLabel = { position: 'absolute', left: 6, top: 7, width: 22, height: 22, display: 'grid', placeItems: 'center', borderRadius: 999, background: 'rgba(0,0,0,.76)', color: '#fff', fontSize: 11, fontWeight: 850, pointerEvents: 'none' };
 const frameImage = { flex: '1 1 0', minWidth: 0, height: '100%', objectFit: 'cover', pointerEvents: 'none' };
 const trimShade = { position: 'absolute', top: 0, bottom: 0, background: 'rgba(0,0,0,.68)', pointerEvents: 'none' };
 const trimSelection = { position: 'absolute', top: 0, bottom: 0, borderTop: '4px solid #b9ff5a', borderBottom: '4px solid #b9ff5a', pointerEvents: 'none', boxSizing: 'border-box' };
@@ -260,6 +295,7 @@ const trimHandle = { position: 'absolute', top: 0, bottom: 0, width: 30, zIndex:
 const playheadLine = { position: 'absolute', top: -2, bottom: -2, width: 3, transform: 'translateX(-50%)', zIndex: 5, background: '#fff', boxShadow: '0 0 0 1px rgba(0,0,0,.45)', pointerEvents: 'none' };
 const clipToolbar = { display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 8 };
 const toolButton = { minHeight: 44, borderRadius: 12, border: '1px solid rgba(229,255,242,.14)', background: '#171a18', color: '#fff', cursor: 'pointer', fontWeight: 750 };
+const timelineAdd = { minHeight: 44, borderRadius: 12, border: '1px dashed rgba(185,255,90,.36)', background: 'rgba(185,255,90,.04)', color: '#b9ff5a', cursor: 'pointer', fontWeight: 800 };
 const textPanel = { border: '1px solid rgba(229,255,242,.12)', borderRadius: 14, background: '#101311', overflow: 'hidden' };
 const textSummary = { padding: '13px 14px', color: '#fff', fontWeight: 800, cursor: 'pointer', display: 'flex', justifyContent: 'space-between' };
 const textFields = { padding: '0 14px 14px', display: 'grid', gap: 12 };
