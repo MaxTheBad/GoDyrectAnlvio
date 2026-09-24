@@ -85,7 +85,7 @@ export default function FeedPage() {
         sellerIds.length ? supabase.from('profiles').select('id,full_name,handle').in('id', sellerIds) : Promise.resolve({ data: [] }),
         bizIds.length ? supabase.from('businesses').select('id,name,city,state,zip,country,county').in('id', bizIds) : Promise.resolve({ data: [] }),
         listingIds.length
-          ? supabase.from('listing_media').select('listing_id,media_type,url,thumbnail_url,sort_order').in('listing_id', listingIds)
+          ? supabase.from('listing_media').select('listing_id,media_type,url,thumbnail_url,overlay_text,sort_order').in('listing_id', listingIds)
           : Promise.resolve({ data: [] }),
       ]);
 

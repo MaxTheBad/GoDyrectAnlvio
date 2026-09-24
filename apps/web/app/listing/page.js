@@ -87,7 +87,7 @@ export default function ListingDetailPage() {
       const [{ data: m, error: mErr }, { data: s }, { data: b }] = await Promise.all([
         supabase
           .from('listing_media')
-          .select('id,media_type,url,thumbnail_url,sort_order')
+          .select('id,media_type,url,thumbnail_url,overlay_text,sort_order')
           .eq('listing_id', id)
           .order('sort_order', { ascending: true }),
         supabase
@@ -260,13 +260,14 @@ export default function ListingDetailPage() {
           {media.length === 0 ? <p style={{ color: 'rgba(255,255,255,0.72)' }}>No media uploaded yet.</p> : null}
           {media.length > 0 ? (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
-              {media.slice(0, 1).map((m) => (
+              {media.map((m) => (
                 <div key={m.id} style={mediaCard}>
                   {m.media_type === 'video' ? (
                     <video controls style={mediaEl} src={m.url} />
                   ) : (
                     <img alt='Listing media' style={mediaEl} src={m.url} />
                   )}
+                  {m.overlay_text ? <span style={mediaOverlayText}>{m.overlay_text}</span> : null}
                 </div>
               ))}
             </div>
@@ -297,7 +298,8 @@ const avatar = { width: 40, height: 40, borderRadius: 999, objectFit: 'cover', b
 const avatarFallback = { width: 40, height: 40, borderRadius: 999, display: 'grid', placeItems: 'center', background: '#f3f4f6', border: '1px solid #e5e7eb' };
 const businessIdentityWrap = { marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', color: '#fff' };
 const businessLogoFallback = { width: 34, height: 34, borderRadius: 10, display: 'grid', placeItems: 'center', background: '#eef2ff', border: '1px solid #e5e7eb', color: '#334155', fontWeight: 700 };
-const mediaCard = { border: '1px solid rgba(42,60,120,0.8)', borderRadius: 16, overflow: 'hidden', background: '#141817' };
+const mediaCard = { position: 'relative', border: '1px solid rgba(42,60,120,0.8)', borderRadius: 16, overflow: 'hidden', background: '#141817' };
+const mediaOverlayText = { position: 'absolute', left: 16, right: 16, top: '50%', transform: 'translateY(-50%)', color: '#fff', textAlign: 'center', fontSize: 23, fontWeight: 800, textShadow: '0 2px 12px rgba(0,0,0,.85)', pointerEvents: 'none', overflowWrap: 'anywhere' };
 const mediaEl = { width: '100%', height: 170, objectFit: 'cover', display: 'block' };
 const btn = { border: '1px solid rgba(229,255,242,0.11)', borderRadius: 8, background: '#2e7dff', color: '#fff', padding: '10px 12px', textDecoration: 'none' };
 const ghostBtn = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 8, background: '#141817', color: '#fff', padding: '10px 12px', textDecoration: 'none' };

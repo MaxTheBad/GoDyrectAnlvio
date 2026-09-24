@@ -126,7 +126,7 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
         const ids = rows.map((r) => r.id);
         const { data: media } = await supabase
           .from('listing_media')
-          .select('listing_id,media_type,url,thumbnail_url,sort_order')
+          .select('listing_id,media_type,url,thumbnail_url,overlay_text,sort_order')
           .in('listing_id', ids);
 
         const preview = {};

@@ -63,7 +63,7 @@ function completeness(business) {
 
 export default function NewListingPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ business_id: '', title: '', lister_role: 'Owner', asking_price: '' });
+  const [form, setForm] = useState({ business_id: '', title: '', description: '', lister_role: 'Owner', asking_price: '' });
   const [files, setFiles] = useState([]);
   const [msg, setMsg] = useState('');
   const [isAuthed, setIsAuthed] = useState(false);
@@ -72,7 +72,7 @@ export default function NewListingPage() {
   const [useDefaultAskingPrice, setUseDefaultAskingPrice] = useState(true);
   const [missingFields, setMissingFields] = useState([]);
   const [errors, setErrors] = useState({});
-  const [editorState, setEditorState] = useState({ clips: [], manifest: null, thumbnailDataUrl: '' });
+  const [editorState, setEditorState] = useState({ clips: [], manifest: null, thumbnailDataUrl: '', overlayText: '' });
   const [loadingAccess, setLoadingAccess] = useState(true);
   const titleRef = useRef(null);
 
@@ -220,7 +220,7 @@ export default function NewListingPage() {
         seller_id: user.id,
         business_id: form.business_id,
         title: form.title,
-        description: business.description || null,
+        description: form.description.trim() || business.description || null,
         category: business.category || 'established',
         lister_role: membership.role || form.lister_role,
         business_age_years: yearsSince(business.start_date),
@@ -261,7 +261,7 @@ export default function NewListingPage() {
         const upload = await supabase.storage.from('listing-media').upload(pathName, clip, { upsert: true });
         if (upload.error) return setMsg(upload.error.message);
         const pub = supabase.storage.from('listing-media').getPublicUrl(pathName).data;
-        mediaRows.push({ listing_id: listing.id, media_type: 'video', url: pub.publicUrl, thumbnail_url: index === 0 ? chosenThumbnailUrl : null, sort_order: index });
+        mediaRows.push({ listing_id: listing.id, media_type: 'video', url: pub.publicUrl, thumbnail_url: index === 0 ? chosenThumbnailUrl : null, overlay_text: editorState.overlayText || null, sort_order: index });
       }
       const mediaInsert = await supabase.from('listing_media').insert(mediaRows);
       if (mediaInsert.error) return setMsg(mediaInsert.error.message);
@@ -326,6 +326,14 @@ export default function NewListingPage() {
           />
           {errors.title ? <div style={{ color: '#ff8b94', fontSize: 13 }}>{errors.title}</div> : null}
         </div>
+        <label style={label} htmlFor='listing-description'>Post details</label>
+        <textarea
+          id='listing-description'
+          style={{ ...input, minHeight: 118, resize: 'vertical' }}
+          placeholder='Tell buyers what makes this opportunity worth a conversation. Include the important context, strengths, and next step.'
+          value={form.description}
+          onChange={(e) => update('description', e.target.value)}
+        />
         <label style={label}>Posting as role</label>
         <input style={input} value={form.lister_role} readOnly />
 
@@ -358,8 +366,8 @@ export default function NewListingPage() {
         ) : null}
 
         {/* Clips upload directly so publishing works on the static edge deployment. */}
-        <VideoEditor onChange={({ clips, manifest, thumbnailDataUrl }) => {
-          setEditorState({ clips: Array.isArray(clips) ? clips : [], manifest: manifest || null, thumbnailDataUrl: thumbnailDataUrl || '' });
+        <VideoEditor onChange={({ clips, manifest, thumbnailDataUrl, overlayText }) => {
+          setEditorState({ clips: Array.isArray(clips) ? clips : [], manifest: manifest || null, thumbnailDataUrl: thumbnailDataUrl || '', overlayText: overlayText || '' });
           setFiles(Array.isArray(clips) ? clips : []);
         }} />
 

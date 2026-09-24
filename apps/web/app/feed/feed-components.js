@@ -98,6 +98,7 @@ export function FeedPost({
           <div style={mediaTitleOverlay}>
             <div style={mediaTitle}>{listing.title}</div>
           </div>
+          {activeMedia.overlay_text ? <div style={videoTextOverlay}>{activeMedia.overlay_text}</div> : null}
           {activeMedia.media_type === 'video' ? (
             <>
               <video
@@ -235,6 +236,7 @@ export function FeedPost({
                 ) : (
                   <img src={activeMedia.thumbnail_url || activeMedia.url} alt='listing media' style={playerMedia} />
                 )}
+                {activeMedia.overlay_text ? <div style={videoTextOverlay}>{activeMedia.overlay_text}</div> : null}
               </div>
             </div>
           ) : null}
@@ -414,6 +416,7 @@ const heroMediaAsset = { position: 'absolute', inset: 0, width: '100%', height: 
 const videoCoverButton = { position: 'absolute', inset: 0, zIndex: 2, border: 0, padding: 0, margin: 0, background: 'linear-gradient(135deg, rgba(15,23,42,0.08) 0%, rgba(15,23,42,0.2) 100%)', display: 'grid', placeItems: 'center', cursor: 'pointer' };
 const videoCoverPill = { padding: '10px 14px', borderRadius: 999, background: 'rgba(15,23,42,0.56)', border: '1px solid rgba(255,255,255,0.16)', color: '#fff', fontWeight: 700, letterSpacing: 0.2 };
 const mediaTitleOverlay = { position: 'absolute', left: 0, right: 0, top: 0, padding: '10px 14px 0', zIndex: 2, pointerEvents: 'none', background: 'linear-gradient(180deg, rgba(5,10,26,0.86) 0%, rgba(5,10,26,0) 100%)' };
+const videoTextOverlay = { position: 'absolute', left: 16, right: 16, top: '50%', transform: 'translateY(-50%)', zIndex: 3, pointerEvents: 'none', textAlign: 'center', color: '#fff', fontSize: 'clamp(18px,4vw,30px)', lineHeight: 1.15, fontWeight: 800, textShadow: '0 2px 12px rgba(0,0,0,.85)', overflowWrap: 'anywhere' };
 const mediaTitle = { color: '#fff', fontWeight: 800, fontSize: 16, lineHeight: 1.15, textShadow: '0 1px 2px rgba(0,0,0,0.5)' };
 const mediaCaption = { position: 'absolute', left: 0, right: 0, bottom: 44, padding: '16px 16px 14px', fontSize: 14, lineHeight: 1.4, color: '#fff', background: 'linear-gradient(180deg, rgba(15,23,42,0) 0%, rgba(15,23,42,0.72) 100%)', textShadow: '0 1px 2px rgba(0,0,0,0.35)', whiteSpace: 'pre-wrap', pointerEvents: 'none', zIndex: 2 };
 const carouselArrowBase = { position: 'absolute', top: '50%', transform: 'translateY(-50%)', width: 30, height: 30, borderRadius: 999, border: 0, background: 'rgba(255,255,255,0.88)', color: '#111827', fontSize: 24, lineHeight: '30px', display: 'grid', placeItems: 'center', cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.18)' };
