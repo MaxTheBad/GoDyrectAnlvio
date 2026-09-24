@@ -426,7 +426,7 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
         {isMobile ? (
           <button style={mobileFilterToggle} onClick={() => setMobileFiltersOpen((v) => !v)}>
             <span>{mobileFiltersOpen ? 'Hide filters' : 'Show filters'}</span>
-            <span style={{ opacity: 0.8 }}>{activeFilterCount ? `${activeFilterCount} active` : 'No filters'}</span>
+            {activeFilterCount ? <span style={{ opacity: 0.8 }}>{activeFilterCount} active</span> : <span aria-hidden='true' />}
           </button>
         ) : null}
 
