@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleDisplayName</key>
+    <string>GoDyrect</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>UILaunchScreen</key>
+    <dict>
+        <key>UIColorName</key>
+        <string>LaunchBackground</string>
+        <key>UIImageName</key>
+        <string>AppIcon</string>
+    </dict>
+    <key>NSCameraUsageDescription</key>
+    <string>GoDyrect uses the camera to capture photos and videos for your business posts.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>GoDyrect uses the microphone when recording videos for your business posts.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>GoDyrect uses your photo library to add photos and videos to business posts.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>GoDyrect can save media you create to your photo library.</string>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+    </array>
+    <key>UISupportedInterfaceOrientations~ipad</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+</dict>
+</plist>
