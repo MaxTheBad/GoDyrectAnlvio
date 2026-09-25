@@ -209,7 +209,7 @@ export function FeedEmptyState({ loading, msg, hasFollows, hasSearch = false, ex
         <p style={emptyCopy}>
           {hasSearch
             ? 'Try a different search term or open Explore for more listings and businesses.'
-            : 'You’re following people or businesses, but nothing has been posted yet. Check Explore for more listings and businesses.'}
+            : 'Your businesses and the people you follow have not posted anything yet. Check Explore for more opportunities.'}
         </p>
       </div>
       <div style={emptyActions}>

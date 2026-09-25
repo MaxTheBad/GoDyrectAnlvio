@@ -47,7 +47,12 @@ export default function FeedPage() {
         supabase.from('business_follows').select('business_id').eq('follower_user_id', uid),
       ]);
 
-      const userIds = (followedUsers || []).map((r) => r.followed_user_id);
+      // A creator should always see their own posts without having to follow
+      // themselves. Keep followed sellers in the same audience query.
+      const userIds = [...new Set([
+        uid,
+        ...(followedUsers || []).map((r) => r.followed_user_id),
+      ])];
       const businessIds = (followedBusinesses || []).map((r) => r.business_id);
       const followsExist = Boolean(userIds.length || businessIds.length);
       setHasFollows(followsExist);
