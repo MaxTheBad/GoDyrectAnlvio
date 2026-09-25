@@ -15,6 +15,19 @@ export default function LoginPage() {
     if (next) setReturnTo(next);
   }, []);
 
+  useEffect(() => {
+    const restore = () => setSubmitting(false);
+    const restoreWhenVisible = () => {
+      if (document.visibilityState === 'visible') restore();
+    };
+    window.addEventListener('pageshow', restore);
+    document.addEventListener('visibilitychange', restoreWhenVisible);
+    return () => {
+      window.removeEventListener('pageshow', restore);
+      document.removeEventListener('visibilitychange', restoreWhenVisible);
+    };
+  }, []);
+
   async function submit(e) {
     e.preventDefault();
     if (!supabase) return setMsg('Supabase env vars are missing.');
@@ -39,15 +52,20 @@ export default function LoginPage() {
     setSubmitting(true);
     setMsg('');
     const safeReturnTo = returnTo?.startsWith('/') ? returnTo : '/dashboard';
+    try {
       const { data, error } = await supabaseOAuth.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeReturnTo)}`, skipBrowserRedirect: true },
       });
-    if (error) {
+      if (error) {
+        setSubmitting(false);
+        setMsg(error.message);
+      } else if (data?.url) window.location.assign(data.url);
+      else { setSubmitting(false); setMsg('Google sign-in could not start. Please try again.'); }
+    } catch (error) {
       setSubmitting(false);
-      setMsg(error.message);
-    } else if (data?.url) window.location.assign(data.url);
-    else { setSubmitting(false); setMsg('Google sign-in could not start. Please try again.'); }
+      setMsg(error?.message || 'Google sign-in could not start. Please try again.');
+    }
   }
 
   return (

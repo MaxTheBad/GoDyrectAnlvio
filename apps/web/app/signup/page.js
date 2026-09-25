@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase, supabaseOAuth } from '../../lib/supabase';
 
 export default function SignupPage() {
@@ -16,6 +16,19 @@ export default function SignupPage() {
   const [cooldown, setCooldown] = useState(0);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const restore = () => setSubmitting(false);
+    const restoreWhenVisible = () => {
+      if (document.visibilityState === 'visible') restore();
+    };
+    window.addEventListener('pageshow', restore);
+    document.addEventListener('visibilitychange', restoreWhenVisible);
+    return () => {
+      window.removeEventListener('pageshow', restore);
+      document.removeEventListener('visibilitychange', restoreWhenVisible);
+    };
+  }, []);
 
   async function submit(e) {
     e.preventDefault();
@@ -72,25 +85,30 @@ export default function SignupPage() {
     if (!agree) return setMsg('Please agree to the policy before continuing with Google.');
     setSubmitting(true);
     setMsg('');
-    const { data, error } = await supabaseOAuth.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=%2Fdashboard`,
-        skipBrowserRedirect: true,
-        data: {
-          full_name: fullName || undefined,
-          phone: phone || undefined,
-          role,
-          marketing_opt_in: marketingOptIn,
-          terms_accepted_at: new Date().toISOString(),
+    try {
+      const { data, error } = await supabaseOAuth.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=%2Fdashboard`,
+          skipBrowserRedirect: true,
+          data: {
+            full_name: fullName || undefined,
+            phone: phone || undefined,
+            role,
+            marketing_opt_in: marketingOptIn,
+            terms_accepted_at: new Date().toISOString(),
+          },
         },
-      },
-    });
-    if (error) {
+      });
+      if (error) {
+        setSubmitting(false);
+        setMsg(error.message);
+      } else if (data?.url) window.location.assign(data.url);
+      else { setSubmitting(false); setMsg('Google sign-in could not start. Please try again.'); }
+    } catch (error) {
       setSubmitting(false);
-      setMsg(error.message);
-    } else if (data?.url) window.location.assign(data.url);
-    else { setSubmitting(false); setMsg('Google sign-in could not start. Please try again.'); }
+      setMsg(error?.message || 'Google sign-in could not start. Please try again.');
+    }
   }
 
   async function resendConfirmation() {

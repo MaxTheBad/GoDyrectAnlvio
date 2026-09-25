@@ -24,6 +24,19 @@ export default function AuthModal() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    const restore = () => setBusy(false);
+    const restoreWhenVisible = () => {
+      if (document.visibilityState === 'visible') restore();
+    };
+    window.addEventListener('pageshow', restore);
+    document.addEventListener('visibilitychange', restoreWhenVisible);
+    return () => {
+      window.removeEventListener('pageshow', restore);
+      document.removeEventListener('visibilitychange', restoreWhenVisible);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!supabase) { setReady(true); return; }
     supabase.auth.getUser().then(({ data }) => { setUser(data?.user || null); setReady(true); });
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user || null));
@@ -56,15 +69,20 @@ export default function AuthModal() {
     if (!supabaseOAuth) return setMessage('Sign-in is temporarily unavailable.');
     if (mode === 'signup' && !agree) return setMessage('Please agree to Privacy & Terms before continuing.');
     setBusy(true); setMessage('');
-    const { data, error } = await supabaseOAuth.auth.signInWithOAuth({
-      provider: 'google',
-      // Complete the PKCE exchange on a dedicated page before sending someone
-      // back to the part of the product they were trying to use.
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(intent)}`, skipBrowserRedirect: true },
-    });
-    if (error) { setBusy(false); setMessage(error.message); }
-    else if (data?.url) window.location.assign(data.url);
-    else { setBusy(false); setMessage('Google sign-in could not start. Please try again.'); }
+    try {
+      const { data, error } = await supabaseOAuth.auth.signInWithOAuth({
+        provider: 'google',
+        // Complete the PKCE exchange on a dedicated page before sending someone
+        // back to the part of the product they were trying to use.
+        options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(intent)}`, skipBrowserRedirect: true },
+      });
+      if (error) { setBusy(false); setMessage(error.message); }
+      else if (data?.url) window.location.assign(data.url);
+      else { setBusy(false); setMessage('Google sign-in could not start. Please try again.'); }
+    } catch (error) {
+      setBusy(false);
+      setMessage(error?.message || 'Google sign-in could not start. Please try again.');
+    }
   }
 
   async function submit(event) {
@@ -93,7 +111,7 @@ export default function AuthModal() {
         <input id='modal-email' name='username' type='email' inputMode='email' autoCapitalize='none' spellCheck='false' autoComplete='username' value={email} onChange={(event) => setEmail(event.target.value)} placeholder='Email address' required />
         <input id='modal-password' name='password' type='password' autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} value={password} onChange={(event) => setPassword(event.target.value)} placeholder='Password' minLength={mode === 'signup' ? 8 : undefined} required />
         {mode === 'signup' ? <label className='check-row'><input type='checkbox' checked={agree} onChange={(event) => setAgree(event.target.checked)} /><span>I agree to the <a href='/legal/privacy'>Privacy & Terms</a></span></label> : null}
-        <button className='auth-submit' type='submit' disabled={busy}>{busy ? 'Working…' : mode === 'signin' ? 'Sign in →' : 'Create account →'}</button>
+        <button className='auth-submit' type='submit' disabled={busy}>{busy ? (mode === 'signin' ? 'Signing you in…' : 'Creating your account…') : mode === 'signin' ? 'Sign in →' : 'Create account →'}</button>
       </form>
       {message ? <p className='auth-message' role='status'>{message}</p> : null}
       <p className='auth-switch'>{mode === 'signin' ? 'New here?' : 'Already have an account?'} <button type='button' onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setMessage(''); }}>{mode === 'signin' ? 'Create an account' : 'Sign in'}</button></p>
