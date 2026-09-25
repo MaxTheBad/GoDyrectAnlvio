@@ -179,6 +179,16 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
   }, [state]);
 
   function requestLocation() {
+    try {
+      const nativeLocation = JSON.parse(localStorage.getItem('godyrect-native-location') || 'null');
+      if (Number.isFinite(nativeLocation?.latitude) && Number.isFinite(nativeLocation?.longitude)) {
+        setOriginLatLng({ lat: nativeLocation.latitude, lng: nativeLocation.longitude });
+        setToast('Location captured for miles filter');
+        setTimeout(() => setToast(''), 1600);
+        return;
+      }
+    } catch {}
+
     if (!navigator.geolocation) {
       setToast('Geolocation not available on this device');
       setTimeout(() => setToast(''), 1600);

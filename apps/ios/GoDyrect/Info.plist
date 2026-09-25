@@ -15,7 +15,7 @@
     <key>CFBundleShortVersionString</key>
     <string>1.0.0</string>
     <key>CFBundleVersion</key>
-    <string>3</string>
+    <string>4</string>
     <key>UILaunchScreen</key>
     <dict>
         <key>UIColorName</key>
@@ -31,6 +31,8 @@
     <string>GoDyrect uses your photo library to add photos and videos to business posts.</string>
     <key>NSPhotoLibraryAddUsageDescription</key>
     <string>GoDyrect can save media you create to your photo library.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>GoDyrect uses your approximate location while you use the app to show nearby businesses and calculate distance.</string>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>UISupportedInterfaceOrientations</key>

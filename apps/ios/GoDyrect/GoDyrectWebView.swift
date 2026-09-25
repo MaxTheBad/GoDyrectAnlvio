@@ -1,6 +1,7 @@
 import SwiftUI
 import WebKit
 import UIKit
+import Combine
 
 @MainActor
 final class BrowserModel: ObservableObject {
@@ -8,10 +9,66 @@ final class BrowserModel: ObservableObject {
     @Published var showError = false
     @Published var errorMessage = "Please check your connection and try again."
     weak var webView: WKWebView?
+    private var observers = Set<AnyCancellable>()
+
+    init() {
+        NotificationCenter.default.publisher(for: .goDyrectPushTokenUpdated)
+            .compactMap { $0.object as? String }
+            .sink { [weak self] token in self?.sendPushToken(token) }
+            .store(in: &observers)
+
+        NotificationCenter.default.publisher(for: .goDyrectLocationUpdated)
+            .sink { [weak self] note in
+                guard let latitude = note.userInfo?["latitude"] as? Double,
+                      let longitude = note.userInfo?["longitude"] as? Double else { return }
+                self?.sendLocation(latitude: latitude, longitude: longitude)
+            }
+            .store(in: &observers)
+
+        NotificationCenter.default.publisher(for: .goDyrectNotificationOpened)
+            .compactMap { $0.object as? String }
+            .sink { [weak self] path in self?.open(path: path) }
+            .store(in: &observers)
+    }
 
     func reload() {
         showError = false
         webView?.reload()
+    }
+
+    func syncNativeState() {
+        if let token = UserDefaults.standard.string(forKey: "godyrect.apns.token") {
+            sendPushToken(token)
+        }
+    }
+
+    private func sendPushToken(_ token: String) {
+        let script = """
+        localStorage.setItem('godyrect-native-push-token', \(json(token)));
+        window.dispatchEvent(new CustomEvent('godyrect:native-push-token', { detail: { token: \(json(token)), platform: 'ios' } }));
+        """
+        webView?.evaluateJavaScript(script)
+    }
+
+    private func sendLocation(latitude: Double, longitude: Double) {
+        let script = """
+        const detail = { latitude: \(latitude), longitude: \(longitude), accuracy: 'approximate' };
+        localStorage.setItem('godyrect-native-location', JSON.stringify(detail));
+        window.dispatchEvent(new CustomEvent('godyrect:native-location', { detail }));
+        """
+        webView?.evaluateJavaScript(script)
+    }
+
+    private func open(path: String) {
+        guard let base = URL(string: "https://godyrect.com"),
+              let url = URL(string: path, relativeTo: base),
+              url.host == "godyrect.com" else { return }
+        webView?.load(URLRequest(url: url))
+    }
+
+    private func json(_ value: String) -> String {
+        let data = try? JSONSerialization.data(withJSONObject: value)
+        return data.flatMap { String(data: $0, encoding: .utf8) } ?? "\"\""
     }
 }
 
@@ -61,6 +118,7 @@ struct GoDyrectWebView: UIViewRepresentable {
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             model.isLoading = false
+            model.syncNativeState()
         }
 
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
