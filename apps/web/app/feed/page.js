@@ -19,9 +19,15 @@ export default function FeedPage() {
 
   useEffect(() => {
     async function loadFeed() {
-      if (!supabase) return;
+      if (!supabase) {
+        setMsg('The feed service is unavailable. Please reload and try again.');
+        setLoading(false);
+        return;
+      }
 
-      const { data: auth } = await supabase.auth.getUser();
+      try {
+      const { data: auth, error: authError } = await supabase.auth.getUser();
+      if (authError) throw authError;
       const uid = auth?.user?.id;
       if (!uid) {
         setMsg('Please sign in to view your feed.');
@@ -128,6 +134,10 @@ export default function FeedPage() {
       });
       setRows(ordered);
       setLoading(false);
+      } catch (error) {
+        setMsg(error?.message || 'The feed could not load. Please try again.');
+        setLoading(false);
+      }
     }
 
     loadFeed();

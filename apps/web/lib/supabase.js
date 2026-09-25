@@ -1,7 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// These are public browser credentials, not server secrets. Keeping production
+// fallbacks here prevents a static export from silently shipping without auth
+// when a deploy shell is missing its build-time environment variables.
+export const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  || 'https://elcoibbmnjejkdbourjv.supabase.co';
+const supabaseAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  || 'sb_publishable_QhYTA1CXDUVIZtM2-BLWEw_LvBX4ixt';
 
 async function resilientFetch(input, init) {
   const request = new Request(input, init);
