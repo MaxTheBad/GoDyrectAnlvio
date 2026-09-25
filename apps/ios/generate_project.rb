@@ -33,7 +33,7 @@ target.build_configurations.each do |config|
   settings['TARGETED_DEVICE_FAMILY'] = '1,2'
   settings['ASSETCATALOG_COMPILER_APPICON_NAME'] = 'AppIcon'
   settings['ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME'] = 'AccentColor'
-  settings['CURRENT_PROJECT_VERSION'] = '2'
+  settings['CURRENT_PROJECT_VERSION'] = '3'
   settings['MARKETING_VERSION'] = '1.0.0'
   settings['GENERATE_INFOPLIST_FILE'] = 'NO'
   settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'YES'
