@@ -250,11 +250,60 @@ otp_expiry = 3600
 subject = "Confirm your GoDyrect account"
 content_path = "./supabase/templates/confirmation.html"
 
-# Uncomment to customize notification email template
-# [auth.email.notification.password_changed]
-# enabled = true
-# subject = "Your password has been changed"
-# content_path = "./supabase/templates/password_changed_notification.html"
+[auth.email.template.invite]
+subject = "You’re invited to GoDyrect"
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.template.recovery]
+subject = "Reset your GoDyrect password"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.magic_link]
+subject = "Your secure GoDyrect sign-in link"
+content_path = "./supabase/templates/magic-link.html"
+
+[auth.email.template.email_change]
+subject = "Confirm your new GoDyrect email"
+content_path = "./supabase/templates/email-change.html"
+
+[auth.email.template.reauthentication]
+subject = "{{ .Token }} is your GoDyrect verification code"
+content_path = "./supabase/templates/reauthentication.html"
+
+[auth.email.notification.password_changed]
+enabled = true
+subject = "Your GoDyrect password was changed"
+content_path = "./supabase/templates/password-changed.html"
+
+[auth.email.notification.email_changed]
+enabled = true
+subject = "Your GoDyrect email was changed"
+content_path = "./supabase/templates/email-changed.html"
+
+[auth.email.notification.phone_changed]
+enabled = true
+subject = "Your GoDyrect phone number was changed"
+content_path = "./supabase/templates/phone-changed.html"
+
+[auth.email.notification.identity_linked]
+enabled = true
+subject = "A sign-in method was linked to GoDyrect"
+content_path = "./supabase/templates/identity-linked.html"
+
+[auth.email.notification.identity_unlinked]
+enabled = true
+subject = "A sign-in method was removed from GoDyrect"
+content_path = "./supabase/templates/identity-unlinked.html"
+
+[auth.email.notification.mfa_factor_enrolled]
+enabled = true
+subject = "A verification method was added to GoDyrect"
+content_path = "./supabase/templates/mfa-enrolled.html"
+
+[auth.email.notification.mfa_factor_unenrolled]
+enabled = true
+subject = "A verification method was removed from GoDyrect"
+content_path = "./supabase/templates/mfa-unenrolled.html"
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.

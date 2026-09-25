@@ -64,6 +64,7 @@ export default function LoginPage() {
         <div><div className='auth-kicker'>Welcome back</div><h2>Sign in to GoDyrect</h2><p>Enter your details to continue.</p></div>
         <label>Email address<input placeholder='you@company.com' type='email' name='email' autoComplete='email' value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
         <label>Password<input placeholder='Your password' type='password' name='password' id='login-password' autoComplete='current-password' value={password} onChange={(e) => setPassword(e.target.value)} required /></label>
+        <div style={{ textAlign: 'right', marginTop: -8 }}><a href='/forgot-password' style={{ color: '#b0ff4b', fontSize: 13, fontWeight: 700 }}>Forgot password?</a></div>
         <button className='auth-submit' type='submit' disabled={submitting}>{submitting ? 'Signing in…' : 'Sign in →'}</button>
         <div className='auth-divider' aria-hidden='true'><span />or<span /></div>
         <button className='auth-google-button' type='button' onClick={signInWithGoogle} disabled={submitting}><GoogleMark />Continue with Google</button>
