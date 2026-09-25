@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '../../../lib/supabase';
+import { supabase, supabaseOAuth } from '../../../lib/supabase';
 
 function safeNext(value) {
   return value?.startsWith('/') && !value.startsWith('//') ? value : '/dashboard';
@@ -13,56 +13,43 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     let cancelled = false;
 
-    async function waitForSession(timeoutMs = 10000) {
-      const existing = await supabase.auth.getSession();
-      if (existing.data?.session) return existing.data.session;
-
-      return new Promise((resolve) => {
-        let settled = false;
-        const finish = (session) => {
-          if (settled) return;
-          settled = true;
-          clearTimeout(timer);
-          subscription?.subscription?.unsubscribe();
-          resolve(session || null);
-        };
-        const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
-          if (session) finish(session);
-        });
-        const timer = setTimeout(async () => {
-          const latest = await supabase.auth.getSession();
-          finish(latest.data?.session || null);
-        }, timeoutMs);
-      });
-    }
-
     async function finishSignIn() {
-      if (!supabase) return setMessage('Sign-in is temporarily unavailable. Please return to GoDyrect and try again.');
+      if (!supabase || !supabaseOAuth) return setMessage('Sign-in is temporarily unavailable. Please return to GoDyrect and try again.');
 
       const params = new URLSearchParams(window.location.search);
       const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
       const next = safeNext(params.get('next'));
       const code = params.get('code');
+      const providerError = params.get('error_description') || params.get('error') || hash.get('error_description') || hash.get('error');
 
       try {
-        // Supabase may return PKCE query parameters or implicit-flow hash
-        // tokens. Mobile browsers can finish automatic token detection after
-        // this page mounts, so handle both and then wait for auth state.
+        if (providerError) throw new Error(providerError);
+
+        let session = null;
         const accessToken = hash.get('access_token');
         const refreshToken = hash.get('refresh_token');
         if (accessToken && refreshToken) {
-          const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+          const { data, error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
           if (error) throw error;
+          session = data.session;
         }
         if (code) {
-          const current = await supabase.auth.getSession();
-          if (!current.data?.session) {
-            const { error } = await supabase.auth.exchangeCodeForSession(code);
-            if (error && !/already|invalid.*code|code.*verifier/i.test(error.message || '')) throw error;
+          const { data, error } = await supabaseOAuth.auth.exchangeCodeForSession(code);
+          if (error) throw error;
+          session = data.session;
+          if (session) {
+            const { error: persistError } = await supabase.auth.setSession({
+              access_token: session.access_token,
+              refresh_token: session.refresh_token,
+            });
+            if (persistError) throw persistError;
           }
         }
-        const session = await waitForSession();
-        if (!session) throw new Error('Google did not return a usable session. Please try again.');
+        if (!session) {
+          const current = await supabase.auth.getSession();
+          session = current.data?.session || null;
+        }
+        if (!session) throw new Error('Google returned without an authorization code. Please restart sign-in from GoDyrect.');
         window.history.replaceState({}, '', window.location.pathname);
         if (cancelled) return;
         window.location.replace(next);

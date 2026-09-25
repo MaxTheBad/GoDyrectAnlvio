@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseOAuth } from '../lib/supabase';
 
 const protectedPrefixes = ['/dashboard', '/messages', '/favorites', '/businesses', '/listings/new', '/listings/edit', '/listings', '/profile', '/settings', '/onboarding'];
 
@@ -53,10 +53,10 @@ export default function AuthModal() {
   }, [ready, user]);
 
   async function continueWithGoogle() {
-    if (!supabase) return setMessage('Sign-in is temporarily unavailable.');
+    if (!supabaseOAuth) return setMessage('Sign-in is temporarily unavailable.');
     if (mode === 'signup' && !agree) return setMessage('Please agree to Privacy & Terms before continuing.');
     setBusy(true); setMessage('');
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabaseOAuth.auth.signInWithOAuth({
       provider: 'google',
       // Complete the PKCE exchange on a dedicated page before sending someone
       // back to the part of the product they were trying to use.

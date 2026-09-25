@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase, supabaseOAuth } from '../../lib/supabase';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -35,11 +35,11 @@ export default function LoginPage() {
   }
 
   async function signInWithGoogle() {
-    if (!supabase) return setMsg('Supabase env vars are missing.');
+    if (!supabaseOAuth) return setMsg('Supabase env vars are missing.');
     setSubmitting(true);
     setMsg('');
     const safeReturnTo = returnTo?.startsWith('/') ? returnTo : '/dashboard';
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabaseOAuth.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeReturnTo)}`, skipBrowserRedirect: true },
       });

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase, supabaseOAuth } from '../../lib/supabase';
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState('');
@@ -68,11 +68,11 @@ export default function SignupPage() {
 
   async function signUpWithGoogle() {
     setErrors({});
-    if (!supabase) return setMsg('Supabase env vars are missing.');
+    if (!supabaseOAuth) return setMsg('Supabase env vars are missing.');
     if (!agree) return setMsg('Please agree to the policy before continuing with Google.');
     setSubmitting(true);
     setMsg('');
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabaseOAuth.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback?next=%2Fdashboard`,

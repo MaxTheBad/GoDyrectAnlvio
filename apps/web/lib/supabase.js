@@ -31,3 +31,19 @@ export const supabase =
         global: { fetch: resilientFetch },
       })
     : null;
+
+// OAuth uses an isolated PKCE client so its verifier cannot race with the
+// implicit-link handling used by email confirmations and recovery flows.
+// The callback copies the resulting session into the primary client.
+export const supabaseOAuth =
+  supabaseUrl && supabaseAnon
+    ? createClient(supabaseUrl, supabaseAnon, {
+        global: { fetch: resilientFetch },
+        auth: {
+          flowType: 'pkce',
+          detectSessionInUrl: false,
+          persistSession: true,
+          storageKey: 'godyrect-oauth-session',
+        },
+      })
+    : null;
