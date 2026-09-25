@@ -3,113 +3,13 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 
+const roles = [['buyer','Buyer'],['seller','Seller'],['broker','Broker'],['not_sure','Exploring']];
+
 export default function ProfilePage() {
-  const [user, setUser] = useState(null);
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [handle, setHandle] = useState('');
-  const [phone, setPhone] = useState('');
-  const [role, setRole] = useState('buyer');
-  const [avatarUrl, setAvatarUrl] = useState('');
-  const [avatarFile, setAvatarFile] = useState(null);
-  const [msg, setMsg] = useState('');
-
-  useEffect(() => {
-    async function init() {
-      if (!supabase) return;
-      const { data } = await supabase.auth.getUser();
-      const u = data?.user;
-      setUser(u || null);
-      if (!u) return;
-      setEmail(u.email || '');
-      const { data: profile } = await supabase.from('profiles').select('full_name,handle,phone,role,avatar_url').eq('id', u.id).single();
-      if (profile) {
-        setFullName(profile.full_name || '');
-        setHandle(profile.handle || '');
-        setPhone(profile.phone || '');
-        setRole(profile.role || 'buyer');
-        setAvatarUrl(profile.avatar_url || '');
-      }
-    }
-    init();
-  }, []);
-
-  async function saveProfile(e) {
-    e.preventDefault();
-    if (!supabase || !user) return setMsg('Please log in first.');
-
-    let nextAvatarUrl = avatarUrl || null;
-    if (avatarFile) {
-      const ext = avatarFile.name.split('.').pop();
-      const path = `${user.id}/avatar-${Date.now()}.${ext}`;
-      const upload = await supabase.storage.from('profile-photos').upload(path, avatarFile, { upsert: false });
-      if (upload.error) return setMsg(upload.error.message);
-      const { data: pub } = supabase.storage.from('profile-photos').getPublicUrl(path);
-      nextAvatarUrl = pub.publicUrl;
-    }
-
-    if (email && email !== user.email) {
-      const { error: emailErr } = await supabase.auth.updateUser({ email });
-      if (emailErr) return setMsg(emailErr.message);
-    }
-
-    const cleanHandle = handle.trim() ? handle.trim().toLowerCase() : null;
-
-    const { error } = await supabase.from('profiles').upsert({
-      id: user.id,
-      full_name: fullName,
-      handle: cleanHandle,
-      phone,
-      role,
-      avatar_url: nextAvatarUrl,
-    });
-
-    if (!error) {
-      setAvatarUrl(nextAvatarUrl || '');
-      setHandle(cleanHandle || '');
-      setMsg('Profile saved.');
-      return;
-    }
-
-    if (error.message?.includes('profiles_handle_key')) {
-      setMsg('That handle is already taken. Try a different one.');
-      return;
-    }
-
-    setMsg(error.message);
-  }
-
-  return (
-    <main style={wrap}>
-      <form onSubmit={saveProfile} style={card}>
-        <h1>Profile</h1>
-        {avatarUrl ? <img src={avatarUrl} alt='Profile' style={{ width: 84, height: 84, borderRadius: 999, objectFit: 'cover' }} /> : null}
-        <div style={badge(role)}>{roleLabel(role)}</div>
-        <input style={input} placeholder='Display name' value={fullName} onChange={(e) => setFullName(e.target.value)} />
-        <input style={input} type='email' placeholder='Email address' value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input style={input} placeholder='Handle' value={handle} onChange={(e) => setHandle(e.target.value)} />
-        <input style={input} placeholder='Phone number' value={phone} onChange={(e) => setPhone(e.target.value)} />
-        <select style={input} value={role} onChange={(e) => setRole(e.target.value)}>
-          <option value='buyer'>Buyer</option>
-          <option value='seller'>Seller</option>
-          <option value='broker'>Broker</option>
-          <option value='not_sure'>Not sure yet</option>
-        </select>
-        <input style={input} type='file' accept='image/*' onChange={(e) => setAvatarFile(e.target.files?.[0] || null)} />
-        <button style={btn} type='submit'>Save Profile</button>
-        {msg ? <p>{msg}</p> : null}
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <a href='/businesses' style={{ color: '#8fb7ff' }}>My Businesses</a>
-          <a href='/feed' style={{ color: '#8fb7ff' }}>Back to Feed</a>
-        </div>
-      </form>
-    </main>
-  );
+  const [user,setUser] = useState(null), [fullName,setFullName] = useState(''), [email,setEmail] = useState(''), [handle,setHandle] = useState(''), [phone,setPhone] = useState(''), [role,setRole] = useState('buyer'), [avatarUrl,setAvatarUrl] = useState(''), [avatarFile,setAvatarFile] = useState(null), [message,setMessage] = useState(''), [saving,setSaving] = useState(false);
+  useEffect(() => { async function load() { if (!supabase) return; const { data } = await supabase.auth.getUser(); const account = data?.user; setUser(account || null); if (!account) return; setEmail(account.email || ''); const { data: profile } = await supabase.from('profiles').select('full_name,handle,phone,role,avatar_url').eq('id',account.id).single(); if (profile) { setFullName(profile.full_name || ''); setHandle(profile.handle || ''); setPhone(profile.phone || ''); setRole(profile.role || 'buyer'); setAvatarUrl(profile.avatar_url || ''); } } load(); },[]);
+  async function save(e) { e.preventDefault(); if (!supabase || !user) return setMessage('Sign in to edit your profile.'); setSaving(true); setMessage(''); let nextAvatar = avatarUrl || null; if (avatarFile) { const ext = avatarFile.name.split('.').pop(); const path = `${user.id}/avatar-${Date.now()}.${ext}`; const upload = await supabase.storage.from('profile-photos').upload(path,avatarFile); if (upload.error) { setSaving(false); return setMessage(upload.error.message); } nextAvatar = supabase.storage.from('profile-photos').getPublicUrl(path).data.publicUrl; } if (email && email !== user.email) { const { error } = await supabase.auth.updateUser({email}); if (error) { setSaving(false); return setMessage(error.message); } } const cleanHandle = handle.trim() ? handle.trim().toLowerCase() : null; const { error } = await supabase.from('profiles').upsert({id:user.id,full_name:fullName,handle:cleanHandle,phone,role,avatar_url:nextAvatar}); setSaving(false); if (error) return setMessage(error.message.includes('profiles_handle_key') ? 'That handle is already taken. Try a different one.' : error.message); setAvatarUrl(nextAvatar || ''); setHandle(cleanHandle || ''); setMessage('Your profile is live.'); }
+  if (!user) return <main className="profile-shell"><section className="profile-empty"><p className="account-kicker">Your account</p><h1>Set up your GoDyrect profile.</h1><p>Sign in to add the details people see when you message, list, or follow a business.</p><a className="account-primary" href="/login?returnTo=%2Fprofile">Sign in</a></section></main>;
+  const initial = (fullName || email || '?').trim().charAt(0).toUpperCase();
+  return <main className="profile-shell"><header className="profile-heading"><div><p className="account-kicker">Your account</p><h1>Your professional profile.</h1><p>Keep your identity clear and credible across every conversation and listing.</p></div><a href="/businesses" className="home-hero__secondary">Manage businesses</a></header><form className="profile-grid" onSubmit={save}><aside className="profile-identity"><div className="profile-avatar">{avatarUrl ? <img src={avatarUrl} alt="Profile" /> : <span>{initial}</span>}</div><strong>{fullName || 'Your name'}</strong><span>{roles.find(([key]) => key === role)?.[1]}</span><label className="profile-photo"><input type="file" accept="image/*" onChange={(e) => setAvatarFile(e.target.files?.[0] || null)} />Change photo</label></aside><section className="profile-form"><div className="section-heading"><div><p className="account-kicker">Public details</p><h2>Make the introduction count.</h2></div>{message ? <span className="profile-status">{message}</span> : null}</div><div className="profile-fields"><label>Display name<input placeholder="e.g. Jordan Lee" value={fullName} onChange={(e) => setFullName(e.target.value)} /></label><label>Profile handle<input placeholder="e.g. jordanlee" value={handle} onChange={(e) => setHandle(e.target.value)} /></label><label>Email address<input type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} /></label><label>Phone number <small>Optional</small><input placeholder="e.g. (305) 555-0147" value={phone} onChange={(e) => setPhone(e.target.value)} /></label></div><fieldset className="profile-role"><legend>How do you use GoDyrect?</legend><div>{roles.map(([key,label]) => <button type="button" className={role === key ? 'is-active' : ''} onClick={() => setRole(key)} key={key}>{label}</button>)}</div></fieldset><div className="profile-actions"><button className="account-primary" disabled={saving} type="submit">{saving ? 'Saving…' : 'Save profile'}</button><a href="/settings">Account settings</a></div></section></form></main>;
 }
-
-const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#fff' };
-const card = { maxWidth: 560, display: 'grid', gap: 10, background: '#0d1010', padding: 20, borderRadius: 12, border: '1px solid rgba(229,255,242,0.11)' };
-const input = { borderRadius: 8, border: '1px solid rgba(229,255,242,0.14)', background: '#090b0b', color: '#fff', padding: '10px 12px' };
-const btn = { border: 0, borderRadius: 8, background: '#2e7dff', color: '#fff', padding: '10px 12px' };
-const badge = (role) => ({ display: 'inline-block', width: 'fit-content', padding: '6px 10px', borderRadius: 999, background: role === 'seller' ? '#124d2f' : role === 'buyer' ? '#1e3a8a' : '#5b4b16', border: '1px solid #3a4f8f', fontSize: 12, textTransform: 'capitalize' });
-const roleLabel = (role) => role === 'not_sure' ? 'Not sure yet' : role;
