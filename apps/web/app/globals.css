@@ -19,6 +19,7 @@ a { color:inherit; } button,a { -webkit-tap-highlight-color:transparent; } butto
 .site-nav__link:hover,.nav-link:hover { color:var(--ink); background:rgba(255,255,255,.055); }
 .site-nav__cta,.nav-primary { margin-left:6px; padding:11px 16px; border:0; border-radius:11px; background:var(--accent); color:var(--accent-ink); text-decoration:none; font-size:14px; font-weight:800; cursor:pointer; box-shadow:0 10px 30px rgba(185,255,90,.12); }
 .nav-menu { position:relative; } .nav-menu__button { display:none; width:42px; height:42px; border-radius:12px; border:1px solid var(--line); color:var(--ink); background:var(--surface-2); font-size:20px; }
+.nav-notifications { width:42px; height:42px; display:grid; place-items:center; border:1px solid rgba(185,255,90,.32); border-radius:12px; color:var(--accent); background:rgba(185,255,90,.08); font-size:18px; line-height:1; cursor:pointer; }
 .nav-menu__panel { position:absolute; right:0; top:50px; width:220px; padding:8px; display:grid; gap:3px; border:1px solid var(--line); border-radius:16px; background:rgba(13,16,16,.98); box-shadow:var(--shadow); }
 .nav-menu__panel a,.nav-menu__panel button { padding:12px 13px; border:0; border-radius:10px; color:var(--ink); background:transparent; text-align:left; text-decoration:none; font-weight:600; cursor:pointer; }
 .nav-menu__panel a:hover,.nav-menu__panel button:hover { background:rgba(255,255,255,.06); }
@@ -70,6 +71,7 @@ a { color:inherit; } button,a { -webkit-tap-highlight-color:transparent; } butto
 .dash-action:hover { border-color:var(--accent); transform:translateY(-1px); } .dash-action.primary { color:var(--accent-ink); border-color:var(--accent); background:var(--accent); }
 
 .site-footer { border-top:1px solid var(--line); background:var(--bg); } .site-footer__inner { max-width:var(--max); margin:auto; padding:34px 28px; display:flex; justify-content:space-between; align-items:center; gap:20px; }
+.godyrect-native-app .site-footer { display:none; }
 .site-footer__brand { color:var(--muted); font-size:13px; } .site-footer__links { display:flex; gap:20px; } .site-footer__links a { color:var(--muted); text-decoration:none; font-size:13px; } .site-footer__links a:hover { color:var(--ink); }
 .messages-shell { display:grid; grid-template-columns:minmax(240px,320px) minmax(0,1fr); gap:12px; } .messages-pane { min-width:0; padding:14px; border:1px solid var(--line); border-radius:16px; background:var(--surface); } .messages-pane--list { max-height:80vh; overflow:auto; } .messages-pane--thread { display:grid; align-content:start; }
 

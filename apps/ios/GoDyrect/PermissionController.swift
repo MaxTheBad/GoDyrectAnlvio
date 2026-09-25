@@ -14,7 +14,6 @@ enum PermissionKind: String, Identifiable {
 final class PermissionController: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var activePrompt: PermissionKind?
     private let locationManager = CLLocationManager()
-    private let defaults = UserDefaults.standard
 
     override init() {
         super.init()
@@ -22,17 +21,31 @@ final class PermissionController: NSObject, ObservableObject, CLLocationManagerD
         locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
     }
 
-    func beginIfNeeded() {
+    func request(_ kind: PermissionKind) {
         guard activePrompt == nil else { return }
-        if !defaults.bool(forKey: "godyrect.soft.notifications.seen") {
-            activePrompt = .notifications
-        } else if !defaults.bool(forKey: "godyrect.soft.location.seen") {
-            activePrompt = .location
+        switch kind {
+        case .notifications:
+            UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
+                Task { @MainActor in
+                    guard let self else { return }
+                    if settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    } else {
+                        self.activePrompt = .notifications
+                    }
+                }
+            }
+        case .location:
+            let status = locationManager.authorizationStatus
+            if status == .authorizedWhenInUse || status == .authorizedAlways {
+                locationManager.requestLocation()
+            } else {
+                activePrompt = .location
+            }
         }
     }
 
     func allow(_ kind: PermissionKind) {
-        markSeen(kind)
         activePrompt = nil
 
         switch kind {
@@ -48,24 +61,10 @@ final class PermissionController: NSObject, ObservableObject, CLLocationManagerD
             }
         }
 
-        presentNextAfterDelay()
     }
 
     func deferPrompt(_ kind: PermissionKind) {
-        markSeen(kind)
         activePrompt = nil
-        presentNextAfterDelay()
-    }
-
-    private func markSeen(_ kind: PermissionKind) {
-        defaults.set(true, forKey: "godyrect.soft.\(kind.rawValue).seen")
-    }
-
-    private func presentNextAfterDelay() {
-        Task {
-            try? await Task.sleep(for: .milliseconds(700))
-            beginIfNeeded()
-        }
     }
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {

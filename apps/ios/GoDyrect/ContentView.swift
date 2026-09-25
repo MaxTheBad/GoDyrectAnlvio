@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var browser = BrowserModel()
     @StateObject private var permissions = PermissionController()
+    @State private var showNotificationPreferences = false
 
     var body: some View {
         ZStack {
@@ -33,15 +34,45 @@ struct ContentView: View {
             }
         }
         .animation(.spring(response: 0.42, dampingFraction: 0.88), value: permissions.activePrompt)
-        .task {
-            try? await Task.sleep(for: .milliseconds(1100))
-            permissions.beginIfNeeded()
+        .onReceive(browser.permissionRequests) { kind in permissions.request(kind) }
+        .onReceive(browser.notificationPreferencesRequests) { showNotificationPreferences = true }
+        .sheet(isPresented: $showNotificationPreferences) {
+            NotificationPreferences(onEnable: { permissions.request(.notifications) })
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
         .alert("Couldn’t load GoDyrect", isPresented: $browser.showError) {
             Button("Try again") { browser.reload() }
             Button("Cancel", role: .cancel) {}
         } message: {
             Text(browser.errorMessage)
+        }
+    }
+}
+
+private struct NotificationPreferences: View {
+    let onEnable: () -> Void
+    @AppStorage("godyrect.notifications.messages") private var messages = true
+    @AppStorage("godyrect.notifications.activity") private var activity = true
+    @AppStorage("godyrect.notifications.saved") private var saved = true
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Text("Choose the updates that earn your attention. You can change these anytime.")
+                        .foregroundStyle(.secondary)
+                    Button("Turn on system notifications", action: onEnable)
+                        .fontWeight(.semibold)
+                } header: { Text("GoDyrect notifications") }
+                Section("Notify me about") {
+                    Toggle("New messages", isOn: $messages)
+                    Toggle("Buyer and seller activity", isOn: $activity)
+                    Toggle("Saved opportunities", isOn: $saved)
+                }
+            }
+            .navigationTitle("Notifications")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

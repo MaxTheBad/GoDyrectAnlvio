@@ -189,6 +189,13 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
       }
     } catch {}
 
+    if (window.GoDyrectNative?.request) {
+      window.GoDyrectNative.request('location');
+      setToast('Choose location access to calculate distance');
+      setTimeout(() => setToast(''), 1600);
+      return;
+    }
+
     if (!navigator.geolocation) {
       setToast('Geolocation not available on this device');
       setTimeout(() => setToast(''), 1600);

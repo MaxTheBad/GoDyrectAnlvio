@@ -7,95 +7,95 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0031DA79C1C812C85A885F42 /* PermissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7D9222D6BA27ACF4D97EE0 /* PermissionController.swift */; };
-		1E66E77D61EDD59CDE11D360 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA06807D2900F9E7675A2D9 /* AppDelegate.swift */; };
-		39E2D2E0C98B389C9A3A4158 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12AA171F0D6EEAB93CA88829 /* ContentView.swift */; };
-		62F4991DF277A3D69F478216 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA92C6F6A7E532E8B437AF1E /* Foundation.framework */; };
-		B265B3B2F4A4D1C8CDBB3361 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 64BB30A38837D20B00103E16 /* Assets.xcassets */; };
-		BE3A6B2C6E9F4C53B0726B57 /* GoDyrectWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71E287ABC50A932BAB994D5 /* GoDyrectWebView.swift */; };
-		E0E9DF59DDEDB90D63F65F58 /* GoDyrectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 875DC967C7ACE8638F0CDA67 /* GoDyrectApp.swift */; };
+		0A039BABCE8819744103761A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4789AF88A4F6C5B563AAB7A2 /* Foundation.framework */; };
+		0DAB47D8E4F394A76D83356F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7DF08662DA2CA73289A99BF6 /* Assets.xcassets */; };
+		34BCB5459B5BE7B92E47B909 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508785E7272E1EA77A8C709E /* AppDelegate.swift */; };
+		4D4005C650944A27CBDBF028 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0411DD6AA2C122D118F709 /* ContentView.swift */; };
+		867594227D6DBE2B5111DFAD /* GoDyrectWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C73C5EEAFEAC0DC7EF6CABB6 /* GoDyrectWebView.swift */; };
+		DF8F386C868BBC5A31521FED /* PermissionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7907C47035EA0E1EEF84390A /* PermissionController.swift */; };
+		FFBB82A276A722DD46567C84 /* GoDyrectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28848DF106E613B506F25F4 /* GoDyrectApp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0AA06807D2900F9E7675A2D9 /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		12AA171F0D6EEAB93CA88829 /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		64BB30A38837D20B00103E16 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		7E71ADDBE64410C49AFE26EC /* GoDyrect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoDyrect.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		875DC967C7ACE8638F0CDA67 /* GoDyrectApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoDyrectApp.swift; sourceTree = "<group>"; };
-		EA92C6F6A7E532E8B437AF1E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		ED7D9222D6BA27ACF4D97EE0 /* PermissionController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PermissionController.swift; sourceTree = "<group>"; };
-		F71E287ABC50A932BAB994D5 /* GoDyrectWebView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoDyrectWebView.swift; sourceTree = "<group>"; };
+		12247CB9C942176819111179 /* GoDyrect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoDyrect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4789AF88A4F6C5B563AAB7A2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		508785E7272E1EA77A8C709E /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		7907C47035EA0E1EEF84390A /* PermissionController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PermissionController.swift; sourceTree = "<group>"; };
+		7DF08662DA2CA73289A99BF6 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A28848DF106E613B506F25F4 /* GoDyrectApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoDyrectApp.swift; sourceTree = "<group>"; };
+		C73C5EEAFEAC0DC7EF6CABB6 /* GoDyrectWebView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GoDyrectWebView.swift; sourceTree = "<group>"; };
+		FE0411DD6AA2C122D118F709 /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		B38E2C987DC2631A3F47D50A /* Frameworks */ = {
+		4ADE1AFC471ADDDE56D546B0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				62F4991DF277A3D69F478216 /* Foundation.framework in Frameworks */,
+				0A039BABCE8819744103761A /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		00A4D8D634E8EE8BD8505052 /* iOS */ = {
+		2D42BD720931FD939208D2D4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				EA92C6F6A7E532E8B437AF1E /* Foundation.framework */,
+				12247CB9C942176819111179 /* GoDyrect.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		995DF762C574EDCB008BEBE6 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				4789AF88A4F6C5B563AAB7A2 /* Foundation.framework */,
 			);
 			name = iOS;
 			sourceTree = "<group>";
 		};
-		09E1DFF9C6AD8F78057A5D0E = {
+		A0ACF546AFB0B6ED1E215443 /* GoDyrect */ = {
 			isa = PBXGroup;
 			children = (
-				9D5F0D9D57DD673C1DDECD63 /* Products */,
-				8C6BFEC07D339A26350A1CA4 /* Frameworks */,
-				9C84D9782E80105E6D6D23F5 /* GoDyrect */,
-			);
-			sourceTree = "<group>";
-		};
-		8C6BFEC07D339A26350A1CA4 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				00A4D8D634E8EE8BD8505052 /* iOS */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		9C84D9782E80105E6D6D23F5 /* GoDyrect */ = {
-			isa = PBXGroup;
-			children = (
-				875DC967C7ACE8638F0CDA67 /* GoDyrectApp.swift */,
-				12AA171F0D6EEAB93CA88829 /* ContentView.swift */,
-				F71E287ABC50A932BAB994D5 /* GoDyrectWebView.swift */,
-				ED7D9222D6BA27ACF4D97EE0 /* PermissionController.swift */,
-				0AA06807D2900F9E7675A2D9 /* AppDelegate.swift */,
-				64BB30A38837D20B00103E16 /* Assets.xcassets */,
+				A28848DF106E613B506F25F4 /* GoDyrectApp.swift */,
+				FE0411DD6AA2C122D118F709 /* ContentView.swift */,
+				C73C5EEAFEAC0DC7EF6CABB6 /* GoDyrectWebView.swift */,
+				7907C47035EA0E1EEF84390A /* PermissionController.swift */,
+				508785E7272E1EA77A8C709E /* AppDelegate.swift */,
+				7DF08662DA2CA73289A99BF6 /* Assets.xcassets */,
 			);
 			name = GoDyrect;
 			path = GoDyrect;
 			sourceTree = "<group>";
 		};
-		9D5F0D9D57DD673C1DDECD63 /* Products */ = {
+		B431B4899B1A9A19CFE86A6D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7E71ADDBE64410C49AFE26EC /* GoDyrect.app */,
+				995DF762C574EDCB008BEBE6 /* iOS */,
 			);
-			name = Products;
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DB3EA0C0FF35C94359EB87D5 = {
+			isa = PBXGroup;
+			children = (
+				2D42BD720931FD939208D2D4 /* Products */,
+				B431B4899B1A9A19CFE86A6D /* Frameworks */,
+				A0ACF546AFB0B6ED1E215443 /* GoDyrect */,
+			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2CCFB20B8A37F33D33BC8DE5 /* GoDyrect */ = {
+		DB11C68C36AE4BB059621B73 /* GoDyrect */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7D3D59B7A447F4A4CB65E816 /* Build configuration list for PBXNativeTarget "GoDyrect" */;
+			buildConfigurationList = 1E0256500676684A97660FC9 /* Build configuration list for PBXNativeTarget "GoDyrect" */;
 			buildPhases = (
-				8015A115072C11F39316F2EB /* Sources */,
-				B38E2C987DC2631A3F47D50A /* Frameworks */,
-				889B28ED45C52278CBCC0227 /* Resources */,
+				4CD1B391B5EB6B2ABAA3F294 /* Sources */,
+				4ADE1AFC471ADDDE56D546B0 /* Frameworks */,
+				1588327B99874CFE571C0546 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -103,19 +103,19 @@
 			);
 			name = GoDyrect;
 			productName = GoDyrect;
-			productReference = 7E71ADDBE64410C49AFE26EC /* GoDyrect.app */;
+			productReference = 12247CB9C942176819111179 /* GoDyrect.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		85A64494361115508DE80B48 /* Project object */ = {
+		5595E4DCAB83350FE9424722 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 2650;
 				LastUpgradeCheck = 2650;
 				TargetAttributes = {
-					2CCFB20B8A37F33D33BC8DE5 = {
+					DB11C68C36AE4BB059621B73 = {
 						CreatedOnToolsVersion = 26.5;
 						SystemCapabilities = {
 							com.apple.Push = {
@@ -125,7 +125,7 @@
 					};
 				};
 			};
-			buildConfigurationList = B1149F9FF61B0E086CC0015C /* Build configuration list for PBXProject "GoDyrect" */;
+			buildConfigurationList = 35AEE66D71D930B17BFAF58B /* Build configuration list for PBXProject "GoDyrect" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -133,46 +133,46 @@
 				en,
 				Base,
 			);
-			mainGroup = 09E1DFF9C6AD8F78057A5D0E;
+			mainGroup = DB3EA0C0FF35C94359EB87D5;
 			minimizedProjectReferenceProxies = 0;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 9D5F0D9D57DD673C1DDECD63 /* Products */;
+			productRefGroup = 2D42BD720931FD939208D2D4 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2CCFB20B8A37F33D33BC8DE5 /* GoDyrect */,
+				DB11C68C36AE4BB059621B73 /* GoDyrect */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		889B28ED45C52278CBCC0227 /* Resources */ = {
+		1588327B99874CFE571C0546 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B265B3B2F4A4D1C8CDBB3361 /* Assets.xcassets in Resources */,
+				0DAB47D8E4F394A76D83356F /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8015A115072C11F39316F2EB /* Sources */ = {
+		4CD1B391B5EB6B2ABAA3F294 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E0E9DF59DDEDB90D63F65F58 /* GoDyrectApp.swift in Sources */,
-				39E2D2E0C98B389C9A3A4158 /* ContentView.swift in Sources */,
-				BE3A6B2C6E9F4C53B0726B57 /* GoDyrectWebView.swift in Sources */,
-				0031DA79C1C812C85A885F42 /* PermissionController.swift in Sources */,
-				1E66E77D61EDD59CDE11D360 /* AppDelegate.swift in Sources */,
+				FFBB82A276A722DD46567C84 /* GoDyrectApp.swift in Sources */,
+				4D4005C650944A27CBDBF028 /* ContentView.swift in Sources */,
+				867594227D6DBE2B5111DFAD /* GoDyrectWebView.swift in Sources */,
+				DF8F386C868BBC5A31521FED /* PermissionController.swift in Sources */,
+				34BCB5459B5BE7B92E47B909 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		0AC95524132CEB84D147323B /* Debug */ = {
+		08D6A9081085A1E6F7B39DD3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -180,7 +180,7 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = GoDyrect/GoDyrect.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 3258CL32QP;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -196,7 +196,32 @@
 			};
 			name = Debug;
 		};
-		10F46237540713B456B54B0B /* Debug */ = {
+		54E14D808568D9DC98050BF6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = GoDyrect/GoDyrect.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				DEVELOPMENT_TEAM = 3258CL32QP;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = GoDyrect/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.godyrect.mobile;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9C16E94C429476A1B5A8A9B5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -258,7 +283,7 @@
 			};
 			name = Debug;
 		};
-		529C4D6828FF0A8D2785F55E /* Release */ = {
+		EDBA351D1B32A7826DFF9C39 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -313,53 +338,28 @@
 			};
 			name = Release;
 		};
-		904BC572ADFADE504A8FAACD /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_ENTITLEMENTS = GoDyrect/GoDyrect.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = 3258CL32QP;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = GoDyrect/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.godyrect.mobile;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7D3D59B7A447F4A4CB65E816 /* Build configuration list for PBXNativeTarget "GoDyrect" */ = {
+		1E0256500676684A97660FC9 /* Build configuration list for PBXNativeTarget "GoDyrect" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				904BC572ADFADE504A8FAACD /* Release */,
-				0AC95524132CEB84D147323B /* Debug */,
+				54E14D808568D9DC98050BF6 /* Release */,
+				08D6A9081085A1E6F7B39DD3 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B1149F9FF61B0E086CC0015C /* Build configuration list for PBXProject "GoDyrect" */ = {
+		35AEE66D71D930B17BFAF58B /* Build configuration list for PBXProject "GoDyrect" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				10F46237540713B456B54B0B /* Debug */,
-				529C4D6828FF0A8D2785F55E /* Release */,
+				9C16E94C429476A1B5A8A9B5 /* Debug */,
+				EDBA351D1B32A7826DFF9C39 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 85A64494361115508DE80B48 /* Project object */;
+	rootObject = 5595E4DCAB83350FE9424722 /* Project object */;
 }

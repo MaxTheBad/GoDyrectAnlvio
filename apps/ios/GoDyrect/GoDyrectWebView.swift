@@ -10,6 +10,8 @@ final class BrowserModel: ObservableObject {
     @Published var errorMessage = "Please check your connection and try again."
     weak var webView: WKWebView?
     private var observers = Set<AnyCancellable>()
+    let permissionRequests = PassthroughSubject<PermissionKind, Never>()
+    let notificationPreferencesRequests = PassthroughSubject<Void, Never>()
 
     init() {
         NotificationCenter.default.publisher(for: .goDyrectPushTokenUpdated)
@@ -42,19 +44,28 @@ final class BrowserModel: ObservableObject {
         }
     }
 
+    func requestPermission(_ kind: String) {
+        if kind == "notificationPreferences" {
+            notificationPreferencesRequests.send()
+            return
+        }
+        guard let request = PermissionKind(rawValue: kind) else { return }
+        permissionRequests.send(request)
+    }
+
     private func sendPushToken(_ token: String) {
         let script = """
-        localStorage.setItem('godyrect-native-push-token', \(json(token)));
-        window.dispatchEvent(new CustomEvent('godyrect:native-push-token', { detail: { token: \(json(token)), platform: 'ios' } }));
+        (() => { localStorage.setItem('godyrect-native-push-token', \(json(token)));
+        window.dispatchEvent(new CustomEvent('godyrect:native-push-token', { detail: { token: \(json(token)), platform: 'ios' } })); })();
         """
         webView?.evaluateJavaScript(script)
     }
 
     private func sendLocation(latitude: Double, longitude: Double) {
         let script = """
-        const detail = { latitude: \(latitude), longitude: \(longitude), accuracy: 'approximate' };
+        (() => { const detail = { latitude: \(latitude), longitude: \(longitude), accuracy: 'approximate' };
         localStorage.setItem('godyrect-native-location', JSON.stringify(detail));
-        window.dispatchEvent(new CustomEvent('godyrect:native-location', { detail }));
+        window.dispatchEvent(new CustomEvent('godyrect:native-location', { detail })); })();
         """
         webView?.evaluateJavaScript(script)
     }
@@ -85,6 +96,14 @@ struct GoDyrectWebView: UIViewRepresentable {
         configuration.allowsInlineMediaPlayback = true
         configuration.mediaTypesRequiringUserActionForPlayback = []
         configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
+        configuration.userContentController.add(context.coordinator, name: "godyrectNative")
+        let nativeBridge = """
+        document.documentElement.classList.add('godyrect-native-app');
+        window.GoDyrectNative = { request: function(kind) {
+          window.webkit && window.webkit.messageHandlers.godyrectNative.postMessage({ kind: kind });
+        }};
+        """
+        configuration.userContentController.addUserScript(WKUserScript(source: nativeBridge, injectionTime: .atDocumentStart, forMainFrameOnly: true))
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
@@ -104,12 +123,19 @@ struct GoDyrectWebView: UIViewRepresentable {
 
     func updateUIView(_ webView: WKWebView, context: Context) {}
 
-    final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
+    final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
         private let model: BrowserModel
         private let allowedHosts = ["godyrect.com", "www.godyrect.com", "elcoibbmnjejkdbourjv.supabase.co"]
 
         init(model: BrowserModel) {
             self.model = model
+        }
+
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            guard message.name == "godyrectNative",
+                  let body = message.body as? [String: Any],
+                  let kind = body["kind"] as? String else { return }
+            Task { @MainActor in self.model.requestPermission(kind) }
         }
 
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
