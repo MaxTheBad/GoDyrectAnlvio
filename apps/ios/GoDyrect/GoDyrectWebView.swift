@@ -29,7 +29,15 @@ struct GoDyrectWebView: UIViewRepresentable {
         configuration.allowsInlineMediaPlayback = true
         configuration.mediaTypesRequiringUserActionForPlayback = []
         configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
-        let nativeMarker = "document.documentElement.classList.add('godyrect-native-app');"
+        configuration.userContentController.add(context.coordinator.permissionBridge, name: "godyrectNative")
+        let nativeMarker = """
+        document.documentElement.classList.add('godyrect-native-app');
+        window.GoDyrectNative = {
+          request: function(kind) {
+            window.webkit.messageHandlers.godyrectNative.postMessage({ kind: kind });
+          }
+        };
+        """
         configuration.userContentController.addUserScript(WKUserScript(source: nativeMarker, injectionTime: .atDocumentStart, forMainFrameOnly: true))
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
@@ -41,8 +49,9 @@ struct GoDyrectWebView: UIViewRepresentable {
         webView.backgroundColor = UIColor(red: 0.015, green: 0.025, blue: 0.021, alpha: 1)
         webView.scrollView.backgroundColor = webView.backgroundColor
         model.webView = webView
+        context.coordinator.permissionBridge.webView = webView
 
-        var request = URLRequest(url: URL(string: "https://godyrect.com")!)
+        var request = URLRequest(url: URL(string: "https://godyrect.com/explore")!)
         request.cachePolicy = .useProtocolCachePolicy
         webView.load(request)
         return webView
@@ -52,6 +61,7 @@ struct GoDyrectWebView: UIViewRepresentable {
 
     final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
         private let model: BrowserModel
+        let permissionBridge = NativePermissionBridge()
         private let allowedHosts = ["godyrect.com", "www.godyrect.com", "elcoibbmnjejkdbourjv.supabase.co"]
 
         init(model: BrowserModel) {
@@ -139,7 +149,7 @@ struct GoDyrectWebView: UIViewRepresentable {
     }
 }
 
-private extension UIView {
+extension UIView {
     var closestViewController: UIViewController? {
         sequence(first: next, next: { $0?.next })
             .first { $0 is UIViewController } as? UIViewController

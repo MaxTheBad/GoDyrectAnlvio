@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["3258CL32QP.com.godyrect.mobile"],
+        "components": [
+          { "/": "*", "comment": "Open GoDyrect links in the app" }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["3258CL32QP.com.godyrect.mobile"]
+  }
+}

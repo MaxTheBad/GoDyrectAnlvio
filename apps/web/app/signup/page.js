@@ -129,13 +129,13 @@ export default function SignupPage() {
       </section>
       <div className='auth-card'>
         {!confirmationSent ? (
-          <form onSubmit={submit} className='auth-form'>
+          <form onSubmit={submit} className='auth-form' name='signup'>
             <div><div className='auth-kicker'>Join GoDyrect</div><h2>Create your account</h2><p>Free to join. Set up takes less than a minute.</p></div>
 
             <label>Full name<input className={errors.fullName ? 'is-error' : ''} placeholder='John Smith' value={fullName} onChange={(e) => setFullName(e.target.value)} onInvalid={(e)=>{e.preventDefault(); markInvalid('fullName','Full name is required.');}} onInput={()=>setErrors((p)=>({ ...p, fullName: '' }))} required /></label>
             {errors.fullName ? <small style={errText}>{errors.fullName}</small> : null}
 
-            <label>Email address<input className={errors.email ? 'is-error' : ''} type='email' name='email' autoComplete='email' placeholder='you@company.com' value={email} onChange={(e) => setEmail(e.target.value)} onInvalid={(e)=>{e.preventDefault(); markInvalid('email','Valid email is required.');}} onInput={()=>setErrors((p)=>({ ...p, email: '' }))} required /></label>
+            <label>Email address<input id='signup-email' className={errors.email ? 'is-error' : ''} type='email' name='username' inputMode='email' autoCapitalize='none' spellCheck='false' autoComplete='username' placeholder='you@company.com' value={email} onChange={(e) => setEmail(e.target.value)} onInvalid={(e)=>{e.preventDefault(); markInvalid('email','Valid email is required.');}} onInput={()=>setErrors((p)=>({ ...p, email: '' }))} required /></label>
             {errors.email ? <small style={errText}>{errors.email}</small> : null}
 
             <label>Phone number<input className={errors.phone ? 'is-error' : ''} placeholder='+1 (555) 555-5555' value={phone} onChange={(e) => setPhone(e.target.value)} onInvalid={(e)=>{e.preventDefault(); markInvalid('phone','Phone number is required.');}} onInput={()=>setErrors((p)=>({ ...p, phone: '' }))} required /></label>

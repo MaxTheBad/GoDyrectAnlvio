@@ -89,9 +89,9 @@ export default function AuthModal() {
       <p>{mode === 'signin' ? 'Sign in to access your workspace, saved opportunities, and deal inbox.' : 'Create an account to save opportunities, message owners, and publish listings.'}</p>
       <button type='button' className='auth-google-button' onClick={continueWithGoogle} disabled={busy}><GoogleMark />Continue with Google</button>
       <div className='auth-divider' aria-hidden='true'><span />or<span /></div>
-      <form className='auth-modal__form' onSubmit={submit}>
-        <input type='email' autoComplete='email' value={email} onChange={(event) => setEmail(event.target.value)} placeholder='Email address' required />
-        <input type='password' autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} value={password} onChange={(event) => setPassword(event.target.value)} placeholder='Password' minLength={mode === 'signup' ? 8 : undefined} required />
+      <form className='auth-modal__form' name={mode === 'signin' ? 'login' : 'signup'} onSubmit={submit}>
+        <input id='modal-email' name='username' type='email' inputMode='email' autoCapitalize='none' spellCheck='false' autoComplete='username' value={email} onChange={(event) => setEmail(event.target.value)} placeholder='Email address' required />
+        <input id='modal-password' name='password' type='password' autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} value={password} onChange={(event) => setPassword(event.target.value)} placeholder='Password' minLength={mode === 'signup' ? 8 : undefined} required />
         {mode === 'signup' ? <label className='check-row'><input type='checkbox' checked={agree} onChange={(event) => setAgree(event.target.checked)} /><span>I agree to the <a href='/legal/privacy'>Privacy & Terms</a></span></label> : null}
         <button className='auth-submit' type='submit' disabled={busy}>{busy ? 'Working…' : mode === 'signin' ? 'Sign in →' : 'Create account →'}</button>
       </form>

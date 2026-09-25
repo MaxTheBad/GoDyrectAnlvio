@@ -26,11 +26,11 @@ export default function FeedPage() {
       }
 
       try {
-      const { data: auth, error: authError } = await supabase.auth.getUser();
+      const { data: auth, error: authError } = await supabase.auth.getSession();
       if (authError) throw authError;
-      const uid = auth?.user?.id;
+      const uid = auth?.session?.user?.id;
       if (!uid) {
-        setMsg('Please sign in to view your feed.');
+        setMsg('Sign in to personalize your feed with your posts, saved opportunities, and businesses you follow.');
         setNeedsLogin(true);
         setLoading(false);
         return;
@@ -140,7 +140,11 @@ export default function FeedPage() {
       setRows(ordered);
       setLoading(false);
       } catch (error) {
-        setMsg(error?.message || 'The feed could not load. Please try again.');
+        const missingSession = /auth session missing/i.test(error?.message || '');
+        setMsg(missingSession
+          ? 'Sign in to personalize your feed with your posts, saved opportunities, and businesses you follow.'
+          : (error?.message || 'The feed could not load. Please try again.'));
+        setNeedsLogin(missingSession);
         setLoading(false);
       }
     }

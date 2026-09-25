@@ -60,9 +60,9 @@ export default function LoginPage() {
           <div className='auth-proof'><span>Private by design</span><span>Direct conversations</span><span>No gatekeepers</span></div>
         </div>
       </section>
-      <form onSubmit={submit} className='auth-card auth-form'>
+      <form onSubmit={submit} className='auth-card auth-form' name='login'>
         <div><div className='auth-kicker'>Welcome back</div><h2>Sign in to GoDyrect</h2><p>Enter your details to continue.</p></div>
-        <label>Email address<input placeholder='you@company.com' type='email' name='email' autoComplete='email' value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
+        <label>Email address<input id='login-email' placeholder='you@company.com' type='email' name='username' inputMode='email' autoCapitalize='none' spellCheck='false' autoComplete='username' value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
         <label>Password<input placeholder='Your password' type='password' name='password' id='login-password' autoComplete='current-password' value={password} onChange={(e) => setPassword(e.target.value)} required /></label>
         <div style={{ textAlign: 'right', marginTop: -8 }}><a href='/forgot-password' style={{ color: '#b0ff4b', fontSize: 13, fontWeight: 700 }}>Forgot password?</a></div>
         <button className='auth-submit' type='submit' disabled={submitting}>{submitting ? 'Signing in…' : 'Sign in →'}</button>
