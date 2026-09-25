@@ -13,7 +13,7 @@ target = project.new_target(:application, 'GoDyrect', :ios, '17.0')
 target.product_name = 'GoDyrect'
 
 group = project.main_group.new_group('GoDyrect', 'GoDyrect')
-source_files = %w[GoDyrectApp.swift ContentView.swift GoDyrectWebView.swift PermissionController.swift AppDelegate.swift]
+source_files = %w[GoDyrectApp.swift ContentView.swift GoDyrectWebView.swift]
 source_refs = source_files.map { |name| group.new_file(name) }
 target.add_file_references(source_refs)
 
@@ -33,7 +33,7 @@ target.build_configurations.each do |config|
   settings['TARGETED_DEVICE_FAMILY'] = '1,2'
   settings['ASSETCATALOG_COMPILER_APPICON_NAME'] = 'AppIcon'
   settings['ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME'] = 'AccentColor'
-  settings['CURRENT_PROJECT_VERSION'] = '6'
+  settings['CURRENT_PROJECT_VERSION'] = '7'
   settings['MARKETING_VERSION'] = '1.0.0'
   settings['GENERATE_INFOPLIST_FILE'] = 'NO'
   settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'YES'
@@ -41,12 +41,7 @@ target.build_configurations.each do |config|
 end
 
 project.root_object.attributes['TargetAttributes'] = {
-  target.uuid => {
-    'CreatedOnToolsVersion' => '26.5',
-    'SystemCapabilities' => {
-      'com.apple.Push' => { 'enabled' => 1 }
-    }
-  }
+  target.uuid => { 'CreatedOnToolsVersion' => '26.5' }
 }
 
 project.build_configurations.each do |config|
