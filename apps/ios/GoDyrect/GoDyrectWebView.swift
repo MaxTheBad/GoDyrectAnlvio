@@ -123,7 +123,8 @@ struct GoDyrectWebView: UIViewRepresentable {
             if let host = url.host?.lowercased(),
                !allowedHosts.contains(host),
                !host.hasSuffix(".google.com"),
-               !host.hasSuffix(".googleusercontent.com") {
+               !host.hasSuffix(".googleusercontent.com"),
+               !host.hasSuffix(".apple.com") {
                 UIApplication.shared.open(url)
                 decisionHandler(.cancel)
                 return

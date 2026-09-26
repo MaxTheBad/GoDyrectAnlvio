@@ -85,6 +85,24 @@ export default function AuthModal() {
     }
   }
 
+  async function continueWithApple() {
+    if (!supabaseOAuth) return setMessage('Sign-in is temporarily unavailable.');
+    if (mode === 'signup' && !agree) return setMessage('Please agree to Privacy & Terms before continuing.');
+    setBusy(true); setMessage('');
+    try {
+      const { data, error } = await supabaseOAuth.auth.signInWithOAuth({
+        provider: 'apple',
+        options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(intent)}`, skipBrowserRedirect: true },
+      });
+      if (error) { setBusy(false); setMessage(error.message); }
+      else if (data?.url) window.location.assign(data.url);
+      else { setBusy(false); setMessage('Apple sign-in could not start. Please try again.'); }
+    } catch (error) {
+      setBusy(false);
+      setMessage(error?.message || 'Apple sign-in could not start. Please try again.');
+    }
+  }
+
   async function submit(event) {
     event.preventDefault();
     if (!supabase) return setMessage('Sign-in is temporarily unavailable.');
@@ -106,6 +124,7 @@ export default function AuthModal() {
       <h2 id='auth-modal-title'>{mode === 'signin' ? 'Continue the conversation.' : 'Start moving directly.'}</h2>
       <p>{mode === 'signin' ? 'Sign in to access your workspace, saved opportunities, and deal inbox.' : 'Create an account to save opportunities, message owners, and publish listings.'}</p>
       <button type='button' className='auth-google-button' onClick={continueWithGoogle} disabled={busy}><GoogleMark />Continue with Google</button>
+      <button type='button' className='auth-google-button auth-apple-button' onClick={continueWithApple} disabled={busy}><AppleMark />Continue with Apple</button>
       <div className='auth-divider' aria-hidden='true'><span />or<span /></div>
       <form className='auth-modal__form' name={mode === 'signin' ? 'login' : 'signup'} onSubmit={submit}>
         <input id='modal-email' name='username' type='email' inputMode='email' autoCapitalize='none' spellCheck='false' autoComplete='username' value={email} onChange={(event) => setEmail(event.target.value)} placeholder='Email address' required />
@@ -121,4 +140,8 @@ export default function AuthModal() {
 
 function GoogleMark() {
   return <svg className='google-mark' viewBox='0 0 18 18' aria-hidden='true'><path fill='#EA4335' d='M17.64 9.205c0-.638-.057-1.251-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.258h2.909c1.702-1.568 2.683-3.878 2.683-6.614Z'/><path fill='#4285F4' d='M9 18c2.43 0 4.467-.806 5.957-2.181l-2.909-2.258c-.806.54-1.837.859-3.048.859-2.344 0-4.328-1.584-5.037-3.71H.956v2.332A9 9 0 0 0 9 18Z'/><path fill='#FBBC05' d='M3.963 10.71A5.42 5.42 0 0 1 3.681 9c0-.593.102-1.17.282-1.71V4.958H.956A9 9 0 0 0 0 9c0 1.452.348 2.827.956 4.042l3.007-2.332Z'/><path fill='#34A853' d='M9 3.58c1.322 0 2.51.455 3.445 1.348l2.584-2.584C13.463.891 11.426 0 9 0A9 9 0 0 0 .956 4.958L3.963 7.29C4.672 5.164 6.656 3.58 9 3.58Z'/></svg>;
+}
+
+function AppleMark() {
+  return <svg className='google-mark' viewBox='0 0 24 24' aria-hidden='true'><path fill='currentColor' d='M17.05 20.28c-.98.95-2.05.8-3.08.35-1.1-.46-2.1-.48-3.26 0-1.45.62-2.22.44-3.08-.35C2.75 15.25 3.47 7.59 9 7.31c1.35.07 2.3.74 3.09.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.51-1.31 3.02-2.5 4.09ZM12 7.25C11.85 5.01 13.67 3.16 15.76 3c.29 2.59-2.35 4.5-3.76 4.25Z'/></svg>;
 }

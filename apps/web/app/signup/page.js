@@ -111,6 +111,19 @@ export default function SignupPage() {
     }
   }
 
+  async function signUpWithApple() {
+    setErrors({});
+    if (!supabaseOAuth) return setMsg('Sign-in is temporarily unavailable.');
+    if (!agree) return setMsg('Please agree to the policy before continuing with Apple.');
+    setSubmitting(true); setMsg('');
+    try {
+      const { data, error } = await supabaseOAuth.auth.signInWithOAuth({ provider: 'apple', options: { redirectTo: `${window.location.origin}/auth/callback?next=%2Fdashboard`, skipBrowserRedirect: true, data: { full_name: fullName || undefined, phone: phone || undefined, role, marketing_opt_in: marketingOptIn, terms_accepted_at: new Date().toISOString() } } });
+      if (error) { setSubmitting(false); setMsg(error.message); }
+      else if (data?.url) window.location.assign(data.url);
+      else { setSubmitting(false); setMsg('Apple sign-in could not start. Please try again.'); }
+    } catch (error) { setSubmitting(false); setMsg(error?.message || 'Apple sign-in could not start. Please try again.'); }
+  }
+
   async function resendConfirmation() {
     if (!supabase || !email || cooldown > 0) return;
     const { error } = await supabase.auth.resend({ type: 'signup', email });
@@ -191,6 +204,7 @@ export default function SignupPage() {
             <button className='auth-submit' type='submit' disabled={submitting}>{submitting ? 'Creating account…' : 'Create account →'}</button>
             <div className='auth-divider' aria-hidden='true'><span />or<span /></div>
             <button className='auth-google-button' type='button' onClick={signUpWithGoogle} disabled={submitting}><GoogleMark />Continue with Google</button>
+            <button className='auth-google-button auth-apple-button' type='button' onClick={signUpWithApple} disabled={submitting}><AppleMark />Continue with Apple</button>
             {msg ? <p className='auth-message'>{msg}</p> : null}
             <p className='auth-switch'>Already have an account? <a href='/login'>Sign in</a></p>
           </form>
@@ -217,5 +231,7 @@ export default function SignupPage() {
 function GoogleMark() {
   return <svg className='google-mark' viewBox='0 0 18 18' aria-hidden='true'><path fill='#EA4335' d='M17.64 9.205c0-.638-.057-1.251-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.258h2.909c1.702-1.568 2.683-3.878 2.683-6.614Z'/><path fill='#4285F4' d='M9 18c2.43 0 4.467-.806 5.957-2.181l-2.909-2.258c-.806.54-1.837.859-3.048.859-2.344 0-4.328-1.584-5.037-3.71H.956v2.332A9 9 0 0 0 9 18Z'/><path fill='#FBBC05' d='M3.963 10.71A5.42 5.42 0 0 1 3.681 9c0-.593.102-1.17.282-1.71V4.958H.956A9 9 0 0 0 0 9c0 1.452.348 2.827.956 4.042l3.007-2.332Z'/><path fill='#34A853' d='M9 3.58c1.322 0 2.51.455 3.445 1.348l2.584-2.584C13.463.891 11.426 0 9 0A9 9 0 0 0 .956 4.958L3.963 7.29C4.672 5.164 6.656 3.58 9 3.58Z'/></svg>;
 }
+
+function AppleMark() { return <svg className='google-mark' viewBox='0 0 24 24' aria-hidden='true'><path fill='currentColor' d='M17.05 20.28c-.98.95-2.05.8-3.08.35-1.1-.46-2.1-.48-3.26 0-1.45.62-2.22.44-3.08-.35C2.75 15.25 3.47 7.59 9 7.31c1.35.07 2.3.74 3.09.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.51-1.31 3.02-2.5 4.09ZM12 7.25C11.85 5.01 13.67 3.16 15.76 3c.29 2.59-2.35 4.5-3.76 4.25Z'/></svg>; }
 
 const errText = { color: '#ff8a80', fontSize: 12, marginTop: -4 };

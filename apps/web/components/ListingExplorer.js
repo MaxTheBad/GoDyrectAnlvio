@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { US_STATES } from '../lib/us-states';
 import { FeedPost } from '../app/feed/feed-components';
@@ -570,26 +570,7 @@ function MarketplaceMap({ listings, isMobile }) {
 
   return (
     <div style={{ ...mapLayout, gridTemplateColumns: isMobile ? '1fr' : mapLayout.gridTemplateColumns }}>
-      <div style={{ ...mapCanvas, minHeight: isMobile ? 330 : mapCanvas.minHeight }} aria-label={`Map showing ${located.length} listing locations`}>
-        <div style={mapGrid} />
-        <span style={{ ...mapLabel, top: '12%', left: '9%' }}>West</span>
-        <span style={{ ...mapLabel, top: '12%', right: '9%' }}>East</span>
-        {located.map((listing) => {
-          const x = Math.max(4, Math.min(96, ((Number(listing.lng) + 125) / 59) * 100));
-          const y = Math.max(7, Math.min(93, ((50 - Number(listing.lat)) / 26) * 100));
-          return (
-            <a
-              key={listing.id}
-              href={`/listing?id=${listing.id}`}
-              title={`${listing.title} — ${listing.city || listing.state || 'View listing'}`}
-              style={{ ...mapPin, left: `${x}%`, top: `${y}%` }}
-            >
-              <span style={mapPinDot} />
-              <span style={mapPinPrice}>${compactPrice(listing.asking_price)}</span>
-            </a>
-          );
-        })}
-      </div>
+      <AppleMarketplaceMap listings={located} height={isMobile ? 330 : mapCanvas.minHeight} />
       <div style={mapResults}>
         {located.slice(0, 8).map((listing) => (
           <a key={listing.id} href={`/listing?id=${listing.id}`} style={mapResult}>
@@ -600,6 +581,49 @@ function MarketplaceMap({ listings, isMobile }) {
       </div>
     </div>
   );
+}
+
+function AppleMarketplaceMap({ listings, height }) {
+  const containerRef = useRef(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let disposed = false;
+    let map;
+    async function start() {
+      try {
+        const response = await fetch('/api/maps-token');
+        const { token } = await response.json();
+        if (!response.ok || !token) throw new Error('Maps is not configured yet.');
+        if (!window.mapkit) {
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js';
+            script.async = true;
+            script.onload = resolve;
+            script.onerror = () => reject(new Error('Unable to load Apple Maps.'));
+            document.head.appendChild(script);
+          });
+        }
+        window.mapkit.init({ authorizationCallback: (done) => done(token) });
+        if (disposed || !containerRef.current) return;
+        map = new window.mapkit.Map(containerRef.current, { showsCompass: window.mapkit.FeatureVisibility.Visible, showsZoomControl: true });
+        const annotations = listings.map((listing) => {
+          const coordinate = new window.mapkit.Coordinate(Number(listing.lat), Number(listing.lng));
+          const annotation = new window.mapkit.MarkerAnnotation(coordinate, { title: listing.title, subtitle: `${listing.city || listing.state || 'Location'} · $${Number(listing.asking_price || 0).toLocaleString()}`, color: '#94d84d' });
+          annotation.url = `/listing?id=${listing.id}`;
+          return annotation;
+        });
+        map.addAnnotations(annotations);
+        map.showItems(annotations);
+      } catch (cause) { if (!disposed) setError(cause.message || 'Map unavailable.'); }
+    }
+    start();
+    return () => { disposed = true; if (map) map.destroy?.(); };
+  }, [listings]);
+
+  if (error) return <div style={{ ...mapEmpty, minHeight: height }}>{error}</div>;
+  return <div ref={containerRef} style={{ ...mapCanvas, minHeight: height }} aria-label={`Apple Map showing ${listings.length} listing locations`} />;
 }
 
 function compactPrice(value) {
