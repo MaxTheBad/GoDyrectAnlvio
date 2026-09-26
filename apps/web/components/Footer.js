@@ -6,7 +6,8 @@ export default function Footer(){
         <nav className="site-footer__links" aria-label="Footer navigation">
           <a href="/about">About</a>
           <a href="/contactus">Contact</a>
-          <a href="/legal/privacy">Privacy &amp; Terms</a>
+          <a href="/legal/privacy">Privacy</a>
+          <a href="/legal/terms">Terms</a>
         </nav>
       </div>
     </footer>
