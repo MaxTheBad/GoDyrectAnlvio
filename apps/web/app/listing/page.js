@@ -351,7 +351,7 @@ export default function ListingDetailPage() {
         .mediaColumn, .dealPanel, .contentCard, .statGrid { border: 1px solid rgba(229,255,242,.11); background: rgba(13,17,15,.92); box-shadow: 0 24px 70px rgba(0,0,0,.28); }
         .mediaColumn { border-radius: 28px; overflow: hidden; }
         .mediaFrame { position: relative; width: 100%; aspect-ratio: 9 / 16; min-height: 0; max-height: 78vh; overflow: hidden; background: #0a0d0c; }
-        .mediaFrame video, .mediaFrame > img { width: 100%; height: 100%; display: block; object-fit: cover; }
+        .mediaFrame video, .mediaFrame > img { width: 100%; height: 100%; display: block; object-fit: contain; background: #050807; }
         .mediaEmpty { height: 100%; display: grid; place-content: center; justify-items: center; gap: 12px; color: rgba(255,255,255,.42); background: radial-gradient(circle at center, rgba(176,255,75,.12), transparent 45%); }
         .mediaEmpty span { width: 76px; height: 76px; display: grid; place-items: center; border-radius: 24px; font-size: 30px; font-weight: 900; color: #0a0d0c; background: #b0ff4b; }
         .mediaEmpty p { margin: 0; }
