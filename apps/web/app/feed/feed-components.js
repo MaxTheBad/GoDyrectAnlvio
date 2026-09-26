@@ -7,6 +7,7 @@ export function FeedPost({
   listing,
   businessName,
   businessLocation,
+  businessIndustry,
   sellerName,
   media = [],
   activeIndex = 0,
@@ -172,7 +173,7 @@ export function FeedPost({
       <div style={postDetails}>
         <div style={postDetailsTop}><h3 style={postTitle}>{listing.title}</h3><strong style={postPrice}>${Number(listing.asking_price || 0).toLocaleString()}</strong></div>
         {listing.description ? <p style={postDescription}>{listing.description}</p> : null}
-        <div style={postInfoRow}><span style={postLocationChip}>⌖ {[listing.city, listing.state].filter(Boolean).join(', ') || businessLocation || 'Location available'}</span><span style={postCategoryChip}>{prettyCategory(listing.category)}</span></div>
+        <div style={postInfoRow}><span style={postLocationChip}><LocationIcon />{[listing.city, listing.state].filter(Boolean).join(', ') || businessLocation || 'Location available'}</span><span style={metaDivider}>|</span><span style={postIndustryChip}><IndustryIcon />{businessIndustry || prettyCategory(listing.category)}</span>{Number.isFinite(Number(listing.business_age_years)) ? <><span style={metaDivider}>|</span><span style={postAgeChip}><AgeIcon />{Number(listing.business_age_years)} {Number(listing.business_age_years) === 1 ? 'year' : 'years'}</span></> : null}</div>
         <div style={postFooter}><a href={`/messages?seller=${listing.seller_id}&listing=${listing.id}`} style={messageButton}><MessageIcon /> Message</a><a href={onOpen} style={postViewLink}>View opportunity <span aria-hidden='true'>↗</span></a></div>
       </div>
     </article>
@@ -180,6 +181,9 @@ export function FeedPost({
 }
 
 function MessageIcon() { return <svg viewBox='0 0 24 24' aria-hidden='true' width='17' height='17' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='M20 15a4 4 0 0 1-4 4H8l-4 3v-7a4 4 0 0 1-1-2.65V7a4 4 0 0 1 4-4h9a4 4 0 0 1 4 4v8Z' /></svg>; }
+function LocationIcon() { return <svg viewBox='0 0 24 24' aria-hidden='true' width='17' height='17' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z' /><circle cx='12' cy='10' r='2.5' /></svg>; }
+function IndustryIcon() { return <svg viewBox='0 0 24 24' aria-hidden='true' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='M4 20V7l8-4 8 4v13' /><path d='M9 20v-5h6v5M8 10h.01M16 10h.01' /></svg>; }
+function AgeIcon() { return <svg viewBox='0 0 24 24' aria-hidden='true' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round'><circle cx='12' cy='12' r='8.5' /><path d='M12 7v5l3 2' /></svg>; }
 function prettyCategory(value) { if (value === 'asset_sale') return 'Asset sale'; if (value === 'real_estate') return 'Real estate'; if (value === 'startup') return 'Start-up'; return 'Established business'; }
 
 export function FeedEmptyState({ loading, msg, hasFollows, hasSearch = false, exploreHref = '/explore' }) {
@@ -346,8 +350,10 @@ const postPrice = { fontSize: 19, color: '#b9ff5a', whiteSpace: 'nowrap', paddin
 const postTitle = { margin: 0, color: '#fff', fontSize: 'clamp(19px,4vw,24px)', lineHeight: 1.15 };
 const postDescription = { margin: 0, color: '#b9c4be', fontSize: 14, lineHeight: 1.45, display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 3, overflow: 'hidden', whiteSpace: 'pre-wrap' };
 const postInfoRow = { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, color: '#aeb9b2', fontSize: 13 };
-const postLocationChip = { display: 'inline-flex', alignItems: 'center', gap: 4 };
-const postCategoryChip = { display: 'inline-flex', alignItems: 'center', padding: '5px 9px', borderRadius: 999, color: '#b9ff5a', border: '1px solid rgba(185,255,90,.2)', background: 'rgba(91,125,42,.12)', textTransform: 'capitalize' };
+const postLocationChip = { display: 'inline-flex', alignItems: 'center', gap: 5 };
+const metaDivider = { color: 'rgba(229,255,242,.25)', fontSize: 16, lineHeight: 1 };
+const postIndustryChip = { display: 'inline-flex', alignItems: 'center', gap: 5, color: '#b9ff5a', textTransform: 'capitalize' };
+const postAgeChip = { display: 'inline-flex', alignItems: 'center', gap: 5, color: '#aeb9b2' };
 const postFooter = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingTop: 11, borderTop: '1px solid rgba(229,255,242,.1)' };
 const messageButton = { display: 'inline-flex', alignItems: 'center', gap: 7, color: '#f4f7f5', textDecoration: 'none', fontSize: 13, fontWeight: 700 };
 const postViewLink = { display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between', color: '#b9ff5a', textDecoration: 'none', fontSize: 13, fontWeight: 800, marginTop: 3 };

@@ -8,6 +8,7 @@ export default function FeedPage() {
   const [rows, setRows] = useState([]);
   const [profileNames, setProfileNames] = useState({});
   const [businessLocations, setBusinessLocations] = useState({});
+  const [businessIndustries, setBusinessIndustries] = useState({});
   const [mediaByListing, setMediaByListing] = useState({});
   const [activeMediaByListing, setActiveMediaByListing] = useState({});
   const [favoriteIds, setFavoriteIds] = useState([]);
@@ -64,7 +65,7 @@ export default function FeedPage() {
 
       let query = supabase
         .from('listings')
-        .select('id,seller_id,business_id,title,description,category,lister_role,asking_price,city,state,country,created_at,is_active,is_sold')
+        .select('id,seller_id,business_id,title,description,category,lister_role,business_age_years,asking_price,city,state,country,created_at,is_active,is_sold')
         .eq('is_active', true)
         .eq('is_sold', false)
         .order('created_at', { ascending: false })
@@ -93,7 +94,7 @@ export default function FeedPage() {
 
       const [{ data: profiles }, { data: businesses }, { data: media }] = await Promise.all([
         sellerIds.length ? supabase.from('profiles').select('id,full_name,handle').in('id', sellerIds) : Promise.resolve({ data: [] }),
-        bizIds.length ? supabase.from('businesses').select('id,city,state,zip,country,county').in('id', bizIds) : Promise.resolve({ data: [] }),
+        bizIds.length ? supabase.from('businesses').select('id,city,state,zip,country,county,industry').in('id', bizIds) : Promise.resolve({ data: [] }),
         listingIds.length
           ? supabase.from('listing_media').select('listing_id,media_type,url,thumbnail_url,overlay_text,overlay_x,overlay_y,overlay_size,sort_order').in('listing_id', listingIds)
           : Promise.resolve({ data: [] }),
@@ -110,6 +111,9 @@ export default function FeedPage() {
         lMap[b.id] = [b.city, b.state, b.zip].filter(Boolean).join(' ');
       });
       setBusinessLocations(lMap);
+      const industryMap = {};
+      (businesses || []).forEach((b) => { industryMap[b.id] = b.industry || ''; });
+      setBusinessIndustries(industryMap);
       const activeMap = {};
       listRows.forEach((row) => {
         activeMap[row.id] = 0;
@@ -201,6 +205,7 @@ export default function FeedPage() {
                 listing={r}
                 businessName={null}
                 businessLocation={businessLocations[r.business_id]}
+                businessIndustry={businessIndustries[r.business_id]}
                 sellerName={profileNames[r.seller_id]}
                 media={media}
                 activeIndex={activeIndex}
