@@ -181,7 +181,7 @@ export function FeedPost({
       <div style={postDetails}>
         <div style={postDetailsTop}><h3 style={postTitle}>{listing.title}</h3><strong style={postPrice}>${Number(listing.asking_price || 0).toLocaleString()}</strong></div>
         {listing.description ? <p style={postDescription}>{listing.description}</p> : null}
-        <div style={postInfoRow}><span style={postLocationChip}><LocationIcon />{[listing.city, listing.state].filter(Boolean).join(', ') || businessLocation || 'Location available'}</span><span style={metaDivider}>|</span><span style={postTypeChip}>{prettyCategory(listing.category)}</span><span style={metaDivider}>|</span><span style={postIndustryChip}><IndustryIcon />{businessIndustry || 'Industry'}</span></div>
+        <div style={postInfoRow}><span style={postLocationChip}><LocationIcon />{[listing.city, listing.state].filter(Boolean).join(', ') || businessLocation || 'Location available'}</span><span style={metaDivider}>|</span><span style={postTypeChip}>{prettyCategory(listing.category)}</span><span style={metaDivider}>|</span><span style={postIndustryChip}><IndustryIcon />{listing.industry || businessIndustry || 'Industry'}</span></div>
         <div style={postFooter}>
           <div style={postSocialActions}>
             <button type='button' onClick={onToggleFavorite} style={socialButton(isFavorite)} aria-label={isFavorite ? 'Remove from favorites' : 'Save opportunity'}><HeartIcon filled={isFavorite} /><span>{isFavorite ? 'Saved' : 'Save'}</span></button>

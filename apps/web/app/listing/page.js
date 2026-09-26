@@ -300,7 +300,7 @@ export default function ListingDetailPage() {
             <h1>{listing.title}</h1>
             <div className='chips'>
               {listing.category ? <span>{listing.category}</span> : null}
-              {business?.industry ? <span>{business.industry}</span> : null}
+              {listing.industry || business?.industry ? <span>{listing.industry || business?.industry}</span> : null}
               <span>{location}</span>
             </div>
             {business?.id ? <div className='businessLink'><span className='businessAvatar'>C</span><span><strong>Confidential business</strong><small>Seller identity shared on request</small></span></div> : null}

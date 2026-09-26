@@ -65,7 +65,7 @@ export default function FeedPage() {
 
       let query = supabase
         .from('listings')
-        .select('id,seller_id,business_id,title,description,category,lister_role,business_age_years,asking_price,city,state,country,created_at,is_active,is_sold')
+        .select('id,seller_id,business_id,title,description,category,industry,lister_role,business_age_years,asking_price,city,state,country,created_at,is_active,is_sold')
         .eq('is_active', true)
         .eq('is_sold', false)
         .order('created_at', { ascending: false })

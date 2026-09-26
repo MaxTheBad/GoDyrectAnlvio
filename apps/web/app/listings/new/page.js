@@ -242,6 +242,7 @@ export default function NewListingPage() {
         title: form.title,
         description: form.description.trim() || business.description || null,
         category: business.category || 'established',
+        industry: business.industry || null,
         lister_role: membership.role || form.lister_role,
         business_age_years: yearsSince(business.start_date),
         asking_price: parsedAskingPrice,
