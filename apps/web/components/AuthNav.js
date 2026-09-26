@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { supabase } from '../lib/supabase';
 
-const memberLinks = [['/explore','Discover'],['/feed','Following'],['/messages','Messages'],['/dashboard','Workspace']];
+const memberLinks = [['/explore','Explore'],['/feed','Following'],['/messages','Messages'],['/dashboard','Workspace']];
 
 export default function AuthNav() {
   const pathname = usePathname();
@@ -25,7 +25,7 @@ export default function AuthNav() {
     if (!('Notification' in window)) return;
     if (Notification.permission === 'default') await Notification.requestPermission();
   }
-  const links = user ? memberLinks : [['/explore','Discover'],['/about','How it works']];
+  const links = user ? memberLinks : [['/explore','Explore'],['/about','How it works']];
   const isCurrent = (href) => {
     if (href === '/explore') return pathname === '/' || pathname?.startsWith('/explore');
     if (href === '/dashboard') return ['/dashboard', '/businesses', '/listings', '/favorites'].some((path) => pathname?.startsWith(path));
