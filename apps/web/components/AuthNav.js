@@ -10,10 +10,8 @@ export default function AuthNav() {
   const [user,setUser] = useState(null);
   const [loading,setLoading] = useState(true);
   const [menuOpen,setMenuOpen] = useState(false);
-  const [isNativeApp,setIsNativeApp] = useState(false);
 
   useEffect(() => {
-    setIsNativeApp(Boolean(window.GoDyrectNative));
     let mounted = true;
     supabase?.auth.getUser().then(({data}) => { if (mounted) { setUser(data?.user || null); setLoading(false); } });
     if (!supabase) setLoading(false);
@@ -22,7 +20,11 @@ export default function AuthNav() {
   },[]);
 
   async function signOut() { await supabase?.auth.signOut(); window.location.href = '/explore'; }
-  function openNotificationPreferences() { window.GoDyrectNative?.request?.('notificationPreferences'); }
+  async function openNotificationPreferences() {
+    if (window.GoDyrectNative?.request) return window.GoDyrectNative.request('notificationPreferences');
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'default') await Notification.requestPermission();
+  }
   const links = user ? memberLinks : [['/explore','Discover'],['/about','How it works']];
   const isCurrent = (href) => {
     if (href === '/explore') return pathname === '/' || pathname?.startsWith('/explore');
@@ -35,7 +37,7 @@ export default function AuthNav() {
     <nav className={`auth-nav ${user ? 'is-signed-in' : ''}`} aria-label="Account navigation">
       {!loading && links.map(([href,label]) => <a className={`nav-link ${isCurrent(href) ? 'is-active' : ''}`} href={href} aria-current={isCurrent(href) ? 'page' : undefined} key={href}>{label}</a>)}
       {!loading && (user ? <a className="nav-primary" href="/listings/new">List a business</a> : <><a className="nav-link" href="/login">Sign in</a><a className="nav-primary" href="/signup">Get started</a></>)}
-      {!loading && user && isNativeApp ? <button className="nav-notifications" onClick={openNotificationPreferences} aria-label="Notification preferences">🔔</button> : null}
+      {!loading && user ? <button className="nav-notifications" onClick={openNotificationPreferences} aria-label="Notification preferences" title="Notification preferences"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg></button> : null}
       <div className="nav-menu">
         <button className={`nav-menu__button ${accountCurrent ? 'is-active' : ''}`} aria-label="Open account navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(v => !v)}>{user ? <span className="nav-menu__avatar">{(user.user_metadata?.full_name || user.email || '?').trim().charAt(0).toUpperCase()}</span> : '≡'}</button>
         {menuOpen ? <div className="nav-menu__panel">

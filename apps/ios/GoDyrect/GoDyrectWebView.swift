@@ -45,6 +45,11 @@ struct GoDyrectWebView: UIViewRepresentable {
         webView.uiDelegate = context.coordinator
         webView.allowsBackForwardNavigationGestures = true
         webView.scrollView.contentInsetAdjustmentBehavior = .automatic
+        webView.scrollView.alwaysBounceVertical = true
+        let refreshControl = context.coordinator.refreshControl
+        refreshControl.tintColor = UIColor(red: 0.73, green: 1.0, blue: 0.35, alpha: 1)
+        refreshControl.addTarget(context.coordinator, action: #selector(Coordinator.refreshWebView(_:)), for: .valueChanged)
+        webView.scrollView.refreshControl = refreshControl
         webView.isOpaque = false
         webView.backgroundColor = UIColor(red: 0.015, green: 0.025, blue: 0.021, alpha: 1)
         webView.scrollView.backgroundColor = webView.backgroundColor
@@ -62,6 +67,7 @@ struct GoDyrectWebView: UIViewRepresentable {
     final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
         private let model: BrowserModel
         let permissionBridge = NativePermissionBridge()
+        let refreshControl = UIRefreshControl()
         private let allowedHosts = ["godyrect.com", "www.godyrect.com", "elcoibbmnjejkdbourjv.supabase.co"]
 
         init(model: BrowserModel) {
@@ -74,6 +80,7 @@ struct GoDyrectWebView: UIViewRepresentable {
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             model.isLoading = false
+            refreshControl.endRefreshing()
         }
 
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
@@ -90,6 +97,11 @@ struct GoDyrectWebView: UIViewRepresentable {
             model.isLoading = false
             model.errorMessage = nsError.localizedDescription
             model.showError = true
+            refreshControl.endRefreshing()
+        }
+
+        @objc func refreshWebView(_ sender: UIRefreshControl) {
+            model.webView?.reloadFromOrigin()
         }
 
         func webView(
