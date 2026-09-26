@@ -104,7 +104,7 @@ export default function ListingDetailPage() {
           .eq('id', l.seller_id)
           .maybeSingle(),
         l.business_id
-          ? supabase.from('businesses').select('id').eq('id', l.business_id).maybeSingle()
+          ? supabase.from('businesses').select('id,industry').eq('id', l.business_id).maybeSingle()
           : Promise.resolve({ data: null }),
       ]);
 
@@ -300,7 +300,7 @@ export default function ListingDetailPage() {
             <h1>{listing.title}</h1>
             <div className='chips'>
               {listing.category ? <span>{listing.category}</span> : null}
-              {listing.business_age_years ? <span>{listing.business_age_years} years established</span> : null}
+              {business?.industry ? <span>{business.industry}</span> : null}
               <span>{location}</span>
             </div>
             {business?.id ? <div className='businessLink'><span className='businessAvatar'>C</span><span><strong>Confidential business</strong><small>Seller identity shared on request</small></span></div> : null}
