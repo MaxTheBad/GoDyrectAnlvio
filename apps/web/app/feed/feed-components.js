@@ -181,7 +181,7 @@ export function FeedPost({
       <div style={postDetails}>
         <div style={postDetailsTop}><h3 style={postTitle}>{listing.title}</h3><strong style={postPrice}>${Number(listing.asking_price || 0).toLocaleString()}</strong></div>
         {listing.description ? <p style={postDescription}>{listing.description}</p> : null}
-        <div style={postInfoRow}><span style={postLocationChip}><LocationIcon />{[listing.city, listing.state].filter(Boolean).join(', ') || businessLocation || 'Location available'}</span><span style={metaDivider}>|</span><span style={postIndustryChip}><IndustryIcon />{businessIndustry || prettyCategory(listing.category)}</span></div>
+        <div style={postInfoRow}><span style={postLocationChip}><LocationIcon />{[listing.city, listing.state].filter(Boolean).join(', ') || businessLocation || 'Location available'}</span><span style={metaDivider}>|</span><span style={postTypeChip}>{prettyCategory(listing.category)}</span><span style={metaDivider}>|</span><span style={postIndustryChip}><IndustryIcon />{businessIndustry || 'Industry'}</span></div>
         <div style={postFooter}>
           <div style={postSocialActions}>
             <button type='button' onClick={onToggleFavorite} style={socialButton(isFavorite)} aria-label={isFavorite ? 'Remove from favorites' : 'Save opportunity'}><HeartIcon filled={isFavorite} /><span>{isFavorite ? 'Saved' : 'Save'}</span></button>
@@ -369,6 +369,7 @@ const postDescription = { margin: 0, color: '#b9c4be', fontSize: 14, lineHeight:
 const postInfoRow = { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, color: '#aeb9b2', fontSize: 13 };
 const postLocationChip = { display: 'inline-flex', alignItems: 'center', gap: 5 };
 const metaDivider = { color: 'rgba(229,255,242,.25)', fontSize: 16, lineHeight: 1 };
+const postTypeChip = { display: 'inline-flex', alignItems: 'center', color: '#b9ff5a', textTransform: 'capitalize' };
 const postIndustryChip = { display: 'inline-flex', alignItems: 'center', gap: 5, color: '#b9ff5a', textTransform: 'capitalize' };
 const postFooter = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingTop: 12, borderTop: '1px solid rgba(229,255,242,.1)' };
 const postSocialActions = { display: 'flex', alignItems: 'center', gap: 18, minWidth: 0 };
