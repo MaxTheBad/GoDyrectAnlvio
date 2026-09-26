@@ -15,16 +15,6 @@ struct ContentView: View {
                     .ignoresSafeArea(edges: .bottom)
             }
 
-            if browser.isLoading {
-                VStack {
-                    ProgressView()
-                        .tint(Color(red: 0.66, green: 1.0, blue: 0.26))
-                    Spacer()
-                }
-                .padding(.top, 8)
-                .allowsHitTesting(false)
-            }
-
         }
         .alert("Couldn’t load GoDyrect", isPresented: $browser.showError) {
             Button("Try again") { browser.reload() }
