@@ -50,6 +50,14 @@ export function FeedPost({
     else if (videoRef.current?.webkitEnterFullscreen) videoRef.current.webkitEnterFullscreen();
   }
 
+  async function shareListing() {
+    const url = `${window.location.origin}${onOpen}`;
+    try {
+      if (navigator.share) await navigator.share({ title: listing.title, text: listing.description || 'Business opportunity on GoDyrect', url });
+      else await navigator.clipboard?.writeText(url);
+    } catch { /* A dismissed native share sheet is not an error state. */ }
+  }
+
   return (
     <article className='feed-post' style={postShell}>
       <div style={postTopRow}>
@@ -174,17 +182,27 @@ export function FeedPost({
         <div style={postDetailsTop}><h3 style={postTitle}>{listing.title}</h3><strong style={postPrice}>${Number(listing.asking_price || 0).toLocaleString()}</strong></div>
         {listing.description ? <p style={postDescription}>{listing.description}</p> : null}
         <div style={postInfoRow}><span style={postLocationChip}><LocationIcon />{[listing.city, listing.state].filter(Boolean).join(', ') || businessLocation || 'Location available'}</span><span style={metaDivider}>|</span><span style={postIndustryChip}><IndustryIcon />{businessIndustry || prettyCategory(listing.category)}</span>{Number.isFinite(Number(listing.business_age_years)) ? <><span style={metaDivider}>|</span><span style={postAgeChip}><AgeIcon />{Number(listing.business_age_years)} {Number(listing.business_age_years) === 1 ? 'year' : 'years'}</span></> : null}</div>
-        <div style={postFooter}><a href={`/messages?seller=${listing.seller_id}&listing=${listing.id}`} style={messageButton}><MessageIcon /> Message</a><a href={onOpen} style={postViewLink}>View opportunity <span aria-hidden='true'>↗</span></a></div>
+        <div style={postFooter}>
+          <div style={postSocialActions}>
+            <button type='button' onClick={onToggleFavorite} style={socialButton(isFavorite)} aria-label={isFavorite ? 'Remove from favorites' : 'Save opportunity'}><HeartIcon filled={isFavorite} /><span>{isFavorite ? 'Saved' : 'Save'}</span></button>
+            <a href={`/messages?seller=${listing.seller_id}&listing=${listing.id}`} style={messageButton}><MessageIcon /><span>Message</span></a>
+            <button type='button' onClick={shareListing} style={socialButton(false)} aria-label='Share opportunity'><ShareIcon /><span>Share</span></button>
+          </div>
+          <span style={postTime}>{relativeTime(listing.created_at)}</span>
+        </div>
       </div>
     </article>
   );
 }
 
 function MessageIcon() { return <svg viewBox='0 0 24 24' aria-hidden='true' width='17' height='17' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='M20 15a4 4 0 0 1-4 4H8l-4 3v-7a4 4 0 0 1-1-2.65V7a4 4 0 0 1 4-4h9a4 4 0 0 1 4 4v8Z' /></svg>; }
+function HeartIcon({ filled }) { return <svg viewBox='0 0 24 24' aria-hidden='true' width='19' height='19' fill={filled ? 'currentColor' : 'none'} stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6Z' /></svg>; }
+function ShareIcon() { return <svg viewBox='0 0 24 24' aria-hidden='true' width='18' height='18' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='M12 16V3m0 0-4 4m4-4 4 4M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6' /></svg>; }
 function LocationIcon() { return <svg viewBox='0 0 24 24' aria-hidden='true' width='17' height='17' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z' /><circle cx='12' cy='10' r='2.5' /></svg>; }
 function IndustryIcon() { return <svg viewBox='0 0 24 24' aria-hidden='true' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='M4 20V7l8-4 8 4v13' /><path d='M9 20v-5h6v5M8 10h.01M16 10h.01' /></svg>; }
 function AgeIcon() { return <svg viewBox='0 0 24 24' aria-hidden='true' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round'><circle cx='12' cy='12' r='8.5' /><path d='M12 7v5l3 2' /></svg>; }
 function prettyCategory(value) { if (value === 'asset_sale') return 'Asset sale'; if (value === 'real_estate') return 'Real estate'; if (value === 'startup') return 'Start-up'; return 'Established business'; }
+function relativeTime(value) { const seconds = Math.max(0, (Date.now() - new Date(value || Date.now()).getTime()) / 1000); if (seconds < 3600) return `${Math.max(1, Math.floor(seconds / 60))}m ago`; if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`; return `${Math.floor(seconds / 86400)}d ago`; }
 
 export function FeedEmptyState({ loading, msg, hasFollows, hasSearch = false, exploreHref = '/explore' }) {
   if (loading || msg) return null;
@@ -354,8 +372,11 @@ const postLocationChip = { display: 'inline-flex', alignItems: 'center', gap: 5 
 const metaDivider = { color: 'rgba(229,255,242,.25)', fontSize: 16, lineHeight: 1 };
 const postIndustryChip = { display: 'inline-flex', alignItems: 'center', gap: 5, color: '#b9ff5a', textTransform: 'capitalize' };
 const postAgeChip = { display: 'inline-flex', alignItems: 'center', gap: 5, color: '#aeb9b2' };
-const postFooter = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingTop: 11, borderTop: '1px solid rgba(229,255,242,.1)' };
-const messageButton = { display: 'inline-flex', alignItems: 'center', gap: 7, color: '#f4f7f5', textDecoration: 'none', fontSize: 13, fontWeight: 700 };
+const postFooter = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingTop: 12, borderTop: '1px solid rgba(229,255,242,.1)' };
+const postSocialActions = { display: 'flex', alignItems: 'center', gap: 18, minWidth: 0 };
+const socialButton = (active) => ({ display: 'inline-flex', alignItems: 'center', gap: 6, border: 0, padding: 0, background: 'transparent', color: active ? '#ff4d73' : '#e9efeb', fontSize: 13, fontWeight: 700, cursor: 'pointer' });
+const messageButton = { display: 'inline-flex', alignItems: 'center', gap: 6, color: '#e9efeb', textDecoration: 'none', fontSize: 13, fontWeight: 700 };
+const postTime = { color: '#98a39e', fontSize: 12, whiteSpace: 'nowrap' };
 const postViewLink = { display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between', color: '#b9ff5a', textDecoration: 'none', fontSize: 13, fontWeight: 800, marginTop: 3 };
 
 const emptyState = { marginTop: 18, padding: 'clamp(22px, 5vw, 42px)', borderRadius: 20, border: '1px solid rgba(229,255,242,.11)', background: 'radial-gradient(circle at 90% 10%, rgba(185,255,90,.1), transparent 35%), #0d1010', display: 'grid', gap: 18, color: '#f4f7f5' };
