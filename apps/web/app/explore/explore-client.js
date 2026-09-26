@@ -5,7 +5,7 @@ import { useState } from 'react';
 import ListingExplorer from '../../components/ListingExplorer';
 import { FeedHero } from '../feed/feed-components';
 
-export default function ExploreClient() {
+export default function ExploreClient({ basePath = '/explore' }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [searchDraft, setSearchDraft] = useState(searchParams.get('q') || '');
@@ -17,7 +17,7 @@ export default function ExploreClient() {
     const params = new URLSearchParams();
     if (searchDraft.trim()) params.set('q', searchDraft.trim());
     if (industry !== 'all') params.set('industry', industry);
-    router.push(`/explore${params.toString() ? `?${params.toString()}` : ''}`);
+    router.push(`${basePath}${params.toString() ? `?${params.toString()}` : ''}`);
   }
 
   return (

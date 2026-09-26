@@ -1,5 +1,6 @@
-import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import ExploreClient from './explore/explore-client';
 
 export default function HomePage() {
-  redirect('/explore');
+  return <main style={{ minHeight: '100vh', background: 'var(--bg)' }}><Suspense fallback={null}><ExploreClient basePath='/' /></Suspense></main>;
 }
