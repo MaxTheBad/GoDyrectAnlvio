@@ -306,9 +306,18 @@ export default function NewListingPage() {
     return (
       <main style={wrap}>
         <div style={{ ...card, ...emptyStateCard }}>
-          <p style={emptyStateKicker}>Before you publish</p><h1 style={{ margin: 0 }}>Set up the business behind the opportunity.</h1>
-          <p style={{ color: '#aab5af', lineHeight: 1.6, margin: 0 }}>Add the business once. Its key details will carry into every post you publish.</p>
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <div style={emptyStateContent}>
+            <p style={emptyStateKicker}>Before you publish</p>
+            <h1 style={emptyStateTitle}>Set up the business <em style={emptyStateEmphasis}>behind the opportunity.</em></h1>
+            <p style={emptyStateCopy}>Add the business once. Its key details will carry into every post you publish.</p>
+          </div>
+          <div style={emptyStateVisual} aria-hidden='true'>
+            <span style={{ ...visualBadge, top: '18%', left: '16%' }}>⌂</span>
+            <span style={{ ...visualBadge, top: '36%', right: '14%' }}>▥</span>
+            <span style={{ ...visualBadge, right: '17%', bottom: '17%' }}>▤</span>
+            <span style={visualLabel}>BUSINESS<br />FOR SALE</span>
+          </div>
+          <div style={emptyStateActions}>
             <a href='/businesses?create=1' style={emptyStatePrimary}>Create a business</a>
             <a href='/businesses' style={emptyStateSecondary}>My businesses</a>
           </div>
@@ -414,7 +423,7 @@ export default function NewListingPage() {
   );
 }
 
-const wrap = { minHeight: '100vh', padding: 24, background: '#070909', color: '#fff' };
+const wrap = { minHeight: '100vh', padding: 'clamp(16px, 4vw, 32px)', background: '#070909', color: '#fff' };
 const card = { maxWidth: 700, display: 'grid', gap: 10, background: '#0d1010', padding: 20, borderRadius: 12 };
 const label = { fontSize: 13, opacity: 0.85 };
 const input = { borderRadius: 8, border: '1px solid rgba(229,255,242,0.14)', background: '#090b0b', color: '#fff', padding: '10px 12px' };
@@ -423,7 +432,15 @@ const infoBox = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, 
 const small = { fontSize: 13, opacity: 0.85 };
 const readinessCard = { display: 'grid', gap: 12, padding: 18, borderRadius: 16, border: '1px solid rgba(185,255,90,.35)', background: 'rgba(185,255,90,.06)', lineHeight: 1.5 };
 const readyLink = { display: 'inline-flex', width: 'fit-content', color: '#0a1205', background: '#b9ff5a', borderRadius: 10, padding: '10px 13px', textDecoration: 'none', fontWeight: 800 };
-const emptyStateCard = { maxWidth: 620, margin: '8vh auto', border: '1px solid rgba(185,255,90,.26)', borderRadius: 24, padding: 30, background: 'radial-gradient(circle at 90% 5%, rgba(185,255,90,.16), transparent 34%), #0d1010', boxShadow: '0 28px 80px rgba(0,0,0,.42)' };
+const emptyStateCard = { maxWidth: 680, minHeight: 460, margin: '7vh auto', border: '1px solid rgba(185,255,90,.3)', borderRadius: 28, padding: 'clamp(24px, 6vw, 40px)', position: 'relative', overflow: 'hidden', background: 'radial-gradient(circle at 15% 18%, rgba(185,255,90,.17), transparent 33%), linear-gradient(110deg, #0d1510 0%, #0c1110 54%, #122016 100%)', boxShadow: '0 28px 80px rgba(0,0,0,.42)' };
+const emptyStateContent = { position: 'relative', zIndex: 2, display: 'grid', gap: 16, maxWidth: 390 };
 const emptyStateKicker = { margin: 0, color: '#b9ff5a', fontSize: 11, fontWeight: 900, letterSpacing: '.16em', textTransform: 'uppercase' };
+const emptyStateTitle = { margin: 0, fontSize: 'clamp(33px, 7vw, 58px)', letterSpacing: '-.05em', lineHeight: .98, maxWidth: 430 };
+const emptyStateEmphasis = { display: 'block', color: '#b9ff5a', fontStyle: 'normal' };
+const emptyStateCopy = { color: '#b8c4bd', lineHeight: 1.58, margin: 0, maxWidth: 315, fontSize: 16 };
+const emptyStateVisual = { position: 'absolute', inset: 0, left: '42%', background: "linear-gradient(90deg, rgba(13,21,16,.98) 0%, rgba(13,21,16,.35) 30%, rgba(10,16,13,.15)), url('/bg.jpg') center/cover", filter: 'saturate(.8) contrast(1.1)' };
+const visualBadge = { position: 'absolute', width: 54, height: 54, display: 'grid', placeItems: 'center', borderRadius: 12, color: '#caff86', fontSize: 27, fontWeight: 900, border: '1px solid rgba(202,255,134,.38)', background: 'rgba(8,15,10,.64)', boxShadow: '0 10px 24px rgba(0,0,0,.25)' };
+const visualLabel = { position: 'absolute', right: '13%', top: '49%', color: '#e6ffb1', fontWeight: 900, fontSize: 'clamp(18px,3.2vw,31px)', textAlign: 'center', lineHeight: .9, letterSpacing: '.03em', textShadow: '0 3px 18px #000' };
+const emptyStateActions = { position: 'relative', zIndex: 2, display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 'auto', paddingTop: 14 };
 const emptyStatePrimary = { display: 'inline-flex', padding: '11px 14px', borderRadius: 11, color: '#0a1205', background: '#b9ff5a', textDecoration: 'none', fontWeight: 850 };
 const emptyStateSecondary = { display: 'inline-flex', padding: '10px 13px', borderRadius: 11, border: '1px solid rgba(229,255,242,.14)', color: '#f4f7f5', background: '#141817', textDecoration: 'none', fontWeight: 800 };
