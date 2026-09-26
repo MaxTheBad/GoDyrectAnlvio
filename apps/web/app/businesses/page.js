@@ -279,8 +279,8 @@ export default function MyBusinessesPage() {
   return (
     <main style={wrap}>
       <div style={card}>
-        <p style={eyebrow}>Business studio</p><h1 style={{ marginTop: 0 }}>Your businesses</h1>
-        <p style={{ opacity: 0.8 }}>Keep the profile, team, and every opportunity in one professional workspace ({businessCount}).</p>
+        <p style={eyebrow}>Business studio</p><h1 style={studioTitle}>Your businesses</h1>
+        <p style={studioCopy}>Keep the profile, team, and every opportunity in one professional workspace ({businessCount}).</p>
 
         <form onSubmit={createBusiness} style={createWrap}>
           <label style={fieldLabel}>Business name<input style={input} minLength={2} maxLength={100} placeholder='e.g. Sunrise Auto Sales' value={newBusinessName} onChange={(e) => setNewBusinessName(e.target.value)} required /></label>
@@ -298,7 +298,7 @@ export default function MyBusinessesPage() {
           <label style={fieldLabel}>Country<select style={input} value={newBusinessCountry} onChange={(e) => setNewBusinessCountry(e.target.value)}>
             {countries.map((c) => <option key={c} value={c}>{c}</option>)}
           </select></label>
-          <button style={{ ...btnPrimary, alignSelf: 'end', minHeight: 44 }} type='submit'>Create Business</button>
+          <button style={{ ...btnPrimary, alignSelf: 'end', minHeight: 52 }} type='submit'>Create Business</button>
         </form>
 
         {msg ? <p>{msg}</p> : null}
@@ -462,10 +462,10 @@ export default function MyBusinessesPage() {
   );
 }
 
-const wrap = { minHeight: '100vh', padding: '16px 12px 96px', background: '#070909', color: '#fff', overflowX: 'hidden' };
-const card = { maxWidth: 980, margin: '0 auto', width: '100%', background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 12, padding: 16, display: 'grid', gap: 12, boxSizing: 'border-box' };
-const createWrap = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 };
-const fieldLabel = { display: 'grid', gap: 6, color: '#bdc7c1', fontSize: 12, fontWeight: 700 };
+const wrap = { minHeight: '100vh', padding: '24px 16px 110px', background: 'radial-gradient(circle at 45% 0%, rgba(185,255,90,.055), transparent 30%), #070909', color: '#fff', overflowX: 'hidden' };
+const card = { maxWidth: 720, margin: '0 auto', width: '100%', background: 'linear-gradient(145deg, rgba(15,20,19,.98), rgba(10,13,12,.98))', border: '1px solid rgba(229,255,242,.14)', borderRadius: 24, padding: 'clamp(22px, 5vw, 34px)', display: 'grid', gap: 22, boxSizing: 'border-box', boxShadow: '0 24px 65px rgba(0,0,0,.28)' };
+const createWrap = { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '18px 14px' };
+const fieldLabel = { display: 'grid', gap: 8, color: '#d5ddd8', fontSize: 14, fontWeight: 750 };
 const bizCard = {
   border: '1px solid rgba(229,255,242,0.14)',
   borderRadius: 18,
@@ -485,9 +485,9 @@ const bizSubline = { marginTop: 6, opacity: 0.82, fontSize: 13 };
 const bizStats = { marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 12, fontSize: 12, color: '#a9b4ae' };
 const bizDivider = { height: 1, background: 'linear-gradient(90deg, rgba(185,255,90,.25), rgba(185,255,90,.02))' };
 const memberRow = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 8, padding: 8, display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center' };
-const input = { borderRadius: 8, border: '1px solid rgba(229,255,242,0.14)', background: '#090b0b', color: '#fff', padding: '10px 12px' };
+const input = { minWidth: 0, minHeight: 52, boxSizing: 'border-box', borderRadius: 13, border: '1px solid rgba(229,255,242,.14)', background: '#090b0b', color: '#fff', padding: '10px 13px', fontSize: 16 };
 const btn = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 8, background: '#141817', color: '#fff', padding: '8px 10px', textDecoration: 'none', cursor: 'pointer' };
-const btnPrimary = { border: 0, borderRadius: 8, background: '#b9ff5a', color: '#0a1205', padding: '10px 12px', cursor: 'pointer', fontWeight: 800 };
+const btnPrimary = { border: 0, borderRadius: 13, background: '#b9ff5a', color: '#0a1205', padding: '10px 12px', cursor: 'pointer', fontWeight: 850, fontSize: 16, boxShadow: '0 10px 24px rgba(185,255,90,.14)' };
 const postAsBtn = {
   display: 'inline-flex',
   alignItems: 'center',
@@ -533,3 +533,5 @@ const bizPill = (active) => ({
   border: active ? '1px solid rgba(185,255,90,.42)' : '1px solid rgba(255,255,255,0.08)',
 });
 const eyebrow = { margin: '0 0 10px', color: '#b9ff5a', letterSpacing: '.16em', textTransform: 'uppercase', fontSize: 11, fontWeight: 800 };
+const studioTitle = { margin: '-4px 0 28px', fontSize: 'clamp(34px, 8vw, 54px)', lineHeight: 1, letterSpacing: '-.045em' };
+const studioCopy = { maxWidth: 580, margin: 0, color: '#b7c1bb', fontSize: 'clamp(16px, 3.8vw, 20px)', lineHeight: 1.45 };
