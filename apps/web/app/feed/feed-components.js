@@ -54,13 +54,8 @@ export function FeedPost({
       <div style={postTopRow}>
         <a href={`/profile/view?id=${listing.seller_id}`} style={{ ...avatar, textDecoration: 'none', flex: '0 0 auto' }} aria-label={`View ${sellerName || 'seller'} profile`}>{(sellerName || listing.title || 'B').slice(0, 1).toUpperCase()}</a>
         <a href={`/profile/view?id=${listing.seller_id}`} style={{ minWidth: 0, color: 'inherit', textDecoration: 'none' }}>
-          <div style={postMeta}>
-            <span style={postBusiness}>{listing.title || listing.category || 'Business opportunity'}</span>
-            <span>·</span>
-            <span>Posted by {sellerName || 'User'}</span>
-            <span>·</span>
-            <span>{listing.lister_role || 'Authorized Representative'}</span>
-          </div>
+          <div style={postBusiness}>{sellerName || 'User'}</div>
+          <div style={postMeta}><span>Posted by {sellerName || 'User'}</span><span>·</span><span>{listing.lister_role || 'Owner'}</span></div>
           <div style={postLocation}>{[listing.city, listing.state].filter(Boolean).join(', ') || businessLocation || 'Location not set'}</div>
         </a>
         <div style={postActions}>
@@ -175,14 +170,17 @@ export function FeedPost({
         </div>
       ) : null}
       <div style={postDetails}>
-        <div style={postDetailsTop}><span style={postType}>Business opportunity</span><strong style={postPrice}>${Number(listing.asking_price || 0).toLocaleString()}</strong></div>
-        <h3 style={postTitle}>{listing.title}</h3>
+        <div style={postDetailsTop}><h3 style={postTitle}>{listing.title}</h3><strong style={postPrice}>${Number(listing.asking_price || 0).toLocaleString()}</strong></div>
         {listing.description ? <p style={postDescription}>{listing.description}</p> : null}
-        <a href={onOpen} style={postViewLink}>View opportunity <span aria-hidden='true'>↗</span></a>
+        <div style={postInfoRow}><span style={postLocationChip}>⌖ {[listing.city, listing.state].filter(Boolean).join(', ') || businessLocation || 'Location available'}</span><span style={postCategoryChip}>{prettyCategory(listing.category)}</span></div>
+        <div style={postFooter}><a href={`/messages?seller=${listing.seller_id}&listing=${listing.id}`} style={messageButton}><MessageIcon /> Message</a><a href={onOpen} style={postViewLink}>View opportunity <span aria-hidden='true'>↗</span></a></div>
       </div>
     </article>
   );
 }
+
+function MessageIcon() { return <svg viewBox='0 0 24 24' aria-hidden='true' width='17' height='17' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='M20 15a4 4 0 0 1-4 4H8l-4 3v-7a4 4 0 0 1-1-2.65V7a4 4 0 0 1 4-4h9a4 4 0 0 1 4 4v8Z' /></svg>; }
+function prettyCategory(value) { if (value === 'asset_sale') return 'Asset sale'; if (value === 'real_estate') return 'Real estate'; if (value === 'startup') return 'Start-up'; return 'Established business'; }
 
 export function FeedEmptyState({ loading, msg, hasFollows, hasSearch = false, exploreHref = '/explore' }) {
   if (loading || msg) return null;
@@ -341,12 +339,17 @@ const activeDot = { ...dot, background: '#fff', width: 8, height: 8 };
 const videoProgress = { position: 'absolute', left: 14, right: 14, bottom: 8, width: 'calc(100% - 28px)', accentColor: '#b9ff5a', zIndex: 3 };
 const videoControls = { position: 'absolute', right: 12, bottom: 34, zIndex: 4, display: 'flex', gap: 6 };
 const videoControlButton = { width: 38, height: 38, borderRadius: 999, border: '1px solid rgba(255,255,255,.2)', background: 'rgba(8,12,10,.76)', color: '#fff', display: 'grid', placeItems: 'center', padding: 0, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' };
-const postDetails = { display: 'grid', gap: 8, padding: '15px 16px 18px', background: '#101413' };
-const postDetailsTop = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 };
+const postDetails = { display: 'grid', gap: 10, padding: '16px 16px 15px', background: '#101413' };
+const postDetailsTop = { display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: 14 };
 const postType = { color: '#b9ff5a', fontSize: 11, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase' };
-const postPrice = { fontSize: 17, color: '#f4f7f5' };
+const postPrice = { fontSize: 19, color: '#b9ff5a', whiteSpace: 'nowrap', paddingTop: 1 };
 const postTitle = { margin: 0, color: '#fff', fontSize: 'clamp(19px,4vw,24px)', lineHeight: 1.15 };
 const postDescription = { margin: 0, color: '#b9c4be', fontSize: 14, lineHeight: 1.45, display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 3, overflow: 'hidden', whiteSpace: 'pre-wrap' };
+const postInfoRow = { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, color: '#aeb9b2', fontSize: 13 };
+const postLocationChip = { display: 'inline-flex', alignItems: 'center', gap: 4 };
+const postCategoryChip = { display: 'inline-flex', alignItems: 'center', padding: '5px 9px', borderRadius: 999, color: '#b9ff5a', border: '1px solid rgba(185,255,90,.2)', background: 'rgba(91,125,42,.12)', textTransform: 'capitalize' };
+const postFooter = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingTop: 11, borderTop: '1px solid rgba(229,255,242,.1)' };
+const messageButton = { display: 'inline-flex', alignItems: 'center', gap: 7, color: '#f4f7f5', textDecoration: 'none', fontSize: 13, fontWeight: 700 };
 const postViewLink = { display: 'inline-flex', alignItems: 'center', justifyContent: 'space-between', color: '#b9ff5a', textDecoration: 'none', fontSize: 13, fontWeight: 800, marginTop: 3 };
 
 const emptyState = { marginTop: 18, padding: 'clamp(22px, 5vw, 42px)', borderRadius: 20, border: '1px solid rgba(229,255,242,.11)', background: 'radial-gradient(circle at 90% 10%, rgba(185,255,90,.1), transparent 35%), #0d1010', display: 'grid', gap: 18, color: '#f4f7f5' };
