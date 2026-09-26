@@ -305,12 +305,12 @@ export default function NewListingPage() {
   if (isAuthed && approvedBusinesses.length === 0) {
     return (
       <main style={wrap}>
-        <div style={card}>
-          <h1>Create a business post</h1>
-          <p>You need an approved business before posting.</p>
+        <div style={{ ...card, ...emptyStateCard }}>
+          <p style={emptyStateKicker}>Before you publish</p><h1 style={{ margin: 0 }}>Set up the business behind the opportunity.</h1>
+          <p style={{ color: '#aab5af', lineHeight: 1.6, margin: 0 }}>Add the business once. Its key details will carry into every post you publish.</p>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <a href='/businesses' style={{ color: '#b9ff5a' }}>Go to My Businesses</a>
-            <a href='/businesses?create=1' style={{ color: '#b9ff5a' }}>Create business</a>
+            <a href='/businesses?create=1' style={emptyStatePrimary}>Create a business</a>
+            <a href='/businesses' style={emptyStateSecondary}>My businesses</a>
           </div>
           {msg ? <p>{msg}</p> : null}
         </div>
@@ -329,6 +329,7 @@ export default function NewListingPage() {
           <option value=''>Select your business</option>
           {approvedBusinesses.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
         </select>
+        <a href='/businesses?create=1' style={{ color: '#b9ff5a', fontSize: 13, fontWeight: 800, width: 'fit-content' }}>+ Create a new business</a>
 
         {!profileCheckReady ? <p style={small}>Checking this business profile…</p> : null}
         {profileCheckReady && profileMissingFields.length ? <div style={readinessCard} role='status'>
@@ -422,3 +423,7 @@ const infoBox = { border: '1px solid rgba(229,255,242,0.14)', borderRadius: 10, 
 const small = { fontSize: 13, opacity: 0.85 };
 const readinessCard = { display: 'grid', gap: 12, padding: 18, borderRadius: 16, border: '1px solid rgba(185,255,90,.35)', background: 'rgba(185,255,90,.06)', lineHeight: 1.5 };
 const readyLink = { display: 'inline-flex', width: 'fit-content', color: '#0a1205', background: '#b9ff5a', borderRadius: 10, padding: '10px 13px', textDecoration: 'none', fontWeight: 800 };
+const emptyStateCard = { maxWidth: 620, margin: '8vh auto', border: '1px solid rgba(185,255,90,.26)', borderRadius: 24, padding: 30, background: 'radial-gradient(circle at 90% 5%, rgba(185,255,90,.16), transparent 34%), #0d1010', boxShadow: '0 28px 80px rgba(0,0,0,.42)' };
+const emptyStateKicker = { margin: 0, color: '#b9ff5a', fontSize: 11, fontWeight: 900, letterSpacing: '.16em', textTransform: 'uppercase' };
+const emptyStatePrimary = { display: 'inline-flex', padding: '11px 14px', borderRadius: 11, color: '#0a1205', background: '#b9ff5a', textDecoration: 'none', fontWeight: 850 };
+const emptyStateSecondary = { display: 'inline-flex', padding: '10px 13px', borderRadius: 11, border: '1px solid rgba(229,255,242,.14)', color: '#f4f7f5', background: '#141817', textDecoration: 'none', fontWeight: 800 };

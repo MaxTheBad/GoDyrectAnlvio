@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
 
 export default function ListingDetailPage() {
+  const router = useRouter();
   const [id, setId] = useState('');
   const [listing, setListing] = useState(null);
   const [media, setMedia] = useState([]);
@@ -247,7 +249,7 @@ export default function ListingDetailPage() {
   return (
     <main className='listingPage'>
       <article className='listingShell'>
-        <a className='backLink' href='/'>← Explore opportunities</a>
+        <button className='backLink' type='button' onClick={() => window.history.length > 1 ? router.back() : router.push('/explore')}>← Back</button>
 
         <div className='heroGrid'>
           <section className='mediaColumn' aria-label='Listing media'>
@@ -343,12 +345,12 @@ export default function ListingDetailPage() {
       <style jsx>{`
         .listingPage { min-height: 100vh; padding: 26px 20px 150px; color: #f7faf8; background: radial-gradient(circle at 75% 6%, rgba(169,255,65,.09), transparent 28rem), #050807; }
         .listingShell { width: min(1120px, 100%); margin: 0 auto; }
-        .backLink { display: inline-flex; margin-bottom: 18px; color: rgba(247,250,248,.62); text-decoration: none; font-size: 14px; font-weight: 650; }
+        .backLink { display: inline-flex; margin-bottom: 18px; padding: 0; border: 0; color: rgba(247,250,248,.62); background: transparent; text-decoration: none; font-size: 14px; font-weight: 650; cursor: pointer; }
         .backLink:hover { color: #b0ff4b; }
         .heroGrid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(330px, .75fr); gap: 18px; align-items: stretch; }
         .mediaColumn, .dealPanel, .contentCard, .statGrid { border: 1px solid rgba(229,255,242,.11); background: rgba(13,17,15,.92); box-shadow: 0 24px 70px rgba(0,0,0,.28); }
         .mediaColumn { border-radius: 28px; overflow: hidden; }
-        .mediaFrame { position: relative; width: 100%; aspect-ratio: 4 / 3; min-height: 430px; overflow: hidden; background: #0a0d0c; }
+        .mediaFrame { position: relative; width: 100%; aspect-ratio: 9 / 16; min-height: 0; max-height: 78vh; overflow: hidden; background: #0a0d0c; }
         .mediaFrame video, .mediaFrame > img { width: 100%; height: 100%; display: block; object-fit: cover; }
         .mediaEmpty { height: 100%; display: grid; place-content: center; justify-items: center; gap: 12px; color: rgba(255,255,255,.42); background: radial-gradient(circle at center, rgba(176,255,75,.12), transparent 45%); }
         .mediaEmpty span { width: 76px; height: 76px; display: grid; place-items: center; border-radius: 24px; font-size: 30px; font-weight: 900; color: #0a0d0c; background: #b0ff4b; }

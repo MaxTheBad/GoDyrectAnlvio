@@ -182,7 +182,13 @@ export default function MyBusinessesPage() {
     if (!supabase || !userId || !newBusinessName.trim()) return;
     const price = parseCurrencyInput(newBusinessAskingPrice);
     if (!newBusinessStartDate) return setMsg('Add the date the business started.');
+    if (new Date(newBusinessStartDate) > new Date()) return setMsg('Business start date cannot be in the future.');
     if (!price || Number(price) <= 0) return setMsg('Add a valid asking price.');
+    if (!newBusinessIndustry.trim()) return setMsg('Choose an industry from the list.');
+    if (!newBusinessCity.trim() || newBusinessCity.trim().length < 2) return setMsg('Add a valid city.');
+    if (!US_STATES.includes(newBusinessState)) return setMsg('Choose a valid state.');
+    if (!/^\d{5}(?:-\d{4})?$/.test(newBusinessZip.trim())) return setMsg('Enter a valid ZIP code, for example 33101.');
+    if (!countries.includes(newBusinessCountry)) return setMsg('Choose a valid country.');
 
     const { data: created, error: createErr } = await supabase
       .from('businesses')
@@ -277,18 +283,18 @@ export default function MyBusinessesPage() {
         <p style={{ opacity: 0.8 }}>Keep the profile, team, and every opportunity in one professional workspace ({businessCount}).</p>
 
         <form onSubmit={createBusiness} style={createWrap}>
-          <label style={fieldLabel}>Business name<input style={input} placeholder='e.g. Sunrise Auto Sales' value={newBusinessName} onChange={(e) => setNewBusinessName(e.target.value)} required /></label>
+          <label style={fieldLabel}>Business name<input style={input} minLength={2} maxLength={100} placeholder='e.g. Sunrise Auto Sales' value={newBusinessName} onChange={(e) => setNewBusinessName(e.target.value)} required /></label>
           <label style={fieldLabel}>Industry<IndustryPicker id='new-business-industry' value={newBusinessIndustry} onChange={setNewBusinessIndustry} /></label>
-          <label style={fieldLabel}>Business started<input style={input} type='date' value={newBusinessStartDate} onChange={(e) => setNewBusinessStartDate(e.target.value)} required /></label>
+          <label style={fieldLabel}>Business started<input style={input} type='date' max={new Date().toISOString().slice(0, 10)} value={newBusinessStartDate} onChange={(e) => setNewBusinessStartDate(e.target.value)} required /></label>
           <label style={fieldLabel}>Asking price<input style={input} inputMode='decimal' placeholder='e.g. $450,000' value={newBusinessAskingPrice} onChange={(e) => setNewBusinessAskingPrice(e.target.value)} onBlur={() => { const raw = parseCurrencyInput(newBusinessAskingPrice); setNewBusinessAskingPrice(raw ? formatCurrency(raw) : ''); }} required /></label>
           <label style={fieldLabel}>Your role<select style={input} value={newBusinessRole} onChange={(e) => setNewBusinessRole(e.target.value)}>
             <option>Owner</option><option>CEO</option><option>Founder</option><option>Broker</option><option>Managing Partner</option><option>Authorized Representative</option>
           </select></label>
-          <label style={fieldLabel}>City<input style={input} placeholder='e.g. Miami' value={newBusinessCity} onChange={(e) => setNewBusinessCity(e.target.value)} /></label>
+          <label style={fieldLabel}>City<input style={input} minLength={2} maxLength={80} placeholder='e.g. Miami' value={newBusinessCity} onChange={(e) => setNewBusinessCity(e.target.value)} required /></label>
           <label style={fieldLabel}>State<select style={input} value={newBusinessState} onChange={(e) => setNewBusinessState(e.target.value)}>
             {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select></label>
-          <label style={fieldLabel}>ZIP code<input style={input} placeholder='e.g. 33101' value={newBusinessZip} onChange={(e) => setNewBusinessZip(e.target.value)} /></label>
+          <label style={fieldLabel}>ZIP code<input style={input} inputMode='numeric' pattern='\d{5}(-\d{4})?' maxLength={10} placeholder='e.g. 33101' value={newBusinessZip} onChange={(e) => setNewBusinessZip(e.target.value.replace(/[^\d-]/g, ''))} required /></label>
           <label style={fieldLabel}>Country<select style={input} value={newBusinessCountry} onChange={(e) => setNewBusinessCountry(e.target.value)}>
             {countries.map((c) => <option key={c} value={c}>{c}</option>)}
           </select></label>

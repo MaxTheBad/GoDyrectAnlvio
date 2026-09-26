@@ -52,8 +52,8 @@ export function FeedPost({
   return (
     <article className='feed-post' style={postShell}>
       <div style={postTopRow}>
-        <div style={avatar}>{(listing.title || 'B').slice(0, 1).toUpperCase()}</div>
-        <div style={{ minWidth: 0 }}>
+        <a href={`/profile/view?id=${listing.seller_id}`} style={{ ...avatar, textDecoration: 'none', flex: '0 0 auto' }} aria-label={`View ${sellerName || 'seller'} profile`}>{(sellerName || listing.title || 'B').slice(0, 1).toUpperCase()}</a>
+        <a href={`/profile/view?id=${listing.seller_id}`} style={{ minWidth: 0, color: 'inherit', textDecoration: 'none' }}>
           <div style={postMeta}>
             <span style={postBusiness}>{listing.title || listing.category || 'Business opportunity'}</span>
             <span>·</span>
@@ -62,7 +62,7 @@ export function FeedPost({
             <span>{listing.lister_role || 'Authorized Representative'}</span>
           </div>
           <div style={postLocation}>{[listing.city, listing.state].filter(Boolean).join(', ') || businessLocation || 'Location not set'}</div>
-        </div>
+        </a>
         <div style={postActions}>
           <button type='button' aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'} onClick={onToggleFavorite} style={bookmarkBtn(isFavorite)}>
             <span style={bookmarkIcon(isFavorite)}>
