@@ -277,22 +277,22 @@ export default function MyBusinessesPage() {
         <p style={{ opacity: 0.8 }}>Keep the profile, team, and every opportunity in one professional workspace ({businessCount}).</p>
 
         <form onSubmit={createBusiness} style={createWrap}>
-          <input style={input} placeholder='e.g. Sunrise Auto Sales or Main Street Laundromat' value={newBusinessName} onChange={(e) => setNewBusinessName(e.target.value)} required />
-          <IndustryPicker id='new-business-industry' value={newBusinessIndustry} onChange={setNewBusinessIndustry} />
-          <input style={input} type='date' aria-label='Business started' value={newBusinessStartDate} onChange={(e) => setNewBusinessStartDate(e.target.value)} required />
-          <input style={input} inputMode='decimal' placeholder='e.g. $450,000 asking price' value={newBusinessAskingPrice} onChange={(e) => setNewBusinessAskingPrice(e.target.value)} onBlur={() => { const raw = parseCurrencyInput(newBusinessAskingPrice); setNewBusinessAskingPrice(raw ? formatCurrency(raw) : ''); }} required />
-          <select style={input} value={newBusinessRole} onChange={(e) => setNewBusinessRole(e.target.value)}>
+          <label style={fieldLabel}>Business name<input style={input} placeholder='e.g. Sunrise Auto Sales' value={newBusinessName} onChange={(e) => setNewBusinessName(e.target.value)} required /></label>
+          <label style={fieldLabel}>Industry<IndustryPicker id='new-business-industry' value={newBusinessIndustry} onChange={setNewBusinessIndustry} /></label>
+          <label style={fieldLabel}>Business started<input style={input} type='date' value={newBusinessStartDate} onChange={(e) => setNewBusinessStartDate(e.target.value)} required /></label>
+          <label style={fieldLabel}>Asking price<input style={input} inputMode='decimal' placeholder='e.g. $450,000' value={newBusinessAskingPrice} onChange={(e) => setNewBusinessAskingPrice(e.target.value)} onBlur={() => { const raw = parseCurrencyInput(newBusinessAskingPrice); setNewBusinessAskingPrice(raw ? formatCurrency(raw) : ''); }} required /></label>
+          <label style={fieldLabel}>Your role<select style={input} value={newBusinessRole} onChange={(e) => setNewBusinessRole(e.target.value)}>
             <option>Owner</option><option>CEO</option><option>Founder</option><option>Broker</option><option>Managing Partner</option><option>Authorized Representative</option>
-          </select>
-          <input style={input} placeholder='e.g. Miami' value={newBusinessCity} onChange={(e) => setNewBusinessCity(e.target.value)} />
-          <select style={input} value={newBusinessState} onChange={(e) => setNewBusinessState(e.target.value)}>
+          </select></label>
+          <label style={fieldLabel}>City<input style={input} placeholder='e.g. Miami' value={newBusinessCity} onChange={(e) => setNewBusinessCity(e.target.value)} /></label>
+          <label style={fieldLabel}>State<select style={input} value={newBusinessState} onChange={(e) => setNewBusinessState(e.target.value)}>
             {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-          <input style={input} placeholder='e.g. 33101' value={newBusinessZip} onChange={(e) => setNewBusinessZip(e.target.value)} />
-          <select style={input} value={newBusinessCountry} onChange={(e) => setNewBusinessCountry(e.target.value)}>
+          </select></label>
+          <label style={fieldLabel}>ZIP code<input style={input} placeholder='e.g. 33101' value={newBusinessZip} onChange={(e) => setNewBusinessZip(e.target.value)} /></label>
+          <label style={fieldLabel}>Country<select style={input} value={newBusinessCountry} onChange={(e) => setNewBusinessCountry(e.target.value)}>
             {countries.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
-          <button style={btnPrimary} type='submit'>Create Business</button>
+          </select></label>
+          <button style={{ ...btnPrimary, alignSelf: 'end', minHeight: 44 }} type='submit'>Create Business</button>
         </form>
 
         {msg ? <p>{msg}</p> : null}
@@ -459,6 +459,7 @@ export default function MyBusinessesPage() {
 const wrap = { minHeight: '100vh', padding: '16px 12px 96px', background: '#070909', color: '#fff', overflowX: 'hidden' };
 const card = { maxWidth: 980, margin: '0 auto', width: '100%', background: '#0d1010', border: '1px solid rgba(229,255,242,0.11)', borderRadius: 12, padding: 16, display: 'grid', gap: 12, boxSizing: 'border-box' };
 const createWrap = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 };
+const fieldLabel = { display: 'grid', gap: 6, color: '#bdc7c1', fontSize: 12, fontWeight: 700 };
 const bizCard = {
   border: '1px solid rgba(229,255,242,0.14)',
   borderRadius: 18,

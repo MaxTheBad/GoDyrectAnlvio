@@ -82,7 +82,7 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
         if (businessIds.length) {
           const { data: businesses } = await supabase
             .from('businesses')
-          .select('id,name,industry')
+          .select('id,industry')
             .in('id', businessIds);
           const map = {};
           (businesses || []).forEach((b) => {
@@ -239,7 +239,7 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
 
     if (searchQuery) {
       rows = rows.filter((l) => {
-        const haystack = [l.title, l.description, l.category, businessNames[l.business_id]?.name, businessNames[l.business_id]?.industry, l.city, l.state, l.country, l.county]
+        const haystack = [l.title, l.description, l.category, businessNames[l.business_id]?.industry, l.city, l.state, l.country, l.county]
           .filter(Boolean)
           .join(' ')
           .toLowerCase();
@@ -534,7 +534,7 @@ export default function ListingExplorer({ initialSearch = '', initialIndustry = 
               <div key={l.id} style={{ display: 'grid', gap: 10 }}>
                 <FeedPost
                   listing={l}
-                  businessName={businessNames[l.business_id]?.name || prettyCategory(l.category)}
+                  businessName={null}
                   businessLocation={[l.city, l.state, l.country].filter(Boolean).join(', ') || 'Location not set'}
                   sellerName={seller?.full_name || seller?.handle || 'Seller'}
                   media={media}

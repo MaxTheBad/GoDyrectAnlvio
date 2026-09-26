@@ -55,7 +55,7 @@ export function FeedPost({
         <div style={avatar}>{(listing.title || 'B').slice(0, 1).toUpperCase()}</div>
         <div style={{ minWidth: 0 }}>
           <div style={postMeta}>
-            <span style={postBusiness}>{businessName || listing.category || 'Listing'}</span>
+            <span style={postBusiness}>{listing.title || listing.category || 'Business opportunity'}</span>
             <span>·</span>
             <span>Posted by {sellerName || 'User'}</span>
             <span>·</span>

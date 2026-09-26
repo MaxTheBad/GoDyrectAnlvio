@@ -7,7 +7,6 @@ import { FeedEmptyState, FeedPost } from './feed-components';
 export default function FeedPage() {
   const [rows, setRows] = useState([]);
   const [profileNames, setProfileNames] = useState({});
-  const [businessNames, setBusinessNames] = useState({});
   const [businessLocations, setBusinessLocations] = useState({});
   const [mediaByListing, setMediaByListing] = useState({});
   const [activeMediaByListing, setActiveMediaByListing] = useState({});
@@ -94,7 +93,7 @@ export default function FeedPage() {
 
       const [{ data: profiles }, { data: businesses }, { data: media }] = await Promise.all([
         sellerIds.length ? supabase.from('profiles').select('id,full_name,handle').in('id', sellerIds) : Promise.resolve({ data: [] }),
-        bizIds.length ? supabase.from('businesses').select('id,name,city,state,zip,country,county').in('id', bizIds) : Promise.resolve({ data: [] }),
+        bizIds.length ? supabase.from('businesses').select('id,city,state,zip,country,county').in('id', bizIds) : Promise.resolve({ data: [] }),
         listingIds.length
           ? supabase.from('listing_media').select('listing_id,media_type,url,thumbnail_url,overlay_text,overlay_x,overlay_y,overlay_size,sort_order').in('listing_id', listingIds)
           : Promise.resolve({ data: [] }),
@@ -106,13 +105,10 @@ export default function FeedPage() {
       });
       setProfileNames(pMap);
 
-      const bMap = {};
       const lMap = {};
       (businesses || []).forEach((b) => {
-        bMap[b.id] = b.name;
         lMap[b.id] = [b.city, b.state, b.zip].filter(Boolean).join(' ');
       });
-      setBusinessNames(bMap);
       setBusinessLocations(lMap);
       const activeMap = {};
       listRows.forEach((row) => {
@@ -203,7 +199,7 @@ export default function FeedPage() {
               <FeedPost
                 key={r.id}
                 listing={r}
-                businessName={businessNames[r.business_id]}
+                businessName={null}
                 businessLocation={businessLocations[r.business_id]}
                 sellerName={profileNames[r.seller_id]}
                 media={media}

@@ -26,7 +26,7 @@ export default function BusinessProfilePage() {
       setViewerId(uid);
 
       const [{ data: b, error: bErr }, { data: listings }, { data: follows }] = await Promise.all([
-        supabase.from('businesses').select('id,name,description,category,start_date,annual_revenue,annual_profit,city,state,country').eq('id', id).maybeSingle(),
+        supabase.from('businesses').select('id,description,category,start_date,annual_revenue,annual_profit,city,state,country').eq('id', id).maybeSingle(),
         supabase.from('listings').select('id,title,asking_price,created_at').eq('business_id', id).eq('is_active', true).eq('is_sold', false).order('created_at', { ascending: false }).limit(30),
         supabase.from('business_follows').select('follower_user_id').eq('business_id', id),
       ]);
@@ -71,9 +71,9 @@ export default function BusinessProfilePage() {
     <main style={wrap}>
       <div style={card}>
         <div style={heroTop}>
-          <div style={brandMark}>{(business.name || 'B').slice(0, 1).toUpperCase()}</div>
+          <div style={brandMark}>C</div>
           <div style={{ minWidth: 0 }}>
-            <h1 style={{ margin: 0, color: '#fff', fontSize: 'clamp(28px, 5vw, 44px)' }}>{business.name}</h1>
+            <h1 style={{ margin: 0, color: '#fff', fontSize: 'clamp(28px, 5vw, 44px)' }}>Confidential business profile</h1>
             <div style={muted}>{business.category || 'Business'} · {[business.city, business.state, business.country].filter(Boolean).join(', ') || 'Location not set'}</div>
             <div style={muted}>{followerCount} follower{followerCount === 1 ? '' : 's'}</div>
           </div>

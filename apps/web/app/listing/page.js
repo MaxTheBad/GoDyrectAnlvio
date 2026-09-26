@@ -102,7 +102,7 @@ export default function ListingDetailPage() {
           .eq('id', l.seller_id)
           .maybeSingle(),
         l.business_id
-          ? supabase.from('businesses').select('id,name').eq('id', l.business_id).maybeSingle()
+          ? supabase.from('businesses').select('id').eq('id', l.business_id).maybeSingle()
           : Promise.resolve({ data: null }),
       ]);
 
@@ -301,12 +301,7 @@ export default function ListingDetailPage() {
               {listing.business_age_years ? <span>{listing.business_age_years} years established</span> : null}
               <span>{location}</span>
             </div>
-            {business?.id ? (
-              <a href={`/business/view?id=${business.id}`} className='businessLink'>
-                <span className='businessAvatar'>{initial(business.name)}</span>
-                <span><strong>{business.name}</strong><small>View business profile →</small></span>
-              </a>
-            ) : null}
+            {business?.id ? <div className='businessLink'><span className='businessAvatar'>C</span><span><strong>Confidential business</strong><small>Seller identity shared on request</small></span></div> : null}
             <div className='priceBlock'><small>Asking price</small><strong>{money(listing.asking_price)}</strong></div>
             <div className='primaryActions'>
               <a className='primaryButton' href={isOwner ? `/listings/edit?id=${listing.id}` : `/messages?seller=${listing.seller_id}&listing=${listing.id}`}>{isOwner ? 'Edit opportunity' : 'Message seller'}</a>

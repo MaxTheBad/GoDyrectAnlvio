@@ -7,7 +7,6 @@ export default function MyListingsPage() {
   const [rows, setRows] = useState([]);
   const [userId, setUserId] = useState('');
   const [msg, setMsg] = useState('');
-  const [businessNames, setBusinessNames] = useState({});
 
   async function loadListings() {
     if (!supabase) return;
@@ -26,15 +25,6 @@ export default function MyListingsPage() {
     const listRows = data || [];
     setRows(listRows);
 
-    const ids = [...new Set(listRows.map((r) => r.business_id).filter(Boolean))];
-    if (ids.length) {
-      const { data: businesses } = await supabase.from('businesses').select('id,name').in('id', ids);
-      const map = {};
-      (businesses || []).forEach((b) => {
-        map[b.id] = b.name;
-      });
-      setBusinessNames(map);
-    }
   }
 
   useEffect(() => {
@@ -74,7 +64,7 @@ export default function MyListingsPage() {
             <div key={r.id} style={row}>
               <div>
                 <strong>{r.title}</strong>
-                <div style={{ opacity: 0.8, fontSize: 13 }}>{businessNames[r.business_id] || 'Business'} · {r.category} · ${Number(r.asking_price || 0).toLocaleString()}</div>
+                <div style={{ opacity: 0.8, fontSize: 13 }}>Confidential business · {r.category} · ${Number(r.asking_price || 0).toLocaleString()}</div>
                 <div style={{ opacity: 0.72, fontSize: 12 }}>Posted as: {r.lister_role || 'Authorized Representative'}</div>
                 <div style={{ opacity: 0.75, fontSize: 12 }}>{r.is_sold ? 'Sold' : r.is_active ? 'Active' : 'Inactive'}</div>
               </div>
